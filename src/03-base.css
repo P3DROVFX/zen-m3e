@@ -1,0 +1,123 @@
+/*
+ * Base: typeface, window surface, icon buttons, tooltips, scrollbars.
+ */
+
+/* ---------- Type ---------- */
+@media not -moz-pref("m3e.system-font") {
+  :root,
+  #main-window,
+  menupopup,
+  panel,
+  tooltip,
+  #urlbar,
+  .urlbarView {
+    font-family: var(--m3e-font) !important;
+    font-variation-settings: var(--m3e-axes);
+    font-optical-sizing: auto;
+  }
+}
+
+/* ---------- Window ---------- */
+#main-window,
+#zen-main-app-wrapper,
+#browser {
+  background-color: var(--m3e-window) !important;
+}
+
+#navigator-toolbox {
+  --zen-toolbox-padding: 6px !important;
+  color: var(--m3-on-surface) !important;
+}
+
+/* Zen's workspace gradient and grain layers give way to the scheme's surface. */
+.zen-browser-generic-background,
+#zen-browser-background {
+  background: var(--m3e-window) !important;
+  &::before,
+  &::after {
+    opacity: 0 !important;
+    background: none !important;
+  }
+}
+#zen-browser-grain,
+.zen-browser-grain {
+  display: none !important;
+}
+
+/* The page sits on the window like a pane: no outline, just the radius and a gap. */
+.browserSidebarContainer {
+  box-shadow: none !important;
+  outline: none !important;
+  border: none !important;
+}
+
+/* ---------- Icon buttons: circle idle, rounded square on hover, 0.95 press ---------- */
+#navigator-toolbox :is(#zen-sidebar-top-buttons, #zen-sidebar-foot-buttons, #nav-bar) .toolbarbutton-1:not(#zen-create-new-button):not(.subviewbutton) {
+  > .toolbarbutton-icon,
+  > .toolbarbutton-badge-stack,
+  > .toolbarbutton-text {
+    border-radius: var(--m3e-r-full) !important;
+    transition:
+      border-radius var(--m3e-d-fast) var(--m3e-spatial-fast),
+      background-color var(--m3e-d-effects) var(--m3e-effects),
+      transform var(--m3e-d-fast) var(--m3e-spatial-fast) !important;
+  }
+
+  &:not([disabled]):hover > :is(.toolbarbutton-icon, .toolbarbutton-badge-stack, .toolbarbutton-text) {
+    border-radius: var(--m3e-r-sm) !important;
+    background-color: var(--toolbarbutton-hover-background) !important;
+  }
+
+  &:not([disabled]):is(:hover:active, [open], [checked]) > :is(.toolbarbutton-icon, .toolbarbutton-badge-stack, .toolbarbutton-text) {
+    background-color: var(--m3-secondary-container) !important;
+    fill: var(--m3-on-secondary-container) !important;
+    color: var(--m3-on-secondary-container) !important;
+  }
+
+  &:not([disabled]):hover:active > :is(.toolbarbutton-icon, .toolbarbutton-badge-stack) {
+    transform: scale(0.95);
+  }
+}
+
+/* ---------- Tooltips: inverse surface, plain M3 tooltip ---------- */
+tooltip:not([remote]),
+#tabbrowser-tab-tooltip,
+.places-tooltip {
+  appearance: none !important;
+  background: var(--m3-inverse-surface) !important;
+  color: var(--m3-inverse-on-surface) !important;
+  border: none !important;
+  border-radius: var(--m3e-r-sm) !important;
+  padding: 6px 10px !important;
+  font-size: 12px !important;
+  font-variation-settings: "ROND" 100, "wght" 500 !important;
+  box-shadow: none !important;
+}
+
+/* ---------- Scrollbars: thin, rounded, tinted ---------- */
+:root {
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--m3-on-surface-variant) 40%, transparent) transparent;
+}
+
+/* ---------- Focus rings: primary, offset, rounded like their owner ---------- */
+:root :focus-visible {
+  outline-color: var(--m3-primary) !important;
+}
+
+/* ---------- Buttons inside chrome (dialogs, notifications, panels) ---------- */
+button:not(.urlbarView-button, .searchbar-engine-one-off-item, .close-button, .tab-audio-button),
+.footer-button,
+moz-button::part(button) {
+  border-radius: var(--m3e-r-full) !important;
+  font-variation-settings: "ROND" 100, "wght" 600 !important;
+}
+
+/* ---------- Notification bars ---------- */
+notification-message {
+  border-radius: var(--m3e-r-md) !important;
+  background: var(--m3-secondary-container) !important;
+  color: var(--m3-on-secondary-container) !important;
+  box-shadow: none !important;
+  border: none !important;
+}

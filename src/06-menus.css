@@ -1,0 +1,125 @@
+/*
+ * Context menus and menupopups. One rounded container, items that morph into a pill
+ * when active, separators as gaps (no lines). Content springs in from the anchor side
+ * (the popup window itself only fades on Linux, so we animate what's inside it).
+ */
+menupopup,
+panel:not([type="arrow"]) {
+  --panel-background-color: var(--m3e-popup) !important;
+  --panel-text-color: var(--m3-on-surface) !important;
+  --panel-border-color: transparent !important;
+  --panel-border-radius: var(--m3e-r-lg) !important;
+  --panel-padding: 6px !important;
+  --panel-box-shadow: 0 8px 24px -6px color-mix(in srgb, var(--m3-shadow) 45%, transparent),
+                      0 1px 4px color-mix(in srgb, var(--m3-shadow) 25%, transparent) !important;
+  --panel-box-shadow-margin: 14px !important;
+  --menuitem-border-radius: var(--m3e-r-sm) !important;
+  --menuitem-padding-block: 9px !important;
+  --menuitem-padding-inline: 12px !important;
+  --menuitem-margin: 1px 0 !important;
+  --menuitem-icon-fill: var(--m3-on-surface-variant) !important;
+  --text-color-disabled: color-mix(in srgb, var(--m3-on-surface) 38%, transparent) !important;
+}
+
+menupopup::part(content) {
+  min-width: 200px !important;
+}
+
+/* Items: rounded square idle, pill when active. */
+menupopup > :is(menuitem, menu) {
+  border-radius: var(--m3e-r-sm) !important;
+  font-size: 13px !important;
+  font-variation-settings: "ROND" 100, "wght" 480 !important;
+  transition:
+    border-radius var(--m3e-d-fast) var(--m3e-spatial-fast),
+    background-color var(--m3e-d-effects) var(--m3e-effects) !important;
+
+  &[_moz-menuactive]:not([disabled]) {
+    background-color: var(--m3-secondary-container) !important;
+    color: var(--m3-on-secondary-container) !important;
+    --menuitem-icon-fill: var(--m3-on-secondary-container) !important;
+    border-radius: var(--m3e-r-full) !important;
+  }
+
+  &[_moz-menuactive][disabled] {
+    background-color: transparent !important;
+  }
+
+  /* An open submenu stays lit in the tertiary voice while you're inside it. */
+  &:is(menu)[open] {
+    background-color: var(--m3-tertiary-container) !important;
+    color: var(--m3-on-tertiary-container) !important;
+    border-radius: var(--m3e-r-full) !important;
+  }
+
+  & .menu-accel,
+  & .menu-accel-container {
+    color: var(--m3-on-surface-variant) !important;
+    font-size: 11px !important;
+    font-variation-settings: "ROND" 100, "wght" 600, "wdth" 90 !important;
+    opacity: 0.85;
+  }
+
+  & .menu-icon {
+    -moz-context-properties: fill, fill-opacity !important;
+    fill: var(--menuitem-icon-fill) !important;
+  }
+}
+
+/* Checked items: the check sits in a tertiary dot. */
+menupopup > menuitem:is([type="checkbox"], [type="radio"])[checked] .menu-icon {
+  background-color: var(--m3-tertiary-container) !important;
+  fill: var(--m3-on-tertiary-container) !important;
+  border-radius: var(--m3e-r-full) !important;
+}
+
+/* The default item reads bolder. */
+menupopup > menuitem:is([default="true"], .spell-suggestion) {
+  font-variation-settings: "ROND" 100, "wght" 700 !important;
+}
+
+/* Separators become breathing room: a gap, no line. */
+menupopup > menuseparator {
+  padding-block: 5px !important;
+  margin: 0 !important;
+  border: none !important;
+  appearance: none !important;
+  &::before {
+    display: none !important;
+  }
+}
+
+/* Captions inside menus (headers like "Recent Chats"). */
+menupopup > menucaption,
+menupopup > .recent-chats-header {
+  font-size: 11px !important;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-variation-settings: "ROND" 100, "wght" 760 !important;
+  color: var(--m3-on-surface-variant) !important;
+}
+
+/* Context-menu nav row (back / forward / reload / bookmark): circular icon buttons. */
+#context-navigation > menuitem {
+  border-radius: var(--m3e-r-full) !important;
+  transition: border-radius var(--m3e-d-fast) var(--m3e-spatial-fast), background-color var(--m3e-d-effects) var(--m3e-effects) !important;
+  &[_moz-menuactive]:not([disabled]) {
+    border-radius: var(--m3e-r-sm) !important;
+  }
+}
+
+/* ---------- Entrance: content springs from the anchor side ---------- */
+@keyframes m3e-menu-in {
+  from { opacity: 0; transform: translateY(var(--m3e-menu-from, -8px)) scale(0.92); }
+  to { opacity: 1; transform: none; }
+}
+
+:is(menupopup, panel)[m3e-open]::part(content) {
+  animation: m3e-menu-in var(--m3e-d-fast) var(--m3e-spatial) both;
+  transform-origin: var(--m3e-menu-origin, 50% 0);
+}
+:is(menupopup, panel)[m3e-open][side="bottom"],
+:is(menupopup, panel)[m3e-open][position^="before"] {
+  --m3e-menu-from: 8px;
+  --m3e-menu-origin: 50% 100%;
+}

@@ -1,0 +1,150 @@
+/*
+ * Arrow panels (app menu, extensions, downloads, site info), the find bar,
+ * toasts (snackbars), split-view and glance.
+ */
+panel[type="arrow"] {
+  --panel-background-color: var(--m3e-popup) !important;
+  --panel-text-color: var(--m3-on-surface) !important;
+  --panel-border-color: transparent !important;
+  --panel-border-radius: var(--m3e-r-xl) !important;
+  --panel-padding: 8px !important;
+  --panel-box-shadow: 0 12px 32px -8px color-mix(in srgb, var(--m3-shadow) 45%, transparent) !important;
+}
+
+/* Subview items: same morph as menu items. */
+.subviewbutton,
+.PanelUI-subView .toolbarbutton-1,
+.unified-extensions-item-action-button,
+.protections-popup-category {
+  border-radius: var(--m3e-r-sm) !important;
+  min-height: 38px !important;
+  font-variation-settings: "ROND" 100, "wght" 480 !important;
+  transition:
+    border-radius var(--m3e-d-fast) var(--m3e-spatial-fast),
+    background-color var(--m3e-d-effects) var(--m3e-effects) !important;
+
+  &:not([disabled]):hover {
+    background-color: var(--m3-secondary-container) !important;
+    color: var(--m3-on-secondary-container) !important;
+    border-radius: var(--m3e-r-full) !important;
+  }
+  &:not([disabled]):hover:active {
+    background-color: color-mix(in srgb, var(--m3-on-secondary-container) 14%, var(--m3-secondary-container)) !important;
+  }
+}
+
+/* Panel headers: the title face. */
+.panel-header > h1,
+.panel-header > .panel-header-title,
+.panel-header > label,
+#unified-extensions-view .panel-header h1 {
+  font-size: 15px !important;
+  font-variation-settings: "ROND" 100, "wght" 760, "wdth" 118 !important;
+}
+
+/* Lines out; gaps in. */
+toolbarseparator,
+.panel-subview-body > toolbarseparator,
+#PanelUI-menu-button-separator,
+.panel-header + toolbarseparator {
+  border-color: transparent !important;
+  background: transparent !important;
+  margin-block: 3px !important;
+}
+
+/* Zoom controls in the app menu: a connected button group. */
+#appMenu-zoom-controls {
+  gap: 2px;
+  & > .subviewbutton {
+    background: var(--m3-surface-container-highest) !important;
+    border-radius: var(--m3e-r-join) !important;
+  }
+  & > .subviewbutton:first-of-type { border-radius: var(--m3e-r-full) var(--m3e-r-join) var(--m3e-r-join) var(--m3e-r-full) !important; }
+  & > .subviewbutton:last-of-type { border-radius: var(--m3e-r-join) var(--m3e-r-full) var(--m3e-r-full) var(--m3e-r-join) !important; }
+  & > .subviewbutton:hover { border-radius: var(--m3e-r-full) !important; }
+}
+
+/* Primary buttons in panels and notifications. */
+.panel-footer button,
+.popup-notification-primary-button,
+button.primary {
+  border-radius: var(--m3e-r-full) !important;
+  min-height: 40px !important;
+}
+.popup-notification-primary-button,
+button.primary {
+  background: var(--m3-primary) !important;
+  color: var(--m3-on-primary) !important;
+}
+.popup-notification-secondary-button,
+.panel-footer button:not(.primary) {
+  background: transparent !important;
+  outline: 1.5px dashed color-mix(in srgb, var(--m3-outline) 70%, transparent) !important;
+  outline-offset: -1.5px;
+}
+
+/* ---------- Find bar ---------- */
+findbar {
+  background: var(--m3e-sheet) !important;
+  border: none !important;
+  border-radius: var(--m3e-r-xl) !important;
+  & .findbar-textbox {
+    background: var(--m3e-field) !important;
+    border: none !important;
+    outline: none !important;
+    border-radius: var(--m3e-r-full) !important;
+    padding-inline: 14px !important;
+    min-height: 34px !important;
+    &[status="notfound"] {
+      background: var(--m3-error-container) !important;
+      color: var(--m3-on-error-container) !important;
+    }
+  }
+  & .findbar-find-previous,
+  & .findbar-find-next,
+  & .findbar-closebutton {
+    border-radius: var(--m3e-r-full) !important;
+  }
+  & checkbox,
+  & .findbar-label {
+    font-variation-settings: "ROND" 100, "wght" 500 !important;
+  }
+}
+
+/* ---------- Toasts → snackbars ---------- */
+#zen-toast-container .zen-toast {
+  background: var(--m3-inverse-surface) !important;
+  color: var(--m3-inverse-on-surface) !important;
+  border: none !important;
+  border-radius: var(--m3e-r-md) !important;
+  font-variation-settings: "ROND" 100, "wght" 550 !important;
+  box-shadow: 0 8px 20px -6px color-mix(in srgb, var(--m3-shadow) 50%, transparent) !important;
+  & button {
+    color: var(--m3-inverse-primary) !important;
+    background: transparent !important;
+  }
+}
+
+/* ---------- Split view, glance ---------- */
+.zen-split-view-splitter[orient] {
+  --zen-split-view-splitter-color: var(--m3-outline-variant);
+}
+.browserSidebarContainer.zen-glance-background,
+.zen-glance-overlay .browserSidebarContainer {
+  border-radius: var(--m3e-r-xl) !important;
+}
+.zen-glance-sidebar-container > toolbarbutton {
+  background: var(--m3-secondary-container) !important;
+  fill: var(--m3-on-secondary-container) !important;
+  border-radius: var(--m3e-r-full) !important;
+  transition: border-radius var(--m3e-d-fast) var(--m3e-spatial-fast) !important;
+  &:hover { border-radius: var(--m3e-r-sm) !important; }
+}
+
+/* ---------- Dialogs inside the browser (zen popups, prompts) ---------- */
+.dialogBox,
+#zen-welcome,
+.tab-modal-prompt .dialogBox {
+  border-radius: var(--m3e-r-xl) !important;
+  background: var(--m3e-sheet) !important;
+}

@@ -1,0 +1,167 @@
+/*
+ * Tokens: shape, motion, type and the surface ladder. Every other file reads these;
+ * nothing below this file hard-codes a colour, radius or duration.
+ */
+:root {
+  /* Shape scale (shell: small 12, normal 17, large 23, verylarge 32). */
+  --m3e-r-xs: 4px;
+  --m3e-r-sm: 12px;
+  --m3e-r-md: 17px;
+  --m3e-r-lg: 23px;
+  --m3e-r-xl: 32px;
+  --m3e-r-full: 999px;
+  --m3e-r-join: 5px;          /* joins inside a grouped list */
+
+  /* Motion (shell Appearance.animationCurves). */
+  --m3e-spatial-fast: cubic-bezier(0.42, 1.67, 0.21, 0.90);
+  --m3e-spatial: cubic-bezier(0.38, 1.21, 0.22, 1.00);
+  --m3e-spatial-slow: cubic-bezier(0.39, 1.29, 0.35, 0.98);
+  --m3e-effects: cubic-bezier(0.34, 0.80, 0.34, 1.00);
+  --m3e-decel: cubic-bezier(0.05, 0.7, 0.1, 1);
+  --m3e-accel: cubic-bezier(0.3, 0, 0.8, 0.15);
+  --m3e-standard: cubic-bezier(0.2, 0, 0, 1);
+  --m3e-d-fast: 350ms;
+  --m3e-d: 500ms;
+  --m3e-d-slow: 650ms;
+  --m3e-d-effects: 200ms;
+  --m3e-d-enter: 400ms;
+  --m3e-d-exit: 200ms;
+
+  /* Type. Google Sans Flex axes: wght, wdth (25–151), ROND, opsz, GRAD, slnt. */
+  --m3e-font: "Google Sans Flex", "Google Sans", "Roboto Flex", system-ui, sans-serif;
+  --m3e-axes: "ROND" 100;
+  --m3e-axes-title: "ROND" 100, "wdth" 100;
+  --m3e-axes-display: "ROND" 100, "wdth" 128;   /* wide headings ("Applications") */
+  --m3e-axes-condensed: "ROND" 100, "wdth" 72;
+
+  /* Tinted actions on any surface (§2.3): 8 / 16 / 24 % of the content colour. */
+  --m3e-tint-idle: 8%;
+  --m3e-tint-hover: 16%;
+  --m3e-tint-press: 24%;
+
+  /* Surface ladder (shell colLayer0..2 / sheet / field). */
+  --m3e-window: var(--m3-surface);
+  --m3e-layer1: var(--m3-surface-container-low);
+  --m3e-layer2: var(--m3-surface-container);
+  --m3e-sheet: var(--m3-surface-container-high);
+  --m3e-field: var(--m3-surface-container-highest);
+  --m3e-popup: var(--m3-surface-container);
+}
+
+/* Reduced motion: from the OS, or forced by the mod preference. */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --m3e-d-fast: 0ms; --m3e-d: 0ms; --m3e-d-slow: 0ms;
+    --m3e-d-enter: 0ms; --m3e-d-exit: 0ms; --m3e-d-effects: 80ms;
+  }
+}
+@media -moz-pref("m3e.reduced-motion") {
+  :root {
+    --m3e-d-fast: 0ms; --m3e-d: 0ms; --m3e-d-slow: 0ms;
+    --m3e-d-enter: 0ms; --m3e-d-exit: 0ms; --m3e-d-effects: 80ms;
+  }
+}
+
+/* Translucent surfaces: for compositor blur (Hyprland) with a transparent Zen window. */
+@media -moz-pref("m3e.translucent") {
+  :root {
+    --m3e-window: color-mix(in srgb, var(--m3-surface) 62%, transparent);
+    --m3e-layer1: color-mix(in srgb, var(--m3-surface-container-low) 70%, transparent);
+    --m3e-layer2: color-mix(in srgb, var(--m3-surface-container) 74%, transparent);
+    --m3e-sheet: color-mix(in srgb, var(--m3-surface-container-high) 84%, transparent);
+    --m3e-field: color-mix(in srgb, var(--m3-surface-container-highest) 80%, transparent);
+    --m3e-popup: color-mix(in srgb, var(--m3-surface-container) 88%, transparent);
+  }
+}
+
+/* Zen and Firefox variables, mapped onto the scheme. */
+:root {
+  color-scheme: var(--m3e-scheme, dark) !important;
+
+  --zen-primary-color: var(--m3-primary) !important;
+  --zen-colors-primary: var(--m3-primary-container) !important;
+  --zen-colors-primary-foreground: var(--m3-on-primary-container) !important;
+  --zen-colors-secondary: var(--m3-secondary-container) !important;
+  --zen-colors-tertiary: var(--m3-surface-container-low) !important;
+  --zen-colors-hover-bg: var(--m3-surface-container-high) !important;
+  --zen-colors-border: transparent !important;
+  --zen-colors-border-contrast: var(--m3-outline-variant) !important;
+  --zen-colors-input-bg: var(--m3e-field) !important;
+  --zen-input-border-color: transparent !important;
+  --zen-dialog-background: var(--m3e-sheet) !important;
+  --zen-in-content-dialog-background: var(--m3e-sheet) !important;
+  --zen-urlbar-background: var(--m3e-sheet) !important;
+  --zen-toolbar-element-bg: var(--m3-surface-container-high) !important;
+  --zen-toolbar-element-bg-hover: var(--m3-surface-container-highest) !important;
+  --zen-branding-bg: var(--m3-surface) !important;
+  --zen-branding-paper: var(--m3-surface-container-high) !important;
+  --zen-branding-bg-reverse: var(--m3-on-surface) !important;
+  --zen-main-browser-background: var(--m3e-window) !important;
+  --zen-main-browser-background-toolbar: var(--m3e-window) !important;
+  --zen-themed-toolbar-bg: var(--m3e-window) !important;
+  --zen-themed-toolbar-bg-transparent: var(--m3e-window) !important;
+  --zen-appcontent-border: none !important;
+  --zen-webview-border-radius: var(--ii-page-radius, var(--m3e-r-lg)) !important;
+
+  --toolbar-bgcolor: var(--m3e-window) !important;
+  --toolbar-color: var(--m3-on-surface) !important;
+  --toolbox-textcolor: var(--m3-on-surface) !important;
+  --toolbox-textcolor-inactive: var(--m3-on-surface-variant) !important;
+  --toolbarbutton-icon-fill: var(--m3-on-surface-variant) !important;
+  --toolbarbutton-icon-fill-attention: var(--m3-primary) !important;
+  --toolbarbutton-border-radius: var(--m3e-r-full) !important;
+  --toolbarbutton-hover-background: color-mix(in srgb, var(--m3-on-surface) var(--m3e-tint-idle), transparent) !important;
+  --toolbarbutton-active-background: color-mix(in srgb, var(--m3-on-surface) var(--m3e-tint-hover), transparent) !important;
+  --toolbar-field-background-color: var(--m3e-field) !important;
+  --toolbar-field-focus-background-color: var(--m3e-field) !important;
+  --toolbar-field-color: var(--m3-on-surface) !important;
+  --focus-outline-color: var(--m3-primary) !important;
+
+  --tab-selected-bgcolor: var(--m3-primary) !important;
+  --tab-selected-textcolor: var(--m3-on-primary) !important;
+  --tab-hover-background-color: var(--m3-surface-container-high) !important;
+  --tab-dragover-outline-color: var(--m3-primary) !important;
+
+  --arrowpanel-background: var(--m3e-popup) !important;
+  --arrowpanel-color: var(--m3-on-surface) !important;
+  --arrowpanel-border-color: transparent !important;
+  --arrowpanel-border-radius: var(--m3e-r-lg) !important;
+  --arrowpanel-padding: 6px !important;
+  --arrowpanel-menuitem-border-radius: var(--m3e-r-sm) !important;
+  --arrowpanel-menuitem-padding-block: 9px !important;
+  --arrowpanel-menuitem-padding-inline: 14px !important;
+  --arrowpanel-menuitem-margin: 1px 6px !important;
+  --panel-background: var(--m3e-popup) !important;
+  --panel-color: var(--m3-on-surface) !important;
+  --panel-border-color: transparent !important;
+  --panel-border-radius: var(--m3e-r-lg) !important;
+  --panel-padding: 6px !important;
+  --panel-separator-color: transparent !important;
+  --panel-banner-item-background-color: var(--m3-secondary-container) !important;
+  --panel-banner-item-color: var(--m3-on-secondary-container) !important;
+  --panel-item-hover-bgcolor: var(--m3-secondary-container) !important;
+  --panel-item-active-bgcolor: color-mix(in srgb, var(--m3-on-secondary-container) 14%, var(--m3-secondary-container)) !important;
+  --menuitem-hover-background-color: var(--m3-secondary-container) !important;
+  --menuitem-disabled-hover-background-color: transparent !important;
+  --menu-background-color: var(--m3e-popup) !important;
+  --menu-color: var(--m3-on-surface) !important;
+  --menu-border-color: transparent !important;
+  --menuitem-border-radius: var(--m3e-r-sm) !important;
+
+  --button-background-color: var(--m3-surface-container-highest) !important;
+  --button-background-color-hover: color-mix(in srgb, var(--m3-on-surface) 12%, var(--m3-surface-container-highest)) !important;
+  --button-text-color: var(--m3-on-surface) !important;
+  --button-background-color-primary: var(--m3-primary) !important;
+  --button-text-color-primary: var(--m3-on-primary) !important;
+  --button-primary-hover-bgcolor: color-mix(in srgb, var(--m3-on-primary) 10%, var(--m3-primary)) !important;
+  --button-primary-active-bgcolor: color-mix(in srgb, var(--m3-on-primary) 18%, var(--m3-primary)) !important;
+  --button-border-radius: var(--m3e-r-full) !important;
+  --border-radius-medium: var(--m3e-r-sm) !important;
+  --input-bgcolor: var(--m3e-field) !important;
+  --input-border-color: transparent !important;
+}
+
+/* Toolbars carry their own color-scheme in Zen; keep them on ours so light-dark() agrees. */
+:root :is(#navigator-toolbox, toolbar, menupopup, panel, #urlbar) {
+  color-scheme: inherit !important;
+}

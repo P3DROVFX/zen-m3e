@@ -1,0 +1,57 @@
+[
+  {
+    "type": "separator",
+    "label": "Colour"
+  },
+  {
+    "type": "dropdown",
+    "property": "m3e.scheme",
+    "label": "Light / dark",
+    "defaultValue": "shell",
+    "placeholder": false,
+    "options": [
+      {
+        "label": "Follow the shell (matugen mode)",
+        "value": "shell"
+      },
+      {
+        "label": "Follow the system",
+        "value": "system"
+      },
+      {
+        "label": "Always light",
+        "value": "light"
+      },
+      {
+        "label": "Always dark",
+        "value": "dark"
+      }
+    ]
+  },
+  {
+    "type": "string",
+    "property": "m3e.colors-path",
+    "label": "Matugen palette file (leave empty for the default)",
+    "defaultValue": "",
+    "placeholder": "(empty: colors.css inside this mod)"
+  },
+  {
+    "type": "checkbox",
+    "property": "m3e.translucent",
+    "label": "Translucent surfaces (for compositor blur with a transparent window)"
+  },
+  {
+    "type": "separator",
+    "label": "Type & motion"
+  },
+  {
+    "type": "checkbox",
+    "property": "m3e.system-font",
+    "label": "Use the system font instead of Google Sans Flex"
+  },
+  {
+    "type": "checkbox",
+    "property": "m3e.reduced-motion",
+    "label": "Reduce motion (no springs or staggered entrances)"
+  }
+]

@@ -1,0 +1,362 @@
+@layer m3e-fallback {
+/* M3 Expressive for Zen — fallback palette (seed #8c4a00). */
+:root {
+  --m3-light-primary: #89511e;
+  --m3-light-on-primary: #ffffff;
+  --m3-light-primary-container: #ffdcc3;
+  --m3-light-on-primary-container: #2f1500;
+  --m3-light-primary-fixed: #ffdcc3;
+  --m3-light-primary-fixed-dim: #ffb77e;
+  --m3-light-on-primary-fixed: #2f1500;
+  --m3-light-on-primary-fixed-variant: #6c3a07;
+  --m3-light-secondary: #745944;
+  --m3-light-on-secondary: #ffffff;
+  --m3-light-secondary-container: #ffdcc3;
+  --m3-light-on-secondary-container: #2a1707;
+  --m3-light-tertiary: #5c6236;
+  --m3-light-on-tertiary: #ffffff;
+  --m3-light-tertiary-container: #e1e7b0;
+  --m3-light-on-tertiary-container: #1a1e00;
+  --m3-light-error: #ba1a1a;
+  --m3-light-on-error: #ffffff;
+  --m3-light-error-container: #ffdad6;
+  --m3-light-on-error-container: #410002;
+  --m3-light-background: #fff8f5;
+  --m3-light-on-background: #221a14;
+  --m3-light-surface: #fff8f5;
+  --m3-light-surface-dim: #e7d7ce;
+  --m3-light-surface-bright: #fff8f5;
+  --m3-light-surface-container-lowest: #ffffff;
+  --m3-light-surface-container-low: #fff1e9;
+  --m3-light-surface-container: #fbebe1;
+  --m3-light-surface-container-high: #f5e5db;
+  --m3-light-surface-container-highest: #efdfd6;
+  --m3-light-on-surface: #221a14;
+  --m3-light-surface-variant: #f3dfd2;
+  --m3-light-on-surface-variant: #51443b;
+  --m3-light-outline: #847469;
+  --m3-light-outline-variant: #d6c3b6;
+  --m3-light-inverse-surface: #382f28;
+  --m3-light-inverse-on-surface: #feeee4;
+  --m3-light-inverse-primary: #ffb77e;
+  --m3-light-shadow: #000000;
+  --m3-light-scrim: #000000;
+  --m3-dark-primary: #ffb77e;
+  --m3-dark-on-primary: #4d2600;
+  --m3-dark-primary-container: #6c3a07;
+  --m3-dark-on-primary-container: #ffdcc3;
+  --m3-dark-primary-fixed: #ffdcc3;
+  --m3-dark-primary-fixed-dim: #ffb77e;
+  --m3-dark-on-primary-fixed: #2f1500;
+  --m3-dark-on-primary-fixed-variant: #6c3a07;
+  --m3-dark-secondary: #e3c0a6;
+  --m3-dark-on-secondary: #422c1a;
+  --m3-dark-secondary-container: #5a422e;
+  --m3-dark-on-secondary-container: #ffdcc3;
+  --m3-dark-tertiary: #c5cb96;
+  --m3-dark-on-tertiary: #2e330d;
+  --m3-dark-tertiary-container: #454a21;
+  --m3-dark-on-tertiary-container: #e1e7b0;
+  --m3-dark-error: #ffb4ab;
+  --m3-dark-on-error: #690005;
+  --m3-dark-error-container: #93000a;
+  --m3-dark-on-error-container: #ffdad6;
+  --m3-dark-background: #19120c;
+  --m3-dark-on-background: #efdfd6;
+  --m3-dark-surface: #19120c;
+  --m3-dark-surface-dim: #19120c;
+  --m3-dark-surface-bright: #413731;
+  --m3-dark-surface-container-lowest: #140d08;
+  --m3-dark-surface-container-low: #221a14;
+  --m3-dark-surface-container: #261e18;
+  --m3-dark-surface-container-high: #312822;
+  --m3-dark-surface-container-highest: #3c332c;
+  --m3-dark-on-surface: #efdfd6;
+  --m3-dark-surface-variant: #51443b;
+  --m3-dark-on-surface-variant: #d6c3b6;
+  --m3-dark-outline: #9e8e82;
+  --m3-dark-outline-variant: #51443b;
+  --m3-dark-inverse-surface: #efdfd6;
+  --m3-dark-inverse-on-surface: #382f28;
+  --m3-dark-inverse-primary: #89511e;
+  --m3-dark-shadow: #000000;
+  --m3-dark-scrim: #000000;
+}
+
+/* Scheme: fallback follows the system; colors.css follows the shell; the pref forces. */
+
+:root {
+  --m3e-scheme: dark;
+  --m3-primary: var(--m3-dark-primary);
+  --m3-on-primary: var(--m3-dark-on-primary);
+  --m3-primary-container: var(--m3-dark-primary-container);
+  --m3-on-primary-container: var(--m3-dark-on-primary-container);
+  --m3-primary-fixed: var(--m3-dark-primary-fixed);
+  --m3-primary-fixed-dim: var(--m3-dark-primary-fixed-dim);
+  --m3-on-primary-fixed: var(--m3-dark-on-primary-fixed);
+  --m3-on-primary-fixed-variant: var(--m3-dark-on-primary-fixed-variant);
+  --m3-secondary: var(--m3-dark-secondary);
+  --m3-on-secondary: var(--m3-dark-on-secondary);
+  --m3-secondary-container: var(--m3-dark-secondary-container);
+  --m3-on-secondary-container: var(--m3-dark-on-secondary-container);
+  --m3-tertiary: var(--m3-dark-tertiary);
+  --m3-on-tertiary: var(--m3-dark-on-tertiary);
+  --m3-tertiary-container: var(--m3-dark-tertiary-container);
+  --m3-on-tertiary-container: var(--m3-dark-on-tertiary-container);
+  --m3-error: var(--m3-dark-error);
+  --m3-on-error: var(--m3-dark-on-error);
+  --m3-error-container: var(--m3-dark-error-container);
+  --m3-on-error-container: var(--m3-dark-on-error-container);
+  --m3-background: var(--m3-dark-background);
+  --m3-on-background: var(--m3-dark-on-background);
+  --m3-surface: var(--m3-dark-surface);
+  --m3-surface-dim: var(--m3-dark-surface-dim);
+  --m3-surface-bright: var(--m3-dark-surface-bright);
+  --m3-surface-container-lowest: var(--m3-dark-surface-container-lowest);
+  --m3-surface-container-low: var(--m3-dark-surface-container-low);
+  --m3-surface-container: var(--m3-dark-surface-container);
+  --m3-surface-container-high: var(--m3-dark-surface-container-high);
+  --m3-surface-container-highest: var(--m3-dark-surface-container-highest);
+  --m3-on-surface: var(--m3-dark-on-surface);
+  --m3-surface-variant: var(--m3-dark-surface-variant);
+  --m3-on-surface-variant: var(--m3-dark-on-surface-variant);
+  --m3-outline: var(--m3-dark-outline);
+  --m3-outline-variant: var(--m3-dark-outline-variant);
+  --m3-inverse-surface: var(--m3-dark-inverse-surface);
+  --m3-inverse-on-surface: var(--m3-dark-inverse-on-surface);
+  --m3-inverse-primary: var(--m3-dark-inverse-primary);
+  --m3-shadow: var(--m3-dark-shadow);
+  --m3-scrim: var(--m3-dark-scrim);
+}
+
+@media (prefers-color-scheme: light) {
+:root {
+  --m3e-scheme: light;
+  --m3-primary: var(--m3-light-primary);
+  --m3-on-primary: var(--m3-light-on-primary);
+  --m3-primary-container: var(--m3-light-primary-container);
+  --m3-on-primary-container: var(--m3-light-on-primary-container);
+  --m3-primary-fixed: var(--m3-light-primary-fixed);
+  --m3-primary-fixed-dim: var(--m3-light-primary-fixed-dim);
+  --m3-on-primary-fixed: var(--m3-light-on-primary-fixed);
+  --m3-on-primary-fixed-variant: var(--m3-light-on-primary-fixed-variant);
+  --m3-secondary: var(--m3-light-secondary);
+  --m3-on-secondary: var(--m3-light-on-secondary);
+  --m3-secondary-container: var(--m3-light-secondary-container);
+  --m3-on-secondary-container: var(--m3-light-on-secondary-container);
+  --m3-tertiary: var(--m3-light-tertiary);
+  --m3-on-tertiary: var(--m3-light-on-tertiary);
+  --m3-tertiary-container: var(--m3-light-tertiary-container);
+  --m3-on-tertiary-container: var(--m3-light-on-tertiary-container);
+  --m3-error: var(--m3-light-error);
+  --m3-on-error: var(--m3-light-on-error);
+  --m3-error-container: var(--m3-light-error-container);
+  --m3-on-error-container: var(--m3-light-on-error-container);
+  --m3-background: var(--m3-light-background);
+  --m3-on-background: var(--m3-light-on-background);
+  --m3-surface: var(--m3-light-surface);
+  --m3-surface-dim: var(--m3-light-surface-dim);
+  --m3-surface-bright: var(--m3-light-surface-bright);
+  --m3-surface-container-lowest: var(--m3-light-surface-container-lowest);
+  --m3-surface-container-low: var(--m3-light-surface-container-low);
+  --m3-surface-container: var(--m3-light-surface-container);
+  --m3-surface-container-high: var(--m3-light-surface-container-high);
+  --m3-surface-container-highest: var(--m3-light-surface-container-highest);
+  --m3-on-surface: var(--m3-light-on-surface);
+  --m3-surface-variant: var(--m3-light-surface-variant);
+  --m3-on-surface-variant: var(--m3-light-on-surface-variant);
+  --m3-outline: var(--m3-light-outline);
+  --m3-outline-variant: var(--m3-light-outline-variant);
+  --m3-inverse-surface: var(--m3-light-inverse-surface);
+  --m3-inverse-on-surface: var(--m3-light-inverse-on-surface);
+  --m3-inverse-primary: var(--m3-light-inverse-primary);
+  --m3-shadow: var(--m3-light-shadow);
+  --m3-scrim: var(--m3-light-scrim);
+}
+}
+}
+
+/* Forced by the m3e.scheme preference. */
+@media -moz-pref("m3e.scheme", "system") and (prefers-color-scheme: dark) {
+:root {
+  --m3e-scheme: dark !important;
+  --m3-primary: var(--m3-dark-primary) !important;
+  --m3-on-primary: var(--m3-dark-on-primary) !important;
+  --m3-primary-container: var(--m3-dark-primary-container) !important;
+  --m3-on-primary-container: var(--m3-dark-on-primary-container) !important;
+  --m3-primary-fixed: var(--m3-dark-primary-fixed) !important;
+  --m3-primary-fixed-dim: var(--m3-dark-primary-fixed-dim) !important;
+  --m3-on-primary-fixed: var(--m3-dark-on-primary-fixed) !important;
+  --m3-on-primary-fixed-variant: var(--m3-dark-on-primary-fixed-variant) !important;
+  --m3-secondary: var(--m3-dark-secondary) !important;
+  --m3-on-secondary: var(--m3-dark-on-secondary) !important;
+  --m3-secondary-container: var(--m3-dark-secondary-container) !important;
+  --m3-on-secondary-container: var(--m3-dark-on-secondary-container) !important;
+  --m3-tertiary: var(--m3-dark-tertiary) !important;
+  --m3-on-tertiary: var(--m3-dark-on-tertiary) !important;
+  --m3-tertiary-container: var(--m3-dark-tertiary-container) !important;
+  --m3-on-tertiary-container: var(--m3-dark-on-tertiary-container) !important;
+  --m3-error: var(--m3-dark-error) !important;
+  --m3-on-error: var(--m3-dark-on-error) !important;
+  --m3-error-container: var(--m3-dark-error-container) !important;
+  --m3-on-error-container: var(--m3-dark-on-error-container) !important;
+  --m3-background: var(--m3-dark-background) !important;
+  --m3-on-background: var(--m3-dark-on-background) !important;
+  --m3-surface: var(--m3-dark-surface) !important;
+  --m3-surface-dim: var(--m3-dark-surface-dim) !important;
+  --m3-surface-bright: var(--m3-dark-surface-bright) !important;
+  --m3-surface-container-lowest: var(--m3-dark-surface-container-lowest) !important;
+  --m3-surface-container-low: var(--m3-dark-surface-container-low) !important;
+  --m3-surface-container: var(--m3-dark-surface-container) !important;
+  --m3-surface-container-high: var(--m3-dark-surface-container-high) !important;
+  --m3-surface-container-highest: var(--m3-dark-surface-container-highest) !important;
+  --m3-on-surface: var(--m3-dark-on-surface) !important;
+  --m3-surface-variant: var(--m3-dark-surface-variant) !important;
+  --m3-on-surface-variant: var(--m3-dark-on-surface-variant) !important;
+  --m3-outline: var(--m3-dark-outline) !important;
+  --m3-outline-variant: var(--m3-dark-outline-variant) !important;
+  --m3-inverse-surface: var(--m3-dark-inverse-surface) !important;
+  --m3-inverse-on-surface: var(--m3-dark-inverse-on-surface) !important;
+  --m3-inverse-primary: var(--m3-dark-inverse-primary) !important;
+  --m3-shadow: var(--m3-dark-shadow) !important;
+  --m3-scrim: var(--m3-dark-scrim) !important;
+}
+}
+
+@media -moz-pref("m3e.scheme", "system") and (prefers-color-scheme: light) {
+:root {
+  --m3e-scheme: light !important;
+  --m3-primary: var(--m3-light-primary) !important;
+  --m3-on-primary: var(--m3-light-on-primary) !important;
+  --m3-primary-container: var(--m3-light-primary-container) !important;
+  --m3-on-primary-container: var(--m3-light-on-primary-container) !important;
+  --m3-primary-fixed: var(--m3-light-primary-fixed) !important;
+  --m3-primary-fixed-dim: var(--m3-light-primary-fixed-dim) !important;
+  --m3-on-primary-fixed: var(--m3-light-on-primary-fixed) !important;
+  --m3-on-primary-fixed-variant: var(--m3-light-on-primary-fixed-variant) !important;
+  --m3-secondary: var(--m3-light-secondary) !important;
+  --m3-on-secondary: var(--m3-light-on-secondary) !important;
+  --m3-secondary-container: var(--m3-light-secondary-container) !important;
+  --m3-on-secondary-container: var(--m3-light-on-secondary-container) !important;
+  --m3-tertiary: var(--m3-light-tertiary) !important;
+  --m3-on-tertiary: var(--m3-light-on-tertiary) !important;
+  --m3-tertiary-container: var(--m3-light-tertiary-container) !important;
+  --m3-on-tertiary-container: var(--m3-light-on-tertiary-container) !important;
+  --m3-error: var(--m3-light-error) !important;
+  --m3-on-error: var(--m3-light-on-error) !important;
+  --m3-error-container: var(--m3-light-error-container) !important;
+  --m3-on-error-container: var(--m3-light-on-error-container) !important;
+  --m3-background: var(--m3-light-background) !important;
+  --m3-on-background: var(--m3-light-on-background) !important;
+  --m3-surface: var(--m3-light-surface) !important;
+  --m3-surface-dim: var(--m3-light-surface-dim) !important;
+  --m3-surface-bright: var(--m3-light-surface-bright) !important;
+  --m3-surface-container-lowest: var(--m3-light-surface-container-lowest) !important;
+  --m3-surface-container-low: var(--m3-light-surface-container-low) !important;
+  --m3-surface-container: var(--m3-light-surface-container) !important;
+  --m3-surface-container-high: var(--m3-light-surface-container-high) !important;
+  --m3-surface-container-highest: var(--m3-light-surface-container-highest) !important;
+  --m3-on-surface: var(--m3-light-on-surface) !important;
+  --m3-surface-variant: var(--m3-light-surface-variant) !important;
+  --m3-on-surface-variant: var(--m3-light-on-surface-variant) !important;
+  --m3-outline: var(--m3-light-outline) !important;
+  --m3-outline-variant: var(--m3-light-outline-variant) !important;
+  --m3-inverse-surface: var(--m3-light-inverse-surface) !important;
+  --m3-inverse-on-surface: var(--m3-light-inverse-on-surface) !important;
+  --m3-inverse-primary: var(--m3-light-inverse-primary) !important;
+  --m3-shadow: var(--m3-light-shadow) !important;
+  --m3-scrim: var(--m3-light-scrim) !important;
+}
+}
+
+@media -moz-pref("m3e.scheme", "light") {
+:root {
+  --m3e-scheme: light !important;
+  --m3-primary: var(--m3-light-primary) !important;
+  --m3-on-primary: var(--m3-light-on-primary) !important;
+  --m3-primary-container: var(--m3-light-primary-container) !important;
+  --m3-on-primary-container: var(--m3-light-on-primary-container) !important;
+  --m3-primary-fixed: var(--m3-light-primary-fixed) !important;
+  --m3-primary-fixed-dim: var(--m3-light-primary-fixed-dim) !important;
+  --m3-on-primary-fixed: var(--m3-light-on-primary-fixed) !important;
+  --m3-on-primary-fixed-variant: var(--m3-light-on-primary-fixed-variant) !important;
+  --m3-secondary: var(--m3-light-secondary) !important;
+  --m3-on-secondary: var(--m3-light-on-secondary) !important;
+  --m3-secondary-container: var(--m3-light-secondary-container) !important;
+  --m3-on-secondary-container: var(--m3-light-on-secondary-container) !important;
+  --m3-tertiary: var(--m3-light-tertiary) !important;
+  --m3-on-tertiary: var(--m3-light-on-tertiary) !important;
+  --m3-tertiary-container: var(--m3-light-tertiary-container) !important;
+  --m3-on-tertiary-container: var(--m3-light-on-tertiary-container) !important;
+  --m3-error: var(--m3-light-error) !important;
+  --m3-on-error: var(--m3-light-on-error) !important;
+  --m3-error-container: var(--m3-light-error-container) !important;
+  --m3-on-error-container: var(--m3-light-on-error-container) !important;
+  --m3-background: var(--m3-light-background) !important;
+  --m3-on-background: var(--m3-light-on-background) !important;
+  --m3-surface: var(--m3-light-surface) !important;
+  --m3-surface-dim: var(--m3-light-surface-dim) !important;
+  --m3-surface-bright: var(--m3-light-surface-bright) !important;
+  --m3-surface-container-lowest: var(--m3-light-surface-container-lowest) !important;
+  --m3-surface-container-low: var(--m3-light-surface-container-low) !important;
+  --m3-surface-container: var(--m3-light-surface-container) !important;
+  --m3-surface-container-high: var(--m3-light-surface-container-high) !important;
+  --m3-surface-container-highest: var(--m3-light-surface-container-highest) !important;
+  --m3-on-surface: var(--m3-light-on-surface) !important;
+  --m3-surface-variant: var(--m3-light-surface-variant) !important;
+  --m3-on-surface-variant: var(--m3-light-on-surface-variant) !important;
+  --m3-outline: var(--m3-light-outline) !important;
+  --m3-outline-variant: var(--m3-light-outline-variant) !important;
+  --m3-inverse-surface: var(--m3-light-inverse-surface) !important;
+  --m3-inverse-on-surface: var(--m3-light-inverse-on-surface) !important;
+  --m3-inverse-primary: var(--m3-light-inverse-primary) !important;
+  --m3-shadow: var(--m3-light-shadow) !important;
+  --m3-scrim: var(--m3-light-scrim) !important;
+}
+}
+
+@media -moz-pref("m3e.scheme", "dark") {
+:root {
+  --m3e-scheme: dark !important;
+  --m3-primary: var(--m3-dark-primary) !important;
+  --m3-on-primary: var(--m3-dark-on-primary) !important;
+  --m3-primary-container: var(--m3-dark-primary-container) !important;
+  --m3-on-primary-container: var(--m3-dark-on-primary-container) !important;
+  --m3-primary-fixed: var(--m3-dark-primary-fixed) !important;
+  --m3-primary-fixed-dim: var(--m3-dark-primary-fixed-dim) !important;
+  --m3-on-primary-fixed: var(--m3-dark-on-primary-fixed) !important;
+  --m3-on-primary-fixed-variant: var(--m3-dark-on-primary-fixed-variant) !important;
+  --m3-secondary: var(--m3-dark-secondary) !important;
+  --m3-on-secondary: var(--m3-dark-on-secondary) !important;
+  --m3-secondary-container: var(--m3-dark-secondary-container) !important;
+  --m3-on-secondary-container: var(--m3-dark-on-secondary-container) !important;
+  --m3-tertiary: var(--m3-dark-tertiary) !important;
+  --m3-on-tertiary: var(--m3-dark-on-tertiary) !important;
+  --m3-tertiary-container: var(--m3-dark-tertiary-container) !important;
+  --m3-on-tertiary-container: var(--m3-dark-on-tertiary-container) !important;
+  --m3-error: var(--m3-dark-error) !important;
+  --m3-on-error: var(--m3-dark-on-error) !important;
+  --m3-error-container: var(--m3-dark-error-container) !important;
+  --m3-on-error-container: var(--m3-dark-on-error-container) !important;
+  --m3-background: var(--m3-dark-background) !important;
+  --m3-on-background: var(--m3-dark-on-background) !important;
+  --m3-surface: var(--m3-dark-surface) !important;
+  --m3-surface-dim: var(--m3-dark-surface-dim) !important;
+  --m3-surface-bright: var(--m3-dark-surface-bright) !important;
+  --m3-surface-container-lowest: var(--m3-dark-surface-container-lowest) !important;
+  --m3-surface-container-low: var(--m3-dark-surface-container-low) !important;
+  --m3-surface-container: var(--m3-dark-surface-container) !important;
+  --m3-surface-container-high: var(--m3-dark-surface-container-high) !important;
+  --m3-surface-container-highest: var(--m3-dark-surface-container-highest) !important;
+  --m3-on-surface: var(--m3-dark-on-surface) !important;
+  --m3-surface-variant: var(--m3-dark-surface-variant) !important;
+  --m3-on-surface-variant: var(--m3-dark-on-surface-variant) !important;
+  --m3-outline: var(--m3-dark-outline) !important;
+  --m3-outline-variant: var(--m3-dark-outline-variant) !important;
+  --m3-inverse-surface: var(--m3-dark-inverse-surface) !important;
+  --m3-inverse-on-surface: var(--m3-dark-inverse-on-surface) !important;
+  --m3-inverse-primary: var(--m3-dark-inverse-primary) !important;
+  --m3-shadow: var(--m3-dark-shadow) !important;
+  --m3-scrim: var(--m3-dark-scrim) !important;
+}
+}
