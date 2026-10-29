@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.6.0 — 2026-10-29
+
+- Search overlay scales up (0.86 → 1) with the emphasized-decelerate ease.
+- Site panel redesigned: tonal quick-action pills, circle → rounded-square extensions,
+  dashed "add", caption headers with tonal Manage/More chips, menu-style settings row,
+  tonal security pill and round footer buttons.
+- Micro-motion: selection pop (tabs, results, space chip), space mark pop-in, folder rows
+  deal in on open, preview/count pop, close button pop on hover, FAB plus turns into a
+  cross while its menu is open, menu rows stagger in, check marks pop, snackbars rise,
+  library sections lift in, press feedback on small controls.
+
 ## 0.5.1 — 2026-10-29
 
 - Folder rows share the header's column without SuperPins: Zen's 14 px per-tab indent in

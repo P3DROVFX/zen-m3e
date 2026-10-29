@@ -120,13 +120,19 @@
   }
 }
 
+/* The overlay scales up from its centre-top with the emphasized-decelerate ease (no
+   bounce: it is a surface entering, not a control reacting). Its contents scale with it
+   but never fade: a delayed opacity-0 animation can stay pending in the popover and
+   leave the field invisible. */
 @keyframes m3e-overlay-in {
-  from { opacity: 0; transform: translateY(-10px) scale(0.94); }
+  from { opacity: 0; transform: scale(0.86); }
   to { opacity: 1; transform: none; }
 }
-#urlbar[zen-floating-urlbar][breakout-extend][open] > .urlbar-background {
-  animation: m3e-overlay-in var(--m3e-d) var(--m3e-spatial) both;
-  transform-origin: 50% 0;
+#urlbar[zen-floating-urlbar][breakout-extend][open] {
+  & > .urlbar-background {
+    animation: m3e-overlay-in var(--m3e-d-enter) var(--m3e-decel) both;
+    transform-origin: 50% 30%;
+  }
 }
 
 /* ---------- Results ---------- */

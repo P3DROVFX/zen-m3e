@@ -1500,13 +1500,19 @@ tab-group {
   }
 }
 
+/* The overlay scales up from its centre-top with the emphasized-decelerate ease (no
+   bounce: it is a surface entering, not a control reacting). Its contents scale with it
+   but never fade: a delayed opacity-0 animation can stay pending in the popover and
+   leave the field invisible. */
 @keyframes m3e-overlay-in {
-  from { opacity: 0; transform: translateY(-10px) scale(0.94); }
+  from { opacity: 0; transform: scale(0.86); }
   to { opacity: 1; transform: none; }
 }
-#urlbar[zen-floating-urlbar][breakout-extend][open] > .urlbar-background {
-  animation: m3e-overlay-in var(--m3e-d) var(--m3e-spatial) both;
-  transform-origin: 50% 0;
+#urlbar[zen-floating-urlbar][breakout-extend][open] {
+  & > .urlbar-background {
+    animation: m3e-overlay-in var(--m3e-d-enter) var(--m3e-decel) both;
+    transform-origin: 50% 30%;
+  }
 }
 
 /* ---------- Results ---------- */
@@ -2814,5 +2820,331 @@ zen-library {
   #tabbrowser-tabs .tabbrowser-tab[pending]:not([selected]) :is(.tab-icon-image, .tab-label) {
     opacity: 0.55;
     transition: opacity var(--m3e-d-effects) var(--m3e-effects);
+  }
+}
+
+/* ===== 11-site-panel.css ===== */
+/*
+ * Site panel (the identity / extensions popover: actions, extensions, settings, footer).
+ * Quick actions are tonal pills that square up on hover; extensions are circles that
+ * become rounded squares (shape is state); "add" is the dashed chip; the settings row
+ * reads like a menu row; the footer holds a tonal security pill and round buttons.
+ */
+#zen-unified-site-data-panel#zen-unified-site-data-panel {
+  --panel-width: 248px !important;
+
+  /* The generic panel rows (06/07, whose :not() lists carry ids) don't belong in this
+     compact layout; the doubled id outranks them. */
+  & :is(.subviewbutton, .unified-extensions-item-action-button) {
+    min-height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    gap: 0;
+    background: transparent !important;
+    border-radius: 0 !important;
+    font-variation-settings: var(--m3e-type-label) !important;
+    & > .toolbarbutton-icon {
+      width: auto !important;
+      height: auto !important;
+      padding: 0 !important;
+      background: transparent !important;
+    }
+  }
+}
+
+/* ---------- Quick actions ---------- */
+#zen-site-data-header {
+  gap: 6px !important;
+  padding: 12px 12px 6px !important;
+
+  & toolbarbutton {
+    flex: 1 1 0 !important;
+    height: 40px !important;
+    color: var(--m3-on-surface-variant) !important;
+    &::before {
+      inset: 0;
+      width: auto !important;
+      height: auto !important;
+      border: none !important;
+      box-shadow: none !important;
+      background: var(--m3-surface-container-highest) !important;
+      border-radius: 20px !important;
+      transform: none !important;
+      transition: border-radius var(--m3e-d-fast) var(--m3e-morph), var(--m3e-color-motion), scale var(--m3e-d-fast) var(--m3e-spatial-fast) !important;
+    }
+    &:hover::before {
+      border-radius: var(--m3e-r-sm) !important;
+      background: color-mix(in srgb, var(--m3-on-surface) 8%, var(--m3-surface-container-highest)) !important;
+    }
+    &:hover:active::before {
+      scale: 0.95;
+    }
+    &.active {
+      color: var(--m3-on-primary-container) !important;
+      fill: var(--m3-on-primary-container) !important;
+      &::before {
+        background: var(--m3-primary-container) !important;
+        border-radius: var(--m3e-r-sm) !important;
+      }
+    }
+  }
+}
+
+/* ---------- Sections ---------- */
+#zen-unified-site-data-panel .zen-site-data-section {
+  padding: 10px 12px 8px !important;
+  gap: 8px !important;
+}
+#zen-unified-site-data-panel .zen-site-data-section-header {
+  align-items: center;
+  & > label:first-child {
+    font-size: 10.5px !important;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-variation-settings: var(--m3e-type-caption) !important;
+    color: var(--m3-on-surface-variant) !important;
+  }
+  /* "Manage" / "More": a small tonal chip, always visible. */
+  & > label:nth-child(2) {
+    opacity: 1 !important;
+    padding: 3px 10px !important;
+    border-radius: 12px !important;
+    background: var(--m3-secondary-container) !important;
+    color: var(--m3-on-secondary-container) !important;
+    font-size: 11px !important;
+    font-variation-settings: var(--m3e-type-strong) !important;
+    transition: var(--m3e-shape-motion), var(--m3e-color-motion) !important;
+    &:hover {
+      border-radius: 6px !important;
+      background: color-mix(in srgb, var(--m3-on-secondary-container) 10%, var(--m3-secondary-container)) !important;
+    }
+  }
+}
+
+/* ---------- Extensions: circles → rounded squares ---------- */
+#zen-unified-site-data-panel#zen-unified-site-data-panel #zen-site-data-addons {
+  gap: 8px !important;
+
+  & :is(#overflowed-extensions-list, #unified-extensions-area, .unified-extensions-list, #zen-site-data-new-addon-button-container) > * {
+    width: 44px !important;
+    height: 44px !important;
+    border-radius: 22px !important;
+    background-color: var(--m3-surface-container-highest) !important;
+    transform: none !important;
+    transition: border-radius var(--m3e-d-fast) var(--m3e-morph), var(--m3e-color-motion), scale var(--m3e-d-fast) var(--m3e-spatial-fast) !important;
+
+    & toolbarbutton {
+      border-radius: inherit !important;
+    }
+    &:hover {
+      border-radius: 14px !important;
+      background-color: color-mix(in srgb, var(--m3-on-surface) 8%, var(--m3-surface-container-highest)) !important;
+    }
+    &:hover:active {
+      scale: 0.92;
+    }
+  }
+
+  /* Add an extension: the dashed chip. */
+  & #zen-site-data-new-addon-button-container > * {
+    background-color: transparent !important;
+    outline: 1.5px dashed color-mix(in srgb, var(--m3-outline) 70%, transparent);
+    outline-offset: -1.5px;
+    &:hover {
+      outline-color: transparent;
+      background-color: var(--m3-secondary-container) !important;
+      fill: var(--m3-on-secondary-container) !important;
+    }
+  }
+}
+
+/* ---------- Settings rows ---------- */
+#zen-site-data-settings-list .permission-popup-permission-item {
+  min-height: 46px;
+  padding: 6px 12px 6px 6px !important;
+  border-radius: 16px !important;
+  background: var(--m3e-row) !important;
+  transition: var(--m3e-shape-motion), var(--m3e-color-motion) !important;
+  &:hover {
+    border-radius: 21px !important;
+    background: var(--m3-secondary-container) !important;
+    color: var(--m3-on-secondary-container) !important;
+  }
+  & .permission-popup-permission-icon {
+    box-sizing: border-box !important;
+    width: 30px !important;
+    height: 30px !important;
+    min-width: 30px !important;
+    padding: 7px !important;
+    margin-inline-end: 10px !important;
+    border-radius: 50% !important;
+    background: color-mix(in srgb, currentColor 10%, transparent) !important;
+  }
+  & .permission-popup-permission-label {
+    font-variation-settings: var(--m3e-type-label) !important;
+  }
+  & .permission-popup-permission-state-label,
+  & .permission-popup-permission-item-site-protection description {
+    font-variation-settings: var(--m3e-type-condensed) !important;
+    color: inherit !important;
+    opacity: 0.75;
+  }
+}
+
+/* ---------- Footer: a tonal security pill and round buttons ---------- */
+#zen-unified-site-data-panel #zen-site-data-footer#zen-site-data-footer {
+  border-top: none !important;
+  margin: 2px 12px 12px !important;
+  padding-top: 4px !important;
+  gap: 6px !important;
+
+  & > toolbarbutton {
+    height: 42px !important;
+    min-width: 42px !important;
+    flex: none;
+    & > .toolbarbutton-icon {
+      box-sizing: border-box !important;
+      width: 18px !important;
+      height: 18px !important;
+      padding: 0 !important;
+      margin: 0 !important;
+      background: none !important;
+    }
+    justify-content: center !important;
+    border-radius: 21px !important;
+    background: var(--m3-surface-container-highest) !important;
+    transition: var(--m3e-shape-motion), var(--m3e-color-motion), scale var(--m3e-d-fast) var(--m3e-spatial-fast) !important;
+    &:hover {
+      border-radius: var(--m3e-r-sm) !important;
+      background: color-mix(in srgb, var(--m3-on-surface) 8%, var(--m3-surface-container-highest)) !important;
+    }
+    &:hover:active {
+      scale: 0.95;
+    }
+  }
+  & > :is(#zen-site-data-boost, #zen-site-data-actions) {
+    width: 42px !important;
+    padding: 0 !important;
+  }
+  & > #zen-site-data-security-info {
+    flex: 1 1 auto !important;
+    min-width: 0 !important;
+    padding: 0 14px !important;
+    gap: 8px;
+    justify-content: flex-start !important;
+    background: var(--m3-secondary-container) !important;
+    color: var(--m3-on-secondary-container) !important;
+    fill: var(--m3-on-secondary-container) !important;
+    font-variation-settings: var(--m3e-type-strong) !important;
+    &:hover {
+      background: color-mix(in srgb, var(--m3-on-secondary-container) 10%, var(--m3-secondary-container)) !important;
+    }
+  }
+}
+
+/* ===== 12-motion.css ===== */
+/*
+ * Micro-motion. Small state changes answer with a short M3E spring; nothing loops, and
+ * every animation is transform/opacity only. All durations come from the tokens, so
+ * reduced motion (OS or m3e.reduced-motion) turns them off.
+ */
+@keyframes m3e-pop {
+  from { transform: scale(0.94); }
+  to { transform: none; }
+}
+@keyframes m3e-pop-in {
+  from { opacity: 0; transform: scale(0.6); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes m3e-drop-in {
+  from { opacity: 0; transform: translateY(-6px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes m3e-rise-in {
+  from { opacity: 0; transform: translateY(16px) scale(0.96); }
+  to { opacity: 1; transform: none; }
+}
+
+/* A tab, essential or result that becomes current settles in with a small spring. */
+#tabbrowser-tabs .tabbrowser-tab[selected] > .tab-stack > .tab-background,
+.urlbarView-row[selected]:not(:first-child),
+#zen-workspaces-button toolbarbutton[active="true"] {
+  animation: m3e-pop var(--m3e-d-fast) var(--m3e-spatial-fast);
+}
+
+/* The current space's mark pops into its cookie when you switch. */
+#zen-workspaces-button toolbarbutton[active="true"] .zen-workspace-icon {
+  animation: m3e-pop-in var(--m3e-d) var(--m3e-spatial-fast) both;
+}
+
+/* Opening a folder deals its rows in, top to bottom. */
+zen-folder:not([collapsed]) > .tab-group-container > .tabbrowser-tab:not([zen-empty-tab]) {
+  animation: m3e-drop-in var(--m3e-d-fast) var(--m3e-decel) both;
+  &:nth-child(3) { animation-delay: 25ms; }
+  &:nth-child(4) { animation-delay: 50ms; }
+  &:nth-child(5) { animation-delay: 75ms; }
+  &:nth-child(n + 6) { animation-delay: 100ms; }
+}
+/* …and a closed folder's preview and count pop back. */
+zen-folder[collapsed] > .tab-group-label-container::before,
+zen-folder > .tab-group-label-container[m3e-count]::after {
+  animation: m3e-pop-in var(--m3e-d-fast) var(--m3e-spatial-fast) both;
+}
+
+/* Close button appears with a pop when a row is hovered. */
+#tabbrowser-tabs .tabbrowser-tab:hover .tab-close-button {
+  animation: m3e-pop-in var(--m3e-d-fast) var(--m3e-spatial-fast) both;
+}
+
+/* Create FAB: the plus turns into a close cross while its menu is open (rotation that
+   means something: open ↔ close). */
+#zen-create-new-button > .toolbarbutton-icon {
+  transition: var(--m3e-shape-motion), var(--m3e-color-motion),
+    transform var(--m3e-d-fast) var(--m3e-spatial-fast),
+    rotate var(--m3e-d) var(--m3e-spatial) !important;
+}
+#zen-create-new-button[open] > .toolbarbutton-icon {
+  rotate: 45deg;
+}
+
+/* Menu rows deal in under the springing container (first reveal of each open). */
+menupopup[m3e-open] > :is(menuitem, menu) {
+  animation: m3e-drop-in var(--m3e-d-fast) var(--m3e-decel) both;
+  &:nth-child(2) { animation-delay: 15ms; }
+  &:nth-child(3) { animation-delay: 30ms; }
+  &:nth-child(4) { animation-delay: 45ms; }
+  &:nth-child(5) { animation-delay: 60ms; }
+  &:nth-child(n + 6) { animation-delay: 75ms; }
+}
+
+/* Checking a box: the mark pops. */
+menupopup > menuitem[type="checkbox"][checked="true"] > .menu-icon,
+menupopup > menuitem[type="radio"][checked="true"] > .menu-icon {
+  animation: m3e-pop-in var(--m3e-d-fast) var(--m3e-spatial-fast) both;
+}
+
+/* Snackbars rise in on a spring. */
+#zen-toast-container .zen-toast {
+  animation: m3e-rise-in var(--m3e-d) var(--m3e-spatial) both;
+}
+
+/* Library: switching destination lifts the new section in. */
+.zen-library-section {
+  animation: m3e-drop-in var(--m3e-d-fast) var(--m3e-decel) both;
+}
+
+/* Site panel and other arrow panels: their content springs like menus. */
+panel[type="arrow"][m3e-open] panelview[current] > * {
+  animation: m3e-drop-in var(--m3e-d-fast) var(--m3e-decel) both;
+}
+
+/* Small controls: press feedback everywhere it was missing. */
+#navigator-toolbox #vertical-tabs-newtab-button,
+.zen-library-filter-chip,
+.zen-library-filter-button,
+.searchbar-engine-one-off-item {
+  transition-property: background-color, color, border-radius, outline-color, scale !important;
+  &:hover:active {
+    scale: 0.96;
   }
 }
