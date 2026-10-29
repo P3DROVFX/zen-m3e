@@ -25,17 +25,33 @@ The guide asks not to repeat a technique. Where each one lives:
 
 | Technique | Where | Why there |
 |---|---|---|
-| Grouped list (joins + notch around the selection) | sidebar tabs | the rail of the browser, like `ClockRail` |
+| Grouped list (joins + notch around the selection) | sidebar tabs, search results | the browser's rail, and the list under the hero (asked for explicitly) |
+| Separate rows with a gap + icon badge | menus, app menu | the shell's own menu style |
+| Pane on its own surface | space header, folders | sections, so their edges never need a line |
+| Edge fade on scroll | the tab list | shell technique; replaces divider lines |
 | Shape is state (circle ↔ rounded square) | essentials, icon buttons, create FAB | small, frequent state changes |
 | Polygon morph (equal-vertex `clip-path`) | search badge (Clover-4 → Sunny while typing), space icon (Cookie-9 → 12 on hover) | the two identity marks of the window |
 | Clipped ornament | the search overlay's top-result card | the one hero on screen |
 | Dashed unselected chip | "New tab", secondary buttons | an action that is not a state |
-| Wide display face (`wdth 128`) | space name, result group headings, panel titles | headings only, never body text |
+| Wide display face (`wdth 140`) | space name, result group headings, panel titles | headings only, never body text |
 | Caption over value | "TOP RESULT" | forms vocabulary from the timetable rail |
 | Pill selection | menu items, results, subview buttons | keyboard/hover target |
+| Weight change on selection (animated `wght`) | tabs, results, menu rows | "animate weight, don't swap it" |
 | Staggered entrance | search results, first reveal only | never replayed while typing |
 
+## Type
+
+Google Sans Flex is loaded through `@font-face` (`fonts/GoogleSansFlex.ttf`): with the
+fontconfig face Gecko ignores `font-variation-settings` in chrome. Roles in
+`02-tokens.css` always list `wght, wdth, ROND` in that order so weights interpolate:
+body 440, label 560, strong 760/104, title 780, display 840/140 (wide), caption 820/118
+uppercase, condensed 600/74 for urls and shortcuts.
+
 ## Motion
+
+- Corner morphs use `--m3e-morph` (a soft spring) between concrete radii. Animating to
+  or from `999px` with the spatial springs dips through 0 — a square flash — so animated
+  pills use half their height instead.
 
 - Springs (`--m3e-spatial*`) only for shape and position; colour and opacity use the
   effects curve.

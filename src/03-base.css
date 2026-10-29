@@ -5,15 +5,21 @@
 /* ---------- Type ---------- */
 @media not -moz-pref("m3e.system-font") {
   :root,
-  #main-window,
   menupopup,
   panel,
   tooltip,
+  button,
+  input,
+  textarea,
   #urlbar,
-  .urlbarView {
+  .urlbarView,
+  zen-sidebar-notification {
     font-family: var(--m3e-font) !important;
-    font-variation-settings: var(--m3e-axes);
-    font-optical-sizing: auto;
+    font-variation-settings: var(--m3e-type-body);
+  }
+  /* Elements that reset the font through `font: menu` / `font: message-box`. */
+  menuitem, menu, menucaption, toolbarbutton, label, description, tab, .tab-label {
+    font-family: inherit !important;
   }
 }
 
@@ -52,19 +58,19 @@
 }
 
 /* ---------- Icon buttons: circle idle, rounded square on hover, 0.95 press ---------- */
-#navigator-toolbox :is(#zen-sidebar-top-buttons, #zen-sidebar-foot-buttons, #nav-bar) .toolbarbutton-1:not(#zen-create-new-button):not(.subviewbutton) {
+#navigator-toolbox :is(#zen-sidebar-top-buttons, #zen-sidebar-foot-buttons, #nav-bar) .toolbarbutton-1:not(#zen-create-new-button, .subviewbutton) {
   > .toolbarbutton-icon,
   > .toolbarbutton-badge-stack,
   > .toolbarbutton-text {
-    border-radius: var(--m3e-r-full) !important;
+    border-radius: 16px !important;
     transition:
-      border-radius var(--m3e-d-fast) var(--m3e-spatial-fast),
-      background-color var(--m3e-d-effects) var(--m3e-effects),
+      var(--m3e-shape-motion),
+      var(--m3e-color-motion),
       transform var(--m3e-d-fast) var(--m3e-spatial-fast) !important;
   }
 
   &:not([disabled]):hover > :is(.toolbarbutton-icon, .toolbarbutton-badge-stack, .toolbarbutton-text) {
-    border-radius: var(--m3e-r-sm) !important;
+    border-radius: 10px !important;
     background-color: var(--toolbarbutton-hover-background) !important;
   }
 
@@ -90,7 +96,7 @@ tooltip:not([remote]),
   border-radius: var(--m3e-r-sm) !important;
   padding: 6px 10px !important;
   font-size: 12px !important;
-  font-variation-settings: "ROND" 100, "wght" 500 !important;
+  font-variation-settings: var(--m3e-type-label) !important;
   box-shadow: none !important;
 }
 
@@ -100,7 +106,7 @@ tooltip:not([remote]),
   scrollbar-color: color-mix(in srgb, var(--m3-on-surface-variant) 40%, transparent) transparent;
 }
 
-/* ---------- Focus rings: primary, offset, rounded like their owner ---------- */
+/* ---------- Focus rings ---------- */
 :root :focus-visible {
   outline-color: var(--m3-primary) !important;
 }
@@ -110,7 +116,7 @@ button:not(.urlbarView-button, .searchbar-engine-one-off-item, .close-button, .t
 .footer-button,
 moz-button::part(button) {
   border-radius: var(--m3e-r-full) !important;
-  font-variation-settings: "ROND" 100, "wght" 600 !important;
+  font-variation-settings: var(--m3e-type-label) !important;
 }
 
 /* ---------- Notification bars ---------- */
@@ -120,4 +126,17 @@ notification-message {
   color: var(--m3-on-secondary-container) !important;
   box-shadow: none !important;
   border: none !important;
+}
+
+/* ---------- Sidebar notification ("Update Complete!"): an opaque sheet ---------- */
+zen-sidebar-notification {
+  --zen-sidebar-notification-bg: var(--m3-surface-container-high) !important;
+  --zen-sidebar-notification-outline: none !important;
+  --zen-sidebar-notification-shadow: 0 8px 22px -6px color-mix(in srgb, var(--m3-shadow) 55%, transparent) !important;
+  --border-radius-medium: var(--m3e-r-lg) !important;
+  background: var(--m3-surface-container-high) !important;
+  color: var(--m3-on-surface) !important;
+  border-radius: var(--m3e-r-lg) !important;
+  outline: none !important;
+  font-size: 12.5px !important;
 }

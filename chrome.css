@@ -386,6 +386,22 @@
  * Tokens: shape, motion, type and the surface ladder. Every other file reads these;
  * nothing below this file hard-codes a colour, radius or duration.
  */
+
+/*
+ * The variable font has to come in through @font-face: with the system (fontconfig)
+ * face Gecko ignores font-variation-settings in chrome, so every axis below would be a
+ * no-op. install.sh copies the font next to this file; the Fedora path is a fallback.
+ */
+@font-face {
+  font-family: "M3E Flex";
+  src:
+    url("fonts/GoogleSansFlex.ttf") format("truetype"),
+    url("file:///usr/share/fonts/google-sans-flex-vf-fonts/GoogleSansFlex-VariableFont_GRAD%2CROND%2Copsz%2Cslnt%2Cwdth%2Cwght.ttf") format("truetype");
+  font-weight: 1 1000;
+  font-stretch: 25% 151%;
+  font-style: normal;
+}
+
 :root {
   /* Shape scale (shell: small 12, normal 17, large 23, verylarge 32). */
   --m3e-r-xs: 4px;
@@ -393,7 +409,8 @@
   --m3e-r-md: 17px;
   --m3e-r-lg: 23px;
   --m3e-r-xl: 32px;
-  --m3e-r-full: 999px;
+  --m3e-r-full: 999px;        /* static pills only: never animate to or from it */
+  --m3e-r-pill: 22px;         /* animated pills: half of the tallest morphing control */
   --m3e-r-join: 5px;          /* joins inside a grouped list */
 
   /* Motion (shell Appearance.animationCurves). */
@@ -404,19 +421,28 @@
   --m3e-decel: cubic-bezier(0.05, 0.7, 0.1, 1);
   --m3e-accel: cubic-bezier(0.3, 0, 0.8, 0.15);
   --m3e-standard: cubic-bezier(0.2, 0, 0, 1);
+  /* Corner morphs: a soft spring. The spatial curves overshoot by up to 67 %, which on
+     a radius dips through 0 (a square flash) before settling. */
+  --m3e-morph: cubic-bezier(0.34, 1.24, 0.64, 1);
   --m3e-d-fast: 350ms;
   --m3e-d: 500ms;
   --m3e-d-slow: 650ms;
   --m3e-d-effects: 200ms;
   --m3e-d-enter: 400ms;
   --m3e-d-exit: 200ms;
+  --m3e-shape-motion: border-radius var(--m3e-d-fast) var(--m3e-morph);
+  --m3e-color-motion: background-color var(--m3e-d-effects) var(--m3e-effects), color var(--m3e-d-effects) var(--m3e-effects);
 
-  /* Type. Google Sans Flex axes: wght, wdth (25–151), ROND, opsz, GRAD, slnt. */
-  --m3e-font: "Google Sans Flex", "Google Sans", "Roboto Flex", system-ui, sans-serif;
-  --m3e-axes: "ROND" 100;
-  --m3e-axes-title: "ROND" 100, "wdth" 100;
-  --m3e-axes-display: "ROND" 100, "wdth" 128;   /* wide headings ("Applications") */
-  --m3e-axes-condensed: "ROND" 100, "wdth" 72;
+  /* Type. Every role names all three axes in the same order so weights interpolate. */
+  --m3e-font: "M3E Flex", "Google Sans Flex", "Google Sans", "Roboto Flex", system-ui, sans-serif;
+  --m3e-type-body: "wght" 440, "wdth" 100, "ROND" 100;
+  --m3e-type-label: "wght" 560, "wdth" 100, "ROND" 100;
+  --m3e-type-strong: "wght" 760, "wdth" 104, "ROND" 100;     /* selected / current */
+  --m3e-type-title: "wght" 780, "wdth" 100, "ROND" 100;      /* hero titles, folders */
+  --m3e-type-display: "wght" 840, "wdth" 140, "ROND" 100;    /* wide headings ("Applications") */
+  --m3e-type-caption: "wght" 820, "wdth" 118, "ROND" 100;    /* TOP RESULT, section captions */
+  --m3e-type-condensed: "wght" 600, "wdth" 74, "ROND" 100;   /* urls, shortcuts, counts */
+  --m3e-type-input: "wght" 580, "wdth" 100, "ROND" 100;
 
   /* Tinted actions on any surface (§2.3): 8 / 16 / 24 % of the content colour. */
   --m3e-tint-idle: 8%;
@@ -430,6 +456,8 @@
   --m3e-sheet: var(--m3-surface-container-high);
   --m3e-field: var(--m3-surface-container-highest);
   --m3e-popup: var(--m3-surface-container);
+  --m3e-row: var(--m3-surface-container-high);       /* rows on a popup */
+  --m3e-row-on-sheet: var(--m3-surface-container-highest);
 }
 
 /* Reduced motion: from the OS, or forced by the mod preference. */
@@ -558,15 +586,21 @@
 /* ---------- Type ---------- */
 @media not -moz-pref("m3e.system-font") {
   :root,
-  #main-window,
   menupopup,
   panel,
   tooltip,
+  button,
+  input,
+  textarea,
   #urlbar,
-  .urlbarView {
+  .urlbarView,
+  zen-sidebar-notification {
     font-family: var(--m3e-font) !important;
-    font-variation-settings: var(--m3e-axes);
-    font-optical-sizing: auto;
+    font-variation-settings: var(--m3e-type-body);
+  }
+  /* Elements that reset the font through `font: menu` / `font: message-box`. */
+  menuitem, menu, menucaption, toolbarbutton, label, description, tab, .tab-label {
+    font-family: inherit !important;
   }
 }
 
@@ -605,19 +639,19 @@
 }
 
 /* ---------- Icon buttons: circle idle, rounded square on hover, 0.95 press ---------- */
-#navigator-toolbox :is(#zen-sidebar-top-buttons, #zen-sidebar-foot-buttons, #nav-bar) .toolbarbutton-1:not(#zen-create-new-button):not(.subviewbutton) {
+#navigator-toolbox :is(#zen-sidebar-top-buttons, #zen-sidebar-foot-buttons, #nav-bar) .toolbarbutton-1:not(#zen-create-new-button, .subviewbutton) {
   > .toolbarbutton-icon,
   > .toolbarbutton-badge-stack,
   > .toolbarbutton-text {
-    border-radius: var(--m3e-r-full) !important;
+    border-radius: 16px !important;
     transition:
-      border-radius var(--m3e-d-fast) var(--m3e-spatial-fast),
-      background-color var(--m3e-d-effects) var(--m3e-effects),
+      var(--m3e-shape-motion),
+      var(--m3e-color-motion),
       transform var(--m3e-d-fast) var(--m3e-spatial-fast) !important;
   }
 
   &:not([disabled]):hover > :is(.toolbarbutton-icon, .toolbarbutton-badge-stack, .toolbarbutton-text) {
-    border-radius: var(--m3e-r-sm) !important;
+    border-radius: 10px !important;
     background-color: var(--toolbarbutton-hover-background) !important;
   }
 
@@ -643,7 +677,7 @@ tooltip:not([remote]),
   border-radius: var(--m3e-r-sm) !important;
   padding: 6px 10px !important;
   font-size: 12px !important;
-  font-variation-settings: "ROND" 100, "wght" 500 !important;
+  font-variation-settings: var(--m3e-type-label) !important;
   box-shadow: none !important;
 }
 
@@ -653,7 +687,7 @@ tooltip:not([remote]),
   scrollbar-color: color-mix(in srgb, var(--m3-on-surface-variant) 40%, transparent) transparent;
 }
 
-/* ---------- Focus rings: primary, offset, rounded like their owner ---------- */
+/* ---------- Focus rings ---------- */
 :root :focus-visible {
   outline-color: var(--m3-primary) !important;
 }
@@ -663,7 +697,7 @@ button:not(.urlbarView-button, .searchbar-engine-one-off-item, .close-button, .t
 .footer-button,
 moz-button::part(button) {
   border-radius: var(--m3e-r-full) !important;
-  font-variation-settings: "ROND" 100, "wght" 600 !important;
+  font-variation-settings: var(--m3e-type-label) !important;
 }
 
 /* ---------- Notification bars ---------- */
@@ -675,26 +709,48 @@ notification-message {
   border: none !important;
 }
 
-/* ===== 04-sidebar.css ===== */
-/*
- * Sidebar: tabs as a grouped list (§4), essentials as shape-is-state tiles, the space
- * header in the wide display face, dashed "new tab" chip and the create FAB.
- */
-
-/* ---------- Tabs: one grouped shape per section ---------- */
-#navigator-toolbox {
-  --m3e-tab-height: 40px;
-  --m3e-tab-gap: 2px;
-  --m3e-tab-outer: var(--m3e-r-lg);
+/* ---------- Sidebar notification ("Update Complete!"): an opaque sheet ---------- */
+zen-sidebar-notification {
+  --zen-sidebar-notification-bg: var(--m3-surface-container-high) !important;
+  --zen-sidebar-notification-outline: none !important;
+  --zen-sidebar-notification-shadow: 0 8px 22px -6px color-mix(in srgb, var(--m3-shadow) 55%, transparent) !important;
+  --border-radius-medium: var(--m3e-r-lg) !important;
+  background: var(--m3-surface-container-high) !important;
+  color: var(--m3-on-surface) !important;
+  border-radius: var(--m3e-r-lg) !important;
+  outline: none !important;
+  font-size: 12.5px !important;
 }
 
-#tabbrowser-tabs[orient="vertical"] .tabbrowser-tab:not([zen-essential]),
-#tabbrowser-tabs .zen-workspace-tabs-section .tabbrowser-tab:not([zen-essential]) {
+/* ===== 04-sidebar.css ===== */
+/*
+ * Sidebar: tabs as a grouped list (§4), the space header and folders as panes on
+ * their own surface, essentials and pinned tiles with shape-is-state, a scroll area that
+ * fades at its edges (shell technique) instead of drawing a line, the dashed "new tab"
+ * chip and the create FAB.
+ */
+
+#navigator-toolbox {
+  --m3e-tab-height: 38px;
+  --m3e-tab-gap: 2px;
+  --m3e-tab-outer: var(--m3e-r-lg);
+  --m3e-tab-pill: 19px;
+  --tab-block-margin: 0px !important;
+}
+
+/* ---------- Tabs (unpinned): one grouped shape per section ---------- */
+#tabbrowser-tabs .tabbrowser-tab:not([pinned], [zen-essential]) {
+  margin-block: 0 !important;
   padding-block: calc(var(--m3e-tab-gap) / 2) !important;
+  min-height: 0 !important;
   --tab-min-height: var(--m3e-tab-height) !important;
-  --tab-border-radius: var(--m3e-r-join);
+
+  & > .tab-stack {
+    min-height: var(--m3e-tab-height) !important;
+  }
 
   & > .tab-stack > .tab-background {
+    margin-block: 0 !important;
     min-height: var(--m3e-tab-height) !important;
     background: var(--m3e-layer1) !important;
     box-shadow: none !important;
@@ -702,9 +758,13 @@ notification-message {
     border-radius: var(--tab-r-top, var(--m3e-r-join)) var(--tab-r-top, var(--m3e-r-join))
                    var(--tab-r-bottom, var(--m3e-r-join)) var(--tab-r-bottom, var(--m3e-r-join)) !important;
     transition:
-      border-radius var(--m3e-d) var(--m3e-spatial),
-      background-color var(--m3e-d-effects) var(--m3e-effects),
+      border-radius var(--m3e-d) var(--m3e-morph),
+      var(--m3e-color-motion),
       transform var(--m3e-d-fast) var(--m3e-spatial-fast) !important;
+  }
+
+  & > .tab-stack > .tab-content {
+    padding-inline: 10px 6px !important;
   }
 
   &:hover > .tab-stack > .tab-background {
@@ -717,11 +777,15 @@ notification-message {
 
   & .tab-label {
     font-size: 13px !important;
-    font-variation-settings: "ROND" 100, "wght" 450, "wdth" 100 !important;
+    font-variation-settings: var(--m3e-type-body) !important;
     color: var(--m3-on-surface-variant) !important;
     transition:
       font-variation-settings var(--m3e-d) var(--m3e-spatial),
       color var(--m3e-d-effects) var(--m3e-effects) !important;
+  }
+  &:hover .tab-label {
+    font-variation-settings: var(--m3e-type-label) !important;
+    color: var(--m3-on-surface) !important;
   }
 
   & .tab-icon-image {
@@ -730,21 +794,21 @@ notification-message {
 
   & .zen-tab-sublabel {
     font-size: 11px !important;
+    font-variation-settings: var(--m3e-type-condensed) !important;
     color: inherit !important;
     opacity: 0.75;
   }
 
-  /* The current tab: a pill in primary; its neighbours round towards it. */
-  &[selected],
-  &[multiselected] {
-    --tab-r-top: var(--m3e-r-full) !important;
-    --tab-r-bottom: var(--m3e-r-full) !important;
+  /* The current tab: a pill in primary, its label gains weight; neighbours round in. */
+  &:is([selected], [multiselected]) {
+    --tab-r-top: var(--m3e-tab-pill) !important;
+    --tab-r-bottom: var(--m3e-tab-pill) !important;
     & > .tab-stack > .tab-background {
       background: var(--m3-primary) !important;
     }
     & .tab-label {
       color: var(--m3-on-primary) !important;
-      font-variation-settings: "ROND" 100, "wght" 680, "wdth" 100 !important;
+      font-variation-settings: var(--m3e-type-strong) !important;
     }
     & .tab-content {
       color: var(--m3-on-primary) !important;
@@ -760,7 +824,6 @@ notification-message {
     fill: var(--m3-on-primary-container) !important;
   }
 
-  /* Neighbours of the selected row press a notch in (ClockRailItem). */
   &:has(+ .tabbrowser-tab[selected]) {
     --tab-r-bottom: var(--m3e-r-md);
   }
@@ -770,19 +833,19 @@ notification-message {
 }
 
 /* Outer corners of each section's group. */
-.zen-workspace-tabs-section > .tabbrowser-tab:nth-child(1 of .tabbrowser-tab:not([hidden], [zen-glance-tab])) {
+.zen-workspace-normal-tabs-section > .tabbrowser-tab:nth-child(1 of .tabbrowser-tab:not([hidden], [zen-glance-tab])) {
   --tab-r-top: var(--m3e-tab-outer);
 }
-.zen-workspace-tabs-section > .tabbrowser-tab:nth-last-child(1 of .tabbrowser-tab:not([hidden], [zen-glance-tab])) {
+.zen-workspace-normal-tabs-section > .tabbrowser-tab:nth-last-child(1 of .tabbrowser-tab:not([hidden], [zen-glance-tab])) {
   --tab-r-bottom: var(--m3e-tab-outer);
 }
 
 /* Close / reset: a circle tinted with the row's content colour. */
 .tabbrowser-tab :is(.tab-close-button, .tab-reset-button) {
-  border-radius: var(--m3e-r-full) !important;
-  transition: border-radius var(--m3e-d-fast) var(--m3e-spatial-fast), background-color var(--m3e-d-effects) var(--m3e-effects) !important;
+  border-radius: 12px !important;
+  transition: var(--m3e-shape-motion), var(--m3e-color-motion) !important;
   &:hover {
-    border-radius: 9px !important;
+    border-radius: 7px !important;
     background-color: color-mix(in srgb, currentColor var(--m3e-tint-hover), transparent) !important;
   }
   &:hover:active {
@@ -790,7 +853,6 @@ notification-message {
   }
 }
 
-/* Loading line / context line follow the scheme. */
 .tabbrowser-tab .tab-context-line {
   border-radius: var(--m3e-r-full) !important;
 }
@@ -799,59 +861,102 @@ notification-message {
   fill: var(--m3-primary) !important;
 }
 
-/* Gaps, not lines, between pinned and normal tabs. */
-.pinned-tabs-container-separator > toolbarseparator,
+/* ---------- Pinned tiles and essentials: rounded square idle → shape when current ---------- */
+/* Layout (grid, sizes, centring) stays with Zen / SuperPins; only surface and shape here. */
+#tabbrowser-tabs .tabbrowser-tab:is([pinned], [zen-essential]) > .tab-stack > .tab-background {
+  background: var(--m3e-layer2) !important;
+  box-shadow: none !important;
+  border: none !important;
+  outline: none !important;
+  border-radius: var(--m3e-r-md) !important;
+  transition: border-radius var(--m3e-d) var(--m3e-morph), var(--m3e-color-motion) !important;
+}
+#tabbrowser-tabs .tabbrowser-tab:is([pinned], [zen-essential]):hover > .tab-stack > .tab-background {
+  background: var(--m3-surface-container-highest) !important;
+  border-radius: var(--m3e-r-lg) !important;
+}
+#tabbrowser-tabs .tabbrowser-tab:is([pinned], [zen-essential]):is([selected], [multiselected]) > .tab-stack > .tab-background {
+  background: var(--m3-primary-container) !important;
+  border-radius: var(--m3e-r-sm) !important;
+}
+#tabbrowser-tabs .tabbrowser-tab[pinned]:not([zen-essential]) .tab-label {
+  font-variation-settings: var(--m3e-type-label) !important;
+}
+#tabbrowser-tabs .tabbrowser-tab[pinned]:not([zen-essential])[selected] .tab-label {
+  font-variation-settings: var(--m3e-type-strong) !important;
+  color: var(--m3-on-primary-container) !important;
+}
+/* Icons sit dead centre in their tile: drop the list-mode gap (3px / 10px) on the icon. */
+#tabbrowser-tabs .tabbrowser-tab:is([pinned], [zen-essential]) .tab-icon-image {
+  margin-inline: 0 !important;
+}
+
+/* No "Clear" button, no separator line: the pinned section ends with a gap. */
+.zen-workspace-close-unpinned-tabs-button,
+.pinned-tabs-container-separator > toolbarseparator {
+  display: none !important;
+}
+.pinned-tabs-container-separator {
+  min-height: 6px !important;
+  height: 6px !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: none !important;
+}
 #vertical-pinned-tabs-splitter {
   border-color: transparent !important;
   background: transparent !important;
   opacity: 0 !important;
 }
 
-/* ---------- Essentials: pill when idle, rounded square when current ---------- */
-.zen-essentials-container .tabbrowser-tab[zen-essential] > .tab-stack > .tab-background {
-  background: var(--m3e-layer2) !important;
-  box-shadow: none !important;
-  border: none !important;
-  outline: none !important;
-  border-radius: var(--m3e-r-xl) !important;
-  transition:
-    border-radius var(--m3e-d) var(--m3e-spatial),
-    background-color var(--m3e-d-effects) var(--m3e-effects) !important;
-}
-.zen-essentials-container .tabbrowser-tab[zen-essential]:hover > .tab-stack > .tab-background {
-  background: var(--m3-surface-container-highest) !important;
-  border-radius: var(--m3e-r-lg) !important;
-}
-.zen-essentials-container .tabbrowser-tab[zen-essential]:is([selected], [multiselected]) > .tab-stack > .tab-background {
-  background: var(--m3-primary-container) !important;
-  border-radius: var(--m3e-r-sm) !important;
-}
-
-/* ---------- Space header: the one heading of the sidebar ---------- */
+/* ---------- Space header: a pane with the space's mark and its name ---------- */
 .zen-current-workspace-indicator {
-  min-height: 44px !important;
-  margin-block: 4px 6px !important;
-  padding-inline: 6px !important;
-  border-radius: var(--m3e-r-full) !important;
-  transition: background-color var(--m3e-d-effects) var(--m3e-effects) !important;
+  /* Same inset as the tab rows (Zen gives the header the full sidebar width). */
+  box-sizing: border-box !important;
+  width: calc(100% - 16px) !important;
+  min-height: 46px !important;
+  margin: 4px 8px 8px !important;
+  padding: 0 14px 0 8px !important;
+  gap: 10px !important;
+  border-radius: var(--m3e-r-lg) !important;
+  background: var(--m3e-layer2) !important;
+  transition: var(--m3e-color-motion), var(--m3e-shape-motion) !important;
 
   &::before {
-    border-radius: var(--m3e-r-full) !important;
+    display: none !important;
+  }
+  &:hover {
+    background: var(--m3-surface-container-high) !important;
+    border-radius: var(--m3e-r-md) !important;
   }
 
   & .zen-current-workspace-indicator-name {
-    font-size: 15px !important;
-    font-variation-settings: "ROND" 100, "wght" 760, "wdth" 128 !important;
-    letter-spacing: 0.01em;
+    font-size: 16px !important;
+    font-variation-settings: var(--m3e-type-display) !important;
+    letter-spacing: 0 !important;
     color: var(--m3-on-surface) !important;
     opacity: 1 !important;
+    text-align: start !important;
+    margin: 0 !important;
   }
 
-  /* Space icon in a cookie that morphs (9 → 12 sides) when the header is hovered. */
+  /* The collapse chevron opens nothing here: the space mark stays. */
+  & .zen-current-workspace-indicator-chevron {
+    display: none !important;
+  }
+  & .zen-current-workspace-indicator-icon {
+    display: flex !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    justify-content: center !important;
+    align-items: center !important;
+  }
+
+  /* The mark in a cookie that morphs 9 → 12 sides on hover. */
   & .zen-current-workspace-indicator-stack {
-    width: 30px !important;
-    height: 30px !important;
-    margin-inline-end: 4px !important;
+    width: 32px !important;
+    height: 32px !important;
+    margin: 0 !important;
     display: grid !important;
     place-items: center !important;
     background: var(--m3-tertiary-container) !important;
@@ -860,39 +965,100 @@ notification-message {
     clip-path: var(--m3e-shape-cookie-9);
     transition: clip-path var(--m3e-d) var(--m3e-spatial) !important;
   }
-
   &:hover .zen-current-workspace-indicator-stack {
     clip-path: var(--m3e-shape-cookie-12);
   }
+
+  & .zen-workspaces-actions {
+    margin-inline-start: auto !important;
+  }
+}
+
+/* ---------- Folders: a pane holding their header and tiles ---------- */
+zen-folder {
+  --zen-folder-behind-bgcolor: var(--m3-tertiary-container) !important;
+  --zen-folder-front-bgcolor: var(--m3-tertiary) !important;
+  --zen-folder-stroke: var(--m3-on-tertiary-container) !important;
+  background: var(--m3e-layer1) !important;
+  border-radius: var(--m3e-r-lg) !important;
+  padding: 2px 4px 6px !important;
+  margin: 0 -4px 6px !important;   /* line up with the tab rows */
+
+  & > .tab-group-label-container {
+    min-height: 40px !important;
+    padding-inline: 8px !important;
+    border-radius: var(--m3e-r-md) !important;
+    background: transparent !important;
+    transition: var(--m3e-color-motion) !important;
+    &::before { display: none !important; }
+    &:hover { background: color-mix(in srgb, var(--m3-on-surface) var(--m3e-tint-idle), transparent) !important; }
+  }
+  & .tab-group-label {
+    font-size: 14px !important;
+    font-variation-settings: var(--m3e-type-title) !important;
+    color: var(--m3-on-surface) !important;
+  }
+  & .tab-group-folder-icon {
+    display: grid !important;
+    place-items: center !important;
+  }
+}
+tab-group {
+  --zen-folder-behind-bgcolor: var(--m3-tertiary-container) !important;
+  --zen-folder-front-bgcolor: var(--m3-tertiary) !important;
+}
+
+/* ---------- Scroll area: edges fade instead of a line (shell technique) ---------- */
+.workspace-arrowscrollbox {
+  --m3e-fade-top: 0px;
+  --m3e-fade-bottom: 0px;
+  &::before,
+  &::after {
+    display: none !important;
+  }
+}
+/* Without the script both edges fade a little; m3e.uc.js sets them per scroll position. */
+.workspace-arrowscrollbox[overflowing] {
+  --m3e-fade-top: 14px;
+  --m3e-fade-bottom: 22px;
+  mask-image: linear-gradient(to bottom,
+    transparent 0, #000 var(--m3e-fade-top),
+    #000 calc(100% - var(--m3e-fade-bottom)), transparent 100%);
+  &[m3e-at-start] { --m3e-fade-top: 0px; }
+  &:not([m3e-at-start])[m3e-scrolled] { --m3e-fade-top: 36px; }
+  &[m3e-at-end] { --m3e-fade-bottom: 0px; }
+  &:not([m3e-at-end])[m3e-scrolled] { --m3e-fade-bottom: 44px; }
+}
+#zen-sidebar-foot-buttons {
+  border: none !important;
+  box-shadow: none !important;
+  &::before, &::after { display: none !important; }
 }
 
 /* ---------- New tab: the dashed "unselected chip" ---------- */
 #tabs-newtab-button,
 #vertical-tabs-newtab-button {
-  margin-block: 4px !important;
-  border-radius: var(--m3e-r-full) !important;
+  margin-block: 2px 4px !important;
+  border-radius: 19px !important;
   outline: 1.5px dashed color-mix(in srgb, var(--m3-outline) 70%, transparent) !important;
   outline-offset: -1.5px !important;
   background: transparent !important;
   min-height: 38px !important;
   color: var(--m3-on-surface-variant) !important;
-  transition:
-    background-color var(--m3e-d-effects) var(--m3e-effects),
-    outline-color var(--m3e-d-effects) var(--m3e-effects),
-    border-radius var(--m3e-d-fast) var(--m3e-spatial-fast) !important;
+  transition: var(--m3e-color-motion), outline-color var(--m3e-d-effects) var(--m3e-effects), var(--m3e-shape-motion) !important;
 
   & > .toolbarbutton-icon,
   & > .toolbarbutton-text {
     background: transparent !important;
   }
   & > .toolbarbutton-text {
-    font-variation-settings: "ROND" 100, "wght" 600 !important;
+    font-variation-settings: var(--m3e-type-label) !important;
   }
   &:hover {
     background: var(--m3-secondary-container) !important;
     color: var(--m3-on-secondary-container) !important;
     outline-color: transparent !important;
-    border-radius: var(--m3e-r-md) !important;
+    border-radius: var(--m3e-r-sm) !important;
   }
 }
 
@@ -900,11 +1066,12 @@ notification-message {
 #zen-workspaces-button {
   gap: 2px !important;
   & toolbarbutton {
-    border-radius: var(--m3e-r-full) !important;
-    transition: border-radius var(--m3e-d) var(--m3e-spatial), background-color var(--m3e-d-effects) var(--m3e-effects) !important;
+    border-radius: 16px !important;
+    transition: var(--m3e-shape-motion), var(--m3e-color-motion) !important;
   }
   & toolbarbutton:hover {
     background: var(--toolbarbutton-hover-background) !important;
+    border-radius: 10px !important;
   }
   & toolbarbutton[active="true"] {
     background: var(--m3-secondary-container) !important;
@@ -921,13 +1088,10 @@ notification-message {
     background: var(--m3-primary-container) !important;
     fill: var(--m3-on-primary-container) !important;
     border-radius: var(--m3e-r-sm) !important;
-    transition:
-      border-radius var(--m3e-d) var(--m3e-spatial),
-      transform var(--m3e-d-fast) var(--m3e-spatial-fast),
-      background-color var(--m3e-d-effects) var(--m3e-effects) !important;
+    transition: var(--m3e-shape-motion), var(--m3e-color-motion), transform var(--m3e-d-fast) var(--m3e-spatial-fast) !important;
   }
   &:hover > .toolbarbutton-icon {
-    border-radius: var(--m3e-r-full) !important;
+    border-radius: 18px !important;
     background: color-mix(in srgb, var(--m3-on-primary-container) 8%, var(--m3-primary-container)) !important;
   }
   &:hover:active > .toolbarbutton-icon,
@@ -945,31 +1109,20 @@ notification-message {
     background: var(--m3e-sheet) !important;
   }
   & #zen-media-title {
-    font-variation-settings: "ROND" 100, "wght" 650 !important;
+    font-variation-settings: var(--m3e-type-strong) !important;
   }
-  & .zen-media-progress-bar,
-  & #zen-media-progress-bar {
-    accent-color: var(--m3-primary);
+  & #zen-media-artist {
+    font-variation-settings: var(--m3e-type-condensed) !important;
   }
-}
-
-/* ---------- Folders (Zen tab groups) ---------- */
-zen-folder,
-tab-group {
-  --zen-folder-behind-bgcolor: var(--m3-tertiary-container) !important;
-  --zen-folder-front-bgcolor: var(--m3-tertiary) !important;
-  --zen-folder-stroke: var(--m3-on-tertiary-container) !important;
-}
-.tab-group-label {
-  font-variation-settings: "ROND" 100, "wght" 650 !important;
 }
 
 /* ===== 05-urlbar.css ===== */
 /*
  * URL bar. Docked: a filled pill in the sidebar. Floating (the search overlay): a sheet
- * with a shape badge that morphs while you type, a "top result" hero card in primary
- * container with a clipped ornament, group headings in the wide display face, favicon
- * tiles and pill selection. The overlay springs in; the first reveal staggers its rows.
+ * with a shape badge that morphs while you type, a compact "top result" hero in primary
+ * container with a clipped ornament, and the other results as a grouped list with the
+ * shell's dynamic radius (joins, outer corners, a pill for the current row with its
+ * neighbours rounding in). Group headings in the wide display face.
  */
 
 /* ---------- Docked ---------- */
@@ -979,8 +1132,8 @@ tab-group {
     border: none !important;
     outline: none !important;
     box-shadow: none !important;
-    border-radius: var(--m3e-r-full) !important;
-    transition: background-color var(--m3e-d-effects) var(--m3e-effects), border-radius var(--m3e-d-fast) var(--m3e-spatial-fast) !important;
+    border-radius: 20px !important;
+    transition: var(--m3e-color-motion), var(--m3e-shape-motion) !important;
   }
   &:hover > .urlbar-background {
     background: color-mix(in srgb, var(--m3-on-surface) 6%, var(--m3-surface-container-highest)) !important;
@@ -991,7 +1144,7 @@ tab-group {
     outline-offset: -2px !important;
   }
   & .urlbar-input {
-    font-variation-settings: "ROND" 100, "wght" 500 !important;
+    font-variation-settings: var(--m3e-type-label) !important;
   }
 }
 
@@ -1010,11 +1163,14 @@ tab-group {
 #urlbar-zoom-button {
   background: var(--m3-secondary-container) !important;
   color: var(--m3-on-secondary-container) !important;
+  font-variation-settings: var(--m3e-type-condensed) !important;
 }
 
 /* ---------- Floating: the search overlay ---------- */
 #urlbar[breakout-extend] {
   --m3e-overlay-pad: 10px;
+  --m3e-row-inline: 10px;     /* shared start padding: hero and rows line up */
+  --m3e-row-icon: 36px;
   --urlbar-height: 56px !important;
 
   & > .urlbar-background {
@@ -1043,7 +1199,7 @@ tab-group {
   }
   & .urlbar-input {
     font-size: 17px !important;
-    font-variation-settings: "ROND" 100, "wght" 500 !important;
+    font-variation-settings: var(--m3e-type-input) !important;
     color: var(--m3-on-surface) !important;
   }
 
@@ -1058,7 +1214,7 @@ tab-group {
     background: var(--m3-primary) !important;
     border-radius: 0 !important;
     clip-path: var(--m3e-shape-clover-4);
-    transition: clip-path var(--m3e-d) var(--m3e-spatial), background-color var(--m3e-d-effects) var(--m3e-effects) !important;
+    transition: clip-path var(--m3e-d) var(--m3e-spatial), var(--m3e-color-motion) !important;
   }
   & #identity-icon {
     fill: var(--m3-on-primary) !important;
@@ -1082,7 +1238,6 @@ tab-group {
   }
 }
 
-/* Spring in when the overlay opens. */
 @keyframes m3e-overlay-in {
   from { opacity: 0; transform: translateY(-10px) scale(0.94); }
   to { opacity: 1; transform: none; }
@@ -1096,30 +1251,28 @@ tab-group {
 #urlbar .urlbarView {
   border: none !important;
 }
-#urlbar[breakout-extend] .urlbarView-body-outer {
-  padding-inline: 2px !important;
-}
 #urlbar .urlbarView-body-inner {
   border-top: none !important;
 }
+#urlbar[breakout-extend] .urlbarView-body-outer {
+  padding-inline: 2px !important;
+}
 #urlbar-results {
-  padding-block: 2px 8px !important;
+  padding-block: 0 8px !important;
 }
 
 .urlbarView-row {
-  border-radius: var(--m3e-r-md) !important;
   padding-block: 0 !important;
-  margin-block: 1px !important;
+  margin-block: 0 !important;
   border: none !important;
   outline: none !important;
   box-shadow: none !important;
-  transition: border-radius var(--m3e-d) var(--m3e-spatial), background-color var(--m3e-d-effects) var(--m3e-effects) !important;
 
   & > .urlbarView-row-inner {
     box-sizing: border-box !important;
     min-height: 48px !important;
     padding-block: 6px !important;
-    padding-inline: 8px 14px !important;
+    padding-inline: var(--m3e-row-inline, 10px) 14px !important;
     border-radius: inherit !important;
     background: transparent !important;
     align-items: center !important;
@@ -1127,135 +1280,176 @@ tab-group {
     color: inherit !important;
   }
 
-  & :is(.urlbarView-title, .urlbarView-url) strong {
-    color: inherit !important;
-    font-variation-settings: "ROND" 100, "wght" 760 !important;
-  }
-
-  &:not([selected]):hover {
-    background: color-mix(in srgb, var(--m3-on-surface) var(--m3e-tint-idle), transparent) !important;
-  }
-
-  &[selected] {
-    background: var(--m3-secondary-container) !important;
-    color: var(--m3-on-secondary-container) !important;
-    border-radius: var(--m3e-r-full) !important;
-    & :is(.urlbarView-url, .urlbarView-action, .urlbarView-title-separator) {
-      color: var(--m3-on-secondary-container) !important;
-    }
-  }
-
-  /* Favicon in a rounded-square tile. */
   & .urlbarView-no-wrap {
     position: static !important;
+    align-items: center !important;
   }
 
+  /* Favicon in a rounded-square tile; same size in every row so text columns align. */
   & .urlbarView-favicon {
     box-sizing: border-box !important;
-    width: 32px !important;
-    height: 32px !important;
-    padding: 8px !important;
-    margin-inline-end: 12px !important;
-    border-radius: 10px !important;
-    background-color: var(--m3-surface-container-highest) !important;
+    width: var(--m3e-row-icon, 36px) !important;
+    height: var(--m3e-row-icon, 36px) !important;
+    min-width: var(--m3e-row-icon, 36px) !important;
+    padding: 10px !important;
+    margin-inline: 0 12px !important;
+    border-radius: var(--m3e-r-sm) !important;
+    background-color: color-mix(in srgb, var(--m3-on-surface) 7%, transparent) !important;
     fill: var(--m3-on-surface-variant) !important;
     -moz-context-properties: fill, fill-opacity !important;
+  }
+  & .urlbarView-type-icon {
+    margin-inline-start: calc(var(--m3e-row-icon, 36px) - 12px) !important;
   }
 
   & .urlbarView-title {
     font-size: 14px !important;
-    font-variation-settings: "ROND" 100, "wght" 550 !important;
+    font-variation-settings: var(--m3e-type-label) !important;
   }
-  & .urlbarView-url {
-    font-size: 12px !important;
+  & :is(.urlbarView-title, .urlbarView-url) strong {
+    color: inherit !important;
+    font-variation-settings: var(--m3e-type-strong) !important;
+  }
+  /* Secondary text: condensed, so it contrasts with the title by width, not just size. */
+  & .urlbarView-url,
+  & .urlbarView-action {
+    font-size: 12.5px !important;
+    font-variation-settings: var(--m3e-type-condensed) !important;
     color: var(--m3-on-surface-variant) !important;
   }
-  & .urlbarView-action,
   & .urlbarView-title-separator {
     color: var(--m3-on-surface-variant) !important;
+    opacity: 0.6;
   }
 }
 
-/* Group headings ("Firefox Suggest", "Search suggestions"): the wide display face. */
+/* ---------- Grouped list: every row after the hero ---------- */
+#urlbar[breakout-extend] #urlbar-results > .urlbarView-row:not(:first-child) {
+  margin-block-start: 2px !important;
+  background: var(--m3e-row-on-sheet) !important;
+  border-radius: var(--res-r-top, var(--m3e-r-join)) var(--res-r-top, var(--m3e-r-join))
+                 var(--res-r-bottom, var(--m3e-r-join)) var(--res-r-bottom, var(--m3e-r-join)) !important;
+  transition: border-radius var(--m3e-d) var(--m3e-morph), var(--m3e-color-motion) !important;
+
+  &:hover:not([selected]) {
+    background: color-mix(in srgb, var(--m3-on-surface) 7%, var(--m3e-row-on-sheet)) !important;
+  }
+
+  /* Group edges: after the hero, at each heading, and at the end. */
+  &:nth-child(2),
+  &[label] {
+    --res-r-top: var(--m3e-r-lg);
+  }
+  &:last-child,
+  &:has(+ .urlbarView-row[label]) {
+    --res-r-bottom: var(--m3e-r-lg);
+  }
+  /* Neighbours of the current row round towards it. */
+  &:has(+ .urlbarView-row[selected]) {
+    --res-r-bottom: var(--m3e-r-md);
+  }
+  &[selected] + .urlbarView-row {
+    --res-r-top: var(--m3e-r-md);
+  }
+
+  &[selected] {
+    --res-r-top: 24px;
+    --res-r-bottom: 24px;
+    background: var(--m3-secondary-container) !important;
+    color: var(--m3-on-secondary-container) !important;
+    & :is(.urlbarView-url, .urlbarView-action, .urlbarView-title-separator) {
+      color: var(--m3-on-secondary-container) !important;
+    }
+    & .urlbarView-favicon {
+      background-color: color-mix(in srgb, var(--m3-on-secondary-container) 12%, transparent) !important;
+      fill: var(--m3-on-secondary-container) !important;
+    }
+    & .urlbarView-title {
+      font-variation-settings: var(--m3e-type-strong) !important;
+    }
+  }
+
+  /* A heading starts a new group: leave room for its label above the row. */
+  &[label] {
+    margin-block-start: calc(1.6em + 14px) !important;
+  }
+}
+
 .urlbarView-row[label]::before {
   font-size: 15px !important;
-  font-variation-settings: "ROND" 100, "wght" 760, "wdth" 128 !important;
+  font-variation-settings: var(--m3e-type-display) !important;
   color: var(--m3-on-surface) !important;
   opacity: 1 !important;
-  padding-inline-start: 10px !important;
-  margin-block-start: 6px;
+  padding-inline-start: 6px !important;
 }
 
 /* ---------- Hero: the first result, in primary container ---------- */
 #urlbar[breakout-extend] #urlbar-results > .urlbarView-row:first-child:not([label]) {
   position: relative;
   overflow: clip;
-  margin-block-end: 8px;
-  border-radius: var(--m3e-r-xl) !important;
+  margin-block: 0 8px !important;
+  border-radius: var(--m3e-r-lg) !important;
   background: var(--m3-primary-container) !important;
   color: var(--m3-on-primary-container) !important;
 
   & > .urlbarView-row-inner {
-    min-height: 84px !important;
-    padding: 14px 16px !important;
-    flex-wrap: wrap !important;
-    align-content: center !important;
+    min-height: 64px !important;
+    padding-block: 10px !important;
+    padding-inline-end: 112px !important;   /* room for the action pill */
     position: relative;
     z-index: 1;
   }
 
-  /* Caption over the value (forms vocabulary): small, bold, tracked. */
-  & > .urlbarView-row-inner::before {
-    content: "Top result";
-    flex-basis: 100%;
-    order: -1;
-    padding-inline-start: 50px;
-    margin-block-end: 1px;
-    font-size: 10.5px;
-    text-transform: uppercase;
-    letter-spacing: 0.09em;
-    font-variation-settings: "ROND" 100, "wght" 760;
-    opacity: 0.8;
-  }
-
-  & .urlbarView-favicon {
-    width: 38px !important;
-    height: 38px !important;
-    padding: 10px !important;
-    border-radius: var(--m3e-r-sm) !important;
-    background-color: color-mix(in srgb, var(--m3-on-primary-container) 12%, transparent) !important;
-    fill: var(--m3-on-primary-container) !important;
+  /* Title column: the caption over the value (forms vocabulary). */
+  & .urlbarView-no-wrap {
+    flex: 1 1 auto;
+    min-width: 0;
   }
   & .urlbarView-title {
-    font-size: 20px !important;
-    font-variation-settings: "ROND" 100, "wght" 720, "wdth" 100 !important;
+    font-size: 19px !important;
+    line-height: 1.2 !important;
+    font-variation-settings: var(--m3e-type-title) !important;
     color: var(--m3-on-primary-container) !important;
   }
-  & .urlbarView-title-separator {
+  & .urlbarView-title::before {
+    content: "Top result";
+    display: block;
+    font-size: 10px;
+    line-height: 1.4;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-variation-settings: var(--m3e-type-caption);
+    opacity: 0.78;
+  }
+  & .urlbarView-favicon {
+    background-color: color-mix(in srgb, var(--m3-on-primary-container) 13%, transparent) !important;
+    fill: var(--m3-on-primary-container) !important;
+  }
+  & :is(.urlbarView-title-separator, .urlbarView-url, .urlbarView-tags) {
     display: none !important;
-  }
-  & :is(.urlbarView-url, .urlbarView-action) {
-    color: var(--m3-on-primary-container) !important;
   }
 
   /* Action as the "Open ↵" pill on the right; it springs in when the hero is current. */
   & .urlbarView-action {
     position: absolute !important;
-    inset-inline-end: 14px;
+    inset-inline-end: 12px;
     inset-block: 0;
     height: max-content;
     margin-block: auto !important;
     margin-inline: 0 !important;
-    padding: 10px 18px !important;
+    padding: 9px 16px !important;
     border-radius: var(--m3e-r-full) !important;
     background: var(--m3-primary) !important;
     color: var(--m3-on-primary) !important;
-    font-size: 14px !important;
-    font-variation-settings: "ROND" 100, "wght" 650 !important;
+    font-size: 13.5px !important;
+    font-variation-settings: var(--m3e-type-strong) !important;
     transform: none !important;
     opacity: 0;
     scale: 0.7;
     transition: opacity var(--m3e-d-effects) var(--m3e-effects), scale var(--m3e-d-fast) var(--m3e-spatial-fast) !important;
+  }
+  & .urlbarView-action:empty::before {
+    content: "Open";
   }
   & .urlbarView-action::after {
     content: "  \21B5";
@@ -1269,10 +1463,10 @@ tab-group {
   &::after {
     content: "";
     position: absolute;
-    inset-inline-end: -46px;
+    inset-inline-end: -42px;
     top: 50%;
-    width: 190px;
-    height: 190px;
+    width: 150px;
+    height: 150px;
     translate: 0 -50%;
     background: var(--m3-on-primary-container);
     opacity: 0.09;
@@ -1281,7 +1475,6 @@ tab-group {
   }
 
   &[selected] {
-    border-radius: var(--m3e-r-xl) !important;
     background: var(--m3-primary-container) !important;
   }
 }
@@ -1307,21 +1500,21 @@ tab-group {
   padding: 4px 6px 10px !important;
 }
 #urlbar .search-panel-one-offs-header-label {
-  font-size: 11px !important;
-  font-variation-settings: "ROND" 100, "wght" 700 !important;
+  font-size: 10.5px !important;
+  font-variation-settings: var(--m3e-type-caption) !important;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.1em;
   color: var(--m3-on-surface-variant) !important;
 }
 #urlbar .searchbar-engine-one-off-item {
   min-width: 40px !important;
   height: 32px !important;
-  border-radius: var(--m3e-r-full) !important;
+  border-radius: 16px !important;
   background: var(--m3e-field) !important;
   margin-inline-end: 4px !important;
-  transition: background-color var(--m3e-d-effects) var(--m3e-effects), border-radius var(--m3e-d-fast) var(--m3e-spatial-fast) !important;
+  transition: var(--m3e-color-motion), var(--m3e-shape-motion) !important;
   &:hover {
-    border-radius: var(--m3e-r-sm) !important;
+    border-radius: 10px !important;
     background: color-mix(in srgb, var(--m3-on-surface) 10%, var(--m3-surface-container-highest)) !important;
   }
   &[selected] {
@@ -1330,7 +1523,6 @@ tab-group {
   }
 }
 
-/* Result buttons (dismiss, menu) — tinted with the row's content colour. */
 .urlbarView-button {
   border-radius: var(--m3e-r-full) !important;
   &:hover {
@@ -1338,7 +1530,6 @@ tab-group {
   }
 }
 
-/* Search mode chip ("Bookmarks", "History", an engine). */
 #urlbar-search-mode-indicator,
 #urlbar-label-box {
   border-radius: var(--m3e-r-full) !important;
@@ -1346,93 +1537,129 @@ tab-group {
   color: var(--m3-on-tertiary-container) !important;
   border: none !important;
   outline: none !important;
-  font-variation-settings: "ROND" 100, "wght" 650 !important;
+  font-variation-settings: var(--m3e-type-strong) !important;
 }
 
 /* ===== 06-menus.css ===== */
 /*
- * Context menus and menupopups. One rounded container, items that morph into a pill
- * when active, separators as gaps (no lines). Content springs in from the anchor side
- * (the popup window itself only fades on Linux, so we animate what's inside it).
+ * Menus in the shell's style: a large rounded container, every item its own rounded
+ * row on a raised surface with a gap between rows, the icon in a circular badge, groups
+ * split by a wider gap. Active rows fill with secondary container and round further.
+ * Content springs from the anchor side (on Linux the popup window itself only fades).
  */
 menupopup,
 panel:not([type="arrow"]) {
   --panel-background-color: var(--m3e-popup) !important;
   --panel-text-color: var(--m3-on-surface) !important;
   --panel-border-color: transparent !important;
-  --panel-border-radius: var(--m3e-r-lg) !important;
-  --panel-padding: 6px !important;
-  --panel-box-shadow: 0 8px 24px -6px color-mix(in srgb, var(--m3-shadow) 45%, transparent),
+  --panel-border-radius: 26px !important;
+  --panel-padding: 8px !important;
+  --panel-box-shadow: 0 10px 28px -6px color-mix(in srgb, var(--m3-shadow) 50%, transparent),
                       0 1px 4px color-mix(in srgb, var(--m3-shadow) 25%, transparent) !important;
   --panel-box-shadow-margin: 14px !important;
-  --menuitem-border-radius: var(--m3e-r-sm) !important;
-  --menuitem-padding-block: 9px !important;
-  --menuitem-padding-inline: 12px !important;
-  --menuitem-margin: 1px 0 !important;
+  --menuitem-border-radius: 16px !important;
+  --menuitem-padding-block: 0 !important;
+  --menuitem-padding-inline: 8px 14px !important;
+  --menuitem-margin: 0 !important;
   --menuitem-icon-fill: var(--m3-on-surface-variant) !important;
   --text-color-disabled: color-mix(in srgb, var(--m3-on-surface) 38%, transparent) !important;
+  --m3e-menu-row: 42px;
+  --m3e-menu-badge: 30px;
 }
 
 menupopup::part(content) {
-  min-width: 200px !important;
+  min-width: 220px !important;
 }
 
-/* Items: rounded square idle, pill when active. */
+/* ---------- Rows ---------- */
 menupopup > :is(menuitem, menu) {
-  border-radius: var(--m3e-r-sm) !important;
+  min-height: var(--m3e-menu-row) !important;
+  margin-block: 0 3px !important;
+  padding-inline: 6px 14px !important;
+  gap: 10px;
+  background: var(--m3e-row) !important;
+  border-radius: 16px !important;
   font-size: 13px !important;
-  font-variation-settings: "ROND" 100, "wght" 480 !important;
-  transition:
-    border-radius var(--m3e-d-fast) var(--m3e-spatial-fast),
-    background-color var(--m3e-d-effects) var(--m3e-effects) !important;
+  font-variation-settings: var(--m3e-type-label) !important;
+  transition: var(--m3e-shape-motion), var(--m3e-color-motion), font-variation-settings var(--m3e-d) var(--m3e-spatial) !important;
+
+  &:last-child { margin-block-end: 0 !important; }
 
   &[_moz-menuactive]:not([disabled]) {
     background-color: var(--m3-secondary-container) !important;
     color: var(--m3-on-secondary-container) !important;
     --menuitem-icon-fill: var(--m3-on-secondary-container) !important;
-    border-radius: var(--m3e-r-full) !important;
+    --m3e-icon-bg: color-mix(in srgb, var(--m3-on-secondary-container) 12%, transparent) !important;
+    border-radius: 21px !important;
+    font-variation-settings: var(--m3e-type-strong) !important;
   }
 
-  &[_moz-menuactive][disabled] {
-    background-color: transparent !important;
+  &[disabled] {
+    background: color-mix(in srgb, var(--m3e-row) 50%, transparent) !important;
   }
 
   /* An open submenu stays lit in the tertiary voice while you're inside it. */
   &:is(menu)[open] {
     background-color: var(--m3-tertiary-container) !important;
     color: var(--m3-on-tertiary-container) !important;
-    border-radius: var(--m3e-r-full) !important;
+    --menuitem-icon-fill: var(--m3-on-tertiary-container) !important;
+    border-radius: 21px !important;
+  }
+
+  & .menu-text {
+    margin-inline-start: 0 !important;
   }
 
   & .menu-accel,
   & .menu-accel-container {
     color: var(--m3-on-surface-variant) !important;
-    font-size: 11px !important;
-    font-variation-settings: "ROND" 100, "wght" 600, "wdth" 90 !important;
+    font-size: 11.5px !important;
+    font-variation-settings: var(--m3e-type-condensed) !important;
     opacity: 0.85;
   }
 
-  & .menu-icon {
+  /* Icon badge: a circle tinted with the row's content colour. Rows without an icon keep
+     an empty slot so every label starts on the same column (08-menu-icons.css fills it). */
+  & > .menu-icon {
+    display: flex !important;
+    box-sizing: border-box !important;
+    width: var(--m3e-menu-badge) !important;
+    height: var(--m3e-menu-badge) !important;
+    min-width: var(--m3e-menu-badge) !important;
+    padding: 7px !important;
+    margin: 0 !important;
+    border-radius: var(--m3e-r-full) !important;
+    background-color: var(--m3e-icon-bg, transparent) !important;
     -moz-context-properties: fill, fill-opacity !important;
     fill: var(--menuitem-icon-fill) !important;
+    fill-opacity: 1 !important;
+    transition: var(--m3e-color-motion) !important;
+  }
+
+  & .menu-right {
+    fill: currentColor !important;
+    opacity: 0.8;
   }
 }
 
-/* Checked items: the check sits in a tertiary dot. */
-menupopup > menuitem:is([type="checkbox"], [type="radio"])[checked] .menu-icon {
+/* Native icons (bookmarks, favicons, extensions) sit in the same badge. */
+menupopup > :is(menuitem, menu):is(.menuitem-iconic, .menu-iconic, [image]) {
+  --m3e-icon-bg: color-mix(in srgb, var(--m3-on-surface) 8%, transparent);
+}
+
+/* Checked items: the badge fills with tertiary and shows the check. */
+menupopup > menuitem:is([type="checkbox"], [type="radio"])[checked] > .menu-icon {
   background-color: var(--m3-tertiary-container) !important;
   fill: var(--m3-on-tertiary-container) !important;
-  border-radius: var(--m3e-r-full) !important;
 }
 
-/* The default item reads bolder. */
 menupopup > menuitem:is([default="true"], .spell-suggestion) {
-  font-variation-settings: "ROND" 100, "wght" 700 !important;
+  font-variation-settings: var(--m3e-type-strong) !important;
 }
 
-/* Separators become breathing room: a gap, no line. */
+/* Groups: a wider gap, no line. */
 menupopup > menuseparator {
-  padding-block: 5px !important;
+  padding-block: 3px !important;
   margin: 0 !important;
   border: none !important;
   appearance: none !important;
@@ -1441,22 +1668,39 @@ menupopup > menuseparator {
   }
 }
 
-/* Captions inside menus (headers like "Recent Chats"). */
+/* Captions inside menus ("Recent Chats" …). */
 menupopup > menucaption,
 menupopup > .recent-chats-header {
-  font-size: 11px !important;
+  font-size: 10.5px !important;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
-  font-variation-settings: "ROND" 100, "wght" 760 !important;
+  letter-spacing: 0.1em;
+  font-variation-settings: var(--m3e-type-caption) !important;
   color: var(--m3-on-surface-variant) !important;
+  background: transparent !important;
 }
 
-/* Context-menu nav row (back / forward / reload / bookmark): circular icon buttons. */
-#context-navigation > menuitem {
-  border-radius: var(--m3e-r-full) !important;
-  transition: border-radius var(--m3e-d-fast) var(--m3e-spatial-fast), background-color var(--m3e-d-effects) var(--m3e-effects) !important;
-  &[_moz-menuactive]:not([disabled]) {
-    border-radius: var(--m3e-r-sm) !important;
+/* Context-menu nav row (back / forward / reload / bookmark): round buttons, no row. */
+#context-navigation {
+  background: transparent !important;
+  margin-block-end: 3px !important;
+  gap: 4px;
+  & > menuitem {
+    min-height: 40px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    justify-content: center;
+    background: var(--m3e-row) !important;
+    border-radius: 20px !important;
+    & > .menu-icon {
+      background: transparent !important;
+      padding: 0 !important;
+      width: 16px !important;
+      height: 16px !important;
+      min-width: 16px !important;
+    }
+    &[_moz-menuactive]:not([disabled]) {
+      border-radius: var(--m3e-r-sm) !important;
+    }
   }
 }
 
@@ -1485,40 +1729,72 @@ panel[type="arrow"] {
   --panel-background-color: var(--m3e-popup) !important;
   --panel-text-color: var(--m3-on-surface) !important;
   --panel-border-color: transparent !important;
-  --panel-border-radius: var(--m3e-r-xl) !important;
+  --panel-border-radius: 28px !important;
   --panel-padding: 8px !important;
   --panel-box-shadow: 0 12px 32px -8px color-mix(in srgb, var(--m3-shadow) 45%, transparent) !important;
+  --arrowpanel-menuitem-margin: 0 !important;
 }
 
-/* Subview items: same morph as menu items. */
-.subviewbutton,
-.PanelUI-subView .toolbarbutton-1,
+/* Subview items: the menu rows (own surface, gap, icon badge, pill when active). */
+.subviewbutton:not(#appMenu-zoom-controls > .subviewbutton, .subviewbutton-iconic.subviewbutton-back),
 .unified-extensions-item-action-button,
 .protections-popup-category {
-  border-radius: var(--m3e-r-sm) !important;
-  min-height: 38px !important;
-  font-variation-settings: "ROND" 100, "wght" 480 !important;
-  transition:
-    border-radius var(--m3e-d-fast) var(--m3e-spatial-fast),
-    background-color var(--m3e-d-effects) var(--m3e-effects) !important;
+  min-height: 42px !important;
+  margin: 0 0 3px !important;
+  padding-inline: 6px 14px !important;
+  gap: 10px;
+  background: var(--m3e-row) !important;
+  border-radius: 16px !important;
+  font-variation-settings: var(--m3e-type-label) !important;
+  transition: var(--m3e-shape-motion), var(--m3e-color-motion), font-variation-settings var(--m3e-d) var(--m3e-spatial) !important;
 
-  &:not([disabled]):hover {
+  & > .toolbarbutton-icon {
+    box-sizing: border-box !important;
+    width: 30px !important;
+    height: 30px !important;
+    padding: 7px !important;
+    margin: 0 !important;
+    border-radius: var(--m3e-r-full) !important;
+    background-color: color-mix(in srgb, currentColor 10%, transparent) !important;
+  }
+  &:not([disabled]):is(:hover, [open]) {
     background-color: var(--m3-secondary-container) !important;
     color: var(--m3-on-secondary-container) !important;
-    border-radius: var(--m3e-r-full) !important;
+    border-radius: 21px !important;
+    font-variation-settings: var(--m3e-type-strong) !important;
   }
   &:not([disabled]):hover:active {
     background-color: color-mix(in srgb, var(--m3-on-secondary-container) 14%, var(--m3-secondary-container)) !important;
   }
+  & .toolbarbutton-text {
+    padding-inline-start: 0 !important;
+  }
+  & .subviewbutton-shortcut,
+  & .panel-banner-item-shortcut {
+    font-size: 11.5px !important;
+    font-variation-settings: var(--m3e-type-condensed) !important;
+    color: var(--m3-on-surface-variant) !important;
+  }
+}
+/* Rows without an icon keep the badge column so labels line up. */
+
+/* The account row at the top: a hero in primary container. */
+#appMenu-fxa-label2,
+#appMenu-fxa-status2 {
+  background: var(--m3-primary-container) !important;
+  color: var(--m3-on-primary-container) !important;
+  min-height: 52px !important;
+  border-radius: var(--m3e-r-lg) !important;
+  margin-block-end: 6px !important;
 }
 
-/* Panel headers: the title face. */
+/* Panel headers: the wide display face. */
 .panel-header > h1,
 .panel-header > .panel-header-title,
 .panel-header > label,
 #unified-extensions-view .panel-header h1 {
   font-size: 15px !important;
-  font-variation-settings: "ROND" 100, "wght" 760, "wdth" 118 !important;
+  font-variation-settings: var(--m3e-type-display) !important;
 }
 
 /* Lines out; gaps in. */
@@ -1531,16 +1807,30 @@ toolbarseparator,
   margin-block: 3px !important;
 }
 
-/* Zoom controls in the app menu: a connected button group. */
+/* Zoom row: a connected button group on its own row surface. */
 #appMenu-zoom-controls {
   gap: 2px;
   & > .subviewbutton {
-    background: var(--m3-surface-container-highest) !important;
+    min-height: 34px !important;
+    background-color: var(--m3-surface-container-highest) !important;
     border-radius: var(--m3e-r-join) !important;
+    transition: var(--m3e-shape-motion), var(--m3e-color-motion) !important;
   }
-  & > .subviewbutton:first-of-type { border-radius: var(--m3e-r-full) var(--m3e-r-join) var(--m3e-r-join) var(--m3e-r-full) !important; }
-  & > .subviewbutton:last-of-type { border-radius: var(--m3e-r-join) var(--m3e-r-full) var(--m3e-r-full) var(--m3e-r-join) !important; }
-  & > .subviewbutton:hover { border-radius: var(--m3e-r-full) !important; }
+  & > .subviewbutton:first-of-type { border-radius: 17px var(--m3e-r-join) var(--m3e-r-join) 17px !important; }
+  & > .subviewbutton:last-of-type { border-radius: var(--m3e-r-join) 17px 17px var(--m3e-r-join) !important; }
+  & > .subviewbutton:hover {
+    border-radius: 17px !important;
+    background-color: var(--m3-secondary-container) !important;
+  }
+  & #appMenu-zoomReset-button2 {
+    font-variation-settings: var(--m3e-type-condensed) !important;
+  }
+}
+.toolbaritem-combined-buttons:has(#appMenu-zoom-controls) {
+  background: var(--m3e-row) !important;
+  border-radius: 16px !important;
+  padding: 4px 4px 4px 14px !important;
+  margin-block-end: 3px !important;
 }
 
 /* Primary buttons in panels and notifications. */
@@ -1586,7 +1876,7 @@ findbar {
   }
   & checkbox,
   & .findbar-label {
-    font-variation-settings: "ROND" 100, "wght" 500 !important;
+    font-variation-settings: var(--m3e-type-label) !important;
   }
 }
 
@@ -1596,7 +1886,7 @@ findbar {
   color: var(--m3-inverse-on-surface) !important;
   border: none !important;
   border-radius: var(--m3e-r-md) !important;
-  font-variation-settings: "ROND" 100, "wght" 550 !important;
+  font-variation-settings: var(--m3e-type-label) !important;
   box-shadow: 0 8px 20px -6px color-mix(in srgb, var(--m3-shadow) 50%, transparent) !important;
   & button {
     color: var(--m3-inverse-primary) !important;
@@ -1626,4 +1916,281 @@ findbar {
 .tab-modal-prompt .dialogBox {
   border-radius: var(--m3e-r-xl) !important;
   background: var(--m3e-sheet) !important;
+}
+
+/* ===== 08-menu-icons.css ===== */
+/* GENERATED by build.py (MENU_ICONS): Zen icons for menu items, shown in the badge. */
+#context_openANewTab > .menu-icon,
+#context-openlinkintab > .menu-icon {
+  content: url("chrome://browser/skin/zen-icons/plus.svg") !important;
+  visibility: visible !important;
+  --m3e-icon-bg: color-mix(in srgb, currentColor 10%, transparent);
+}
+#context_zenMoveToFolder > .menu-icon,
+#context_moveTabToNewGroup > .menu-icon,
+#context_moveTabToGroup > .menu-icon {
+  content: url("chrome://browser/skin/zen-icons/folder.svg") !important;
+  visibility: visible !important;
+  --m3e-icon-bg: color-mix(in srgb, currentColor 10%, transparent);
+}
+#context_zenSplitTabs > .menu-icon,
+#context-zen-split-link > .menu-icon {
+  content: url("chrome://browser/skin/zen-icons/split.svg") !important;
+  visibility: visible !important;
+  --m3e-icon-bg: color-mix(in srgb, currentColor 10%, transparent);
+}
+#context_reloadTab > .menu-icon,
+#context_reloadSelectedTabs > .menu-icon,
+#context-reload > .menu-icon {
+  content: url("chrome://browser/skin/zen-icons/reload.svg") !important;
+  visibility: visible !important;
+  --m3e-icon-bg: color-mix(in srgb, currentColor 10%, transparent);
+}
+#context_toggleMuteTab > .menu-icon,
+#context_toggleMuteSelectedTabs > .menu-icon {
+  content: url("chrome://browser/skin/zen-icons/media-mute.svg") !important;
+  visibility: visible !important;
+  --m3e-icon-bg: color-mix(in srgb, currentColor 10%, transparent);
+}
+#context_zen-add-essential > .menu-icon {
+  content: url("chrome://browser/skin/zen-icons/essential-add.svg") !important;
+  visibility: visible !important;
+  --m3e-icon-bg: color-mix(in srgb, currentColor 10%, transparent);
+}
+#context_zen-remove-essential > .menu-icon {
+  content: url("chrome://browser/skin/zen-icons/essential-remove.svg") !important;
+  visibility: visible !important;
+  --m3e-icon-bg: color-mix(in srgb, currentColor 10%, transparent);
+}
+#context_zen-edit-tab-title > .menu-icon {
+  content: url("chrome://browser/skin/zen-icons/text-title-case.svg") !important;
+  visibility: visible !important;
+  --m3e-icon-bg: color-mix(in srgb, currentColor 10%, transparent);
+}
+#context_zen-edit-tab-icon > .menu-icon {
+  content: url("chrome://browser/skin/zen-icons/palette.svg") !important;
+  visibility: visible !important;
+  --m3e-icon-bg: color-mix(in srgb, currentColor 10%, transparent);
+}
+#context_pinTab > .menu-icon,
+#context_pinSelectedTabs > .menu-icon {
+  content: url("chrome://browser/skin/zen-icons/pin.svg") !important;
+  visibility: visible !important;
+  --m3e-icon-bg: color-mix(in srgb, currentColor 10%, transparent);
+}
+#context_unpinTab > .menu-icon,
+#context_unpinSelectedTabs > .menu-icon {
+  content: url("chrome://browser/skin/zen-icons/unpin.svg") !important;
+  visibility: visible !important;
+  --m3e-icon-bg: color-mix(in srgb, currentColor 10%, transparent);
+}
+#context_unloadTab > .menu-icon,
+#context_zenUnloadTab > .menu-icon,
+#context_unloadSelectedTabs > .menu-icon {
+  content: url("chrome://browser/skin/zen-icons/moon-stars.svg") !important;
+  visibility: visible !important;
+  --m3e-icon-bg: color-mix(in srgb, currentColor 10%, transparent);
+}
+#context_duplicateTab > .menu-icon,
+#context_duplicateTabs > .menu-icon {
+  content: url("chrome://browser/skin/zen-icons/duplicate-tab.svg") !important;
+  visibility: visible !important;
+  --m3e-icon-bg: color-mix(in srgb, currentColor 10%, transparent);
+}
+#context_bookmarkTab > .menu-icon,
+#context_bookmarkSelectedTabs > .menu-icon,
+#context-bookmarklink > .menu-icon,
+#context-bookmarkpage > .menu-icon {
+  content: url("chrome://browser/skin/zen-icons/bookmark-hollow.svg") !important;
+  visibility: visible !important;
+  --m3e-icon-bg: color-mix(in srgb, currentColor 10%, transparent);
+}
+#context_moveTabOptions > .menu-icon {
+  content: url("chrome://browser/skin/zen-icons/move-cursor.svg") !important;
+  visibility: visible !important;
+  --m3e-icon-bg: color-mix(in srgb, currentColor 10%, transparent);
+}
+#context_reopenInContainer > .menu-icon,
+#context-openlinkinusercontext-menu > .menu-icon {
+  content: url("chrome://browser/skin/zen-icons/container-tab.svg") !important;
+  visibility: visible !important;
+  --m3e-icon-bg: color-mix(in srgb, currentColor 10%, transparent);
+}
+#context_selectAllTabs > .menu-icon {
+  content: url("chrome://browser/skin/zen-icons/tab.svg") !important;
+  visibility: visible !important;
+  --m3e-icon-bg: color-mix(in srgb, currentColor 10%, transparent);
+}
+#context_closeTab > .menu-icon,
+#context_closeSelectedTabs > .menu-icon {
+  content: url("chrome://browser/skin/zen-icons/close.svg") !important;
+  visibility: visible !important;
+  --m3e-icon-bg: color-mix(in srgb, currentColor 10%, transparent);
+}
+#context_closeTabOptions > .menu-icon,
+#context_closeDuplicateTabs > .menu-icon,
+#context-delete > .menu-icon {
+  content: url("chrome://browser/skin/zen-icons/trash.svg") !important;
+  visibility: visible !important;
+  --m3e-icon-bg: color-mix(in srgb, currentColor 10%, transparent);
+}
+#context_undoCloseTab > .menu-icon {
+  content: url("chrome://browser/skin/zen-icons/u-turn-to-left.svg") !important;
+  visibility: visible !important;
+  --m3e-icon-bg: color-mix(in srgb, currentColor 10%, transparent);
+}
+#context_sendTabToDevice > .menu-icon,
+#context-sendpagetodevice > .menu-icon,
+#context-sendlinktodevice > .menu-icon {
+  content: url("chrome://browser/skin/zen-icons/send-to-device.svg") !important;
+  visibility: visible !important;
+  --m3e-icon-bg: color-mix(in srgb, currentColor 10%, transparent);
+}
+#context_shareTabURL > .menu-icon,
+#context-sharepage > .menu-icon {
+  content: url("chrome://browser/skin/zen-icons/share.svg") !important;
+  visibility: visible !important;
+  --m3e-icon-bg: color-mix(in srgb, currentColor 10%, transparent);
+}
+#context_zen-reset-pinned-tab > .menu-icon {
+  content: url("chrome://browser/skin/zen-icons/arrow-rotate-anticlockwise.svg") !important;
+  visibility: visible !important;
+  --m3e-icon-bg: color-mix(in srgb, currentColor 10%, transparent);
+}
+#context_zen-replace-pinned-url-with-current > .menu-icon,
+#context-copylink > .menu-icon,
+#context-stripOnShareLink > .menu-icon {
+  content: url("chrome://browser/skin/zen-icons/link.svg") !important;
+  visibility: visible !important;
+  --m3e-icon-bg: color-mix(in srgb, currentColor 10%, transparent);
+}
+#context_openTabInWindow > .menu-icon,
+#context-openlink > .menu-icon {
+  content: url("chrome://browser/skin/zen-icons/window.svg") !important;
+  visibility: visible !important;
+  --m3e-icon-bg: color-mix(in srgb, currentColor 10%, transparent);
+}
+#context-openlinkprivate > .menu-icon {
+  content: url("chrome://browser/skin/zen-icons/private-window-small.svg") !important;
+  visibility: visible !important;
+  --m3e-icon-bg: color-mix(in srgb, currentColor 10%, transparent);
+}
+#context-savelink > .menu-icon,
+#context-savepage > .menu-icon,
+#context-saveimage > .menu-icon,
+#context-savevideo > .menu-icon,
+#context-saveaudio > .menu-icon {
+  content: url("chrome://browser/skin/zen-icons/save.svg") !important;
+  visibility: visible !important;
+  --m3e-icon-bg: color-mix(in srgb, currentColor 10%, transparent);
+}
+#context-copy > .menu-icon,
+#context-copyimage-contents > .menu-icon,
+#context-copyimage > .menu-icon,
+#context-copyvideourl > .menu-icon,
+#context-copyaudiourl > .menu-icon {
+  content: url("chrome://browser/skin/zen-icons/edit-copy.svg") !important;
+  visibility: visible !important;
+  --m3e-icon-bg: color-mix(in srgb, currentColor 10%, transparent);
+}
+#context-cut > .menu-icon {
+  content: url("chrome://browser/skin/zen-icons/edit-cut.svg") !important;
+  visibility: visible !important;
+  --m3e-icon-bg: color-mix(in srgb, currentColor 10%, transparent);
+}
+#context-paste > .menu-icon,
+#context-paste-no-formatting > .menu-icon {
+  content: url("chrome://browser/skin/zen-icons/edit-paste.svg") !important;
+  visibility: visible !important;
+  --m3e-icon-bg: color-mix(in srgb, currentColor 10%, transparent);
+}
+#context-searchselect > .menu-icon,
+#context-searchselect-private > .menu-icon,
+#context-keywordfield > .menu-icon {
+  content: url("chrome://browser/skin/zen-icons/search-glass.svg") !important;
+  visibility: visible !important;
+  --m3e-icon-bg: color-mix(in srgb, currentColor 10%, transparent);
+}
+#context-viewsource > .menu-icon,
+#context-viewpartialsource-selection > .menu-icon {
+  content: url("chrome://browser/skin/zen-icons/brackets-curly.svg") !important;
+  visibility: visible !important;
+  --m3e-icon-bg: color-mix(in srgb, currentColor 10%, transparent);
+}
+#context-inspect > .menu-icon,
+#context-inspect-a11y > .menu-icon {
+  content: url("chrome://browser/skin/zen-icons/developer.svg") !important;
+  visibility: visible !important;
+  --m3e-icon-bg: color-mix(in srgb, currentColor 10%, transparent);
+}
+#context-print-selection > .menu-icon {
+  content: url("chrome://browser/skin/zen-icons/print.svg") !important;
+  visibility: visible !important;
+  --m3e-icon-bg: color-mix(in srgb, currentColor 10%, transparent);
+}
+#context-take-screenshot > .menu-icon {
+  content: url("chrome://browser/skin/zen-icons/screenshot.svg") !important;
+  visibility: visible !important;
+  --m3e-icon-bg: color-mix(in srgb, currentColor 10%, transparent);
+}
+#context-translate-selection > .menu-icon,
+#context-translate-full-page > .menu-icon {
+  content: url("chrome://browser/skin/zen-icons/translations.svg") !important;
+  visibility: visible !important;
+  --m3e-icon-bg: color-mix(in srgb, currentColor 10%, transparent);
+}
+#context-viewimage > .menu-icon,
+#context-viewvideo > .menu-icon,
+#context-openlinkincurrent > .menu-icon {
+  content: url("chrome://browser/skin/zen-icons/open.svg") !important;
+  visibility: visible !important;
+  --m3e-icon-bg: color-mix(in srgb, currentColor 10%, transparent);
+}
+#context-sendimage > .menu-icon,
+#context-sendvideo > .menu-icon,
+#context-sendaudio > .menu-icon {
+  content: url("chrome://browser/skin/zen-icons/mail.svg") !important;
+  visibility: visible !important;
+  --m3e-icon-bg: color-mix(in srgb, currentColor 10%, transparent);
+}
+#context-setDesktopBackground > .menu-icon {
+  content: url("chrome://browser/skin/zen-icons/screen.svg") !important;
+  visibility: visible !important;
+  --m3e-icon-bg: color-mix(in srgb, currentColor 10%, transparent);
+}
+#context-spell-check-enabled > .menu-icon {
+  content: url("chrome://browser/skin/zen-icons/spell-check.svg") !important;
+  visibility: visible !important;
+  --m3e-icon-bg: color-mix(in srgb, currentColor 10%, transparent);
+}
+#context-ask-chat > .menu-icon {
+  content: url("chrome://browser/skin/zen-icons/sparkles.svg") !important;
+  visibility: visible !important;
+  --m3e-icon-bg: color-mix(in srgb, currentColor 10%, transparent);
+}
+#context-viewinfo > .menu-icon,
+#context-viewimageinfo > .menu-icon {
+  content: url("chrome://browser/skin/zen-icons/reader-mode.svg") !important;
+  visibility: visible !important;
+  --m3e-icon-bg: color-mix(in srgb, currentColor 10%, transparent);
+}
+#context-selectall > .menu-icon {
+  content: url("chrome://browser/skin/zen-icons/text-size.svg") !important;
+  visibility: visible !important;
+  --m3e-icon-bg: color-mix(in srgb, currentColor 10%, transparent);
+}
+#context-back > .menu-icon {
+  content: url("chrome://browser/skin/zen-icons/back.svg") !important;
+  visibility: visible !important;
+  --m3e-icon-bg: color-mix(in srgb, currentColor 10%, transparent);
+}
+#context-forward > .menu-icon {
+  content: url("chrome://browser/skin/zen-icons/forward.svg") !important;
+  visibility: visible !important;
+  --m3e-icon-bg: color-mix(in srgb, currentColor 10%, transparent);
+}
+#context-zen-customize > .menu-icon {
+  content: url("chrome://browser/skin/zen-icons/settings.svg") !important;
+  visibility: visible !important;
+  --m3e-icon-bg: color-mix(in srgb, currentColor 10%, transparent);
 }

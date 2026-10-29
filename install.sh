@@ -127,6 +127,17 @@ else
 fi
 edit_mods_json add
 
+# Google Sans Flex next to chrome.css: Gecko only honours the variable axes
+# (font-variation-settings) for a face loaded through @font-face.
+font="$(fc-list --format '%{file}\n' 'Google Sans Flex' 2>/dev/null | grep -i 'GoogleSansFlex-VariableFont' | head -1)"
+if [[ -n "$font" ]]; then
+    mkdir -p "$target/fonts"
+    cp -f "$font" "$target/fonts/GoogleSansFlex.ttf"
+    echo "font: $font"
+else
+    echo "warning: Google Sans Flex (variable) not found; expressive axes fall back to plain weights." >&2
+fi
+
 if ((matugen)); then
     add_matugen_block
     render_now

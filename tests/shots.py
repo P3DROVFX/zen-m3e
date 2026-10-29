@@ -67,6 +67,11 @@ def setup():
         await new Promise(r => setTimeout(r, 800));
         const tabs = gBrowser.tabs.filter(t => !t.pinned);
         gBrowser.pinTab(tabs[1]);
+        const pins = ['Figma', 'Pinterest', 'Android', 'Docs'].map(t => gBrowser.addTab(page(t, '#eee'), { triggeringPrincipal: sys }));
+        for (const t of pins) gBrowser.pinTab(t);
+        for (let i = 0; i < 12; i++) gBrowser.addTab(page('Reading list ' + i, '#ddd'), { triggeringPrincipal: sys });
+        await new Promise(r => setTimeout(r, 600));
+        try { await gZenFolders.createFolder(pins, { label: 'Design Quickshell', renameFolder: false }); } catch {}
         gBrowser.selectedTab = tabs[3];
         const now = Date.now() * 1000;
         const visits = [['https://github.com/', 'GitHub'], ['https://github.com/P3DROVFX/zen-m3e', 'P3DROVFX/zen-m3e'],
@@ -83,6 +88,12 @@ def setup():
 def sidebar():
     close_all()
     grab("sidebar")
+
+
+def sidebar_top():
+    close_all()
+    js("for (const b of document.querySelectorAll('.workspace-arrowscrollbox')) b.scrollbox.scrollTop = 0;")
+    grab("sidebar-top")
 
 
 def urlbar(text=""):
@@ -143,7 +154,7 @@ def light():
 
 
 SCENE_FNS = {
-    "setup": setup, "sidebar": sidebar, "urlbar": urlbar,
+    "setup": setup, "sidebar": sidebar, "sidebar-top": sidebar_top, "urlbar": urlbar,
     "urlbar-typing": lambda: urlbar("git"), "context": context, "appmenu": appmenu, "light": light,
 }
 

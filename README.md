@@ -8,33 +8,40 @@ and motion uses the M3E spring curves.
 It is the browser half of the ii shell's design language: same tokens, same surface
 ladder, same curves (`Appearance.animationCurves`), same rules (`docs/design.md`).
 
-| Dark | Light |
-|---|---|
-| ![search overlay, dark](docs/screenshots/urlbar-dark.png) | ![search overlay, light](docs/screenshots/urlbar-light.png) |
-| ![sidebar and menu](docs/screenshots/context-dark.png) | ![sidebar, light](docs/screenshots/sidebar-light.png) |
+![search overlay](docs/screenshots/urlbar-dark.png)
+
+| Sidebar | Menu | Light |
+|---|---|---|
+| ![sidebar](docs/screenshots/sidebar-dark.png) | ![context menu](docs/screenshots/context-dark.png) | ![sidebar, light](docs/screenshots/sidebar-light.png) |
 
 ## What it themes
 
 - **Sidebar** — tabs as one grouped shape per section (joins 5 px, outer corners 23 px);
-  the current tab becomes a primary pill and its neighbours round towards it. Essentials
-  are pills at rest and rounded squares when current. The space header uses the wide
-  display face (`wdth 128`, `wght 760`) with its icon in a cookie that morphs 9 → 12 sides
-  on hover. "New tab" is the dashed unselected chip; "create" is a small FAB.
+  the current tab becomes a primary pill, its label gains weight, and its neighbours
+  round towards it. The space header and each folder are panes on their own surface; the
+  space name uses the wide display face (`wdth 140`, `wght 840`) next to its mark in a
+  cookie that morphs 9 → 12 sides. Pinned tiles and essentials are shape-is-state. The
+  list fades at its top/bottom edges while there is more to scroll (no divider lines).
+  "New tab" is the dashed unselected chip; "create" is a small FAB.
 - **Search overlay** (floating URL bar) — a sheet with a Clover-4 badge that morphs into
   Sunny while you type, the query in a filled pill, the first result as a **top result**
-  hero card (primary container, caption, big title, an "Open ↵" pill that springs in, a
-  clipped scallop ornament), group headings in the wide face, favicon tiles, pill
-  selection, engine chips. The overlay springs in; the first reveal staggers its rows.
-- **Menus** — one rounded container, items morph to a pill when active, separators are
-  gaps, open submenus stay lit in the tertiary voice, content springs from the anchor.
-- **Panels** — app menu, extensions, site info: same item morph, title-face headers,
-  connected zoom button group, dashed secondary / filled primary buttons.
+  hero card (primary container, caption, title, an "Open ↵" pill that springs in, a
+  clipped scallop ornament); the other results are a grouped list with the shell's
+  dynamic radius (joins, outer corners, the current row as a pill with neighbours rounding
+  in). Group headings in the wide face, favicon tiles, condensed urls, engine chips.
+- **Menus and the app menu** — the shell's menu: every item its own rounded row with a
+  gap, the icon in a circular badge (Zen's icon set mapped onto context-menu items),
+  wider gaps between groups, active rows fill and round further, content springs in.
 - **Also** — tooltips (inverse surface), find bar, toasts as snackbars, notifications,
   glance and split view, scrollbars, focus rings.
 
 ## Install
 
 Requirements: Zen with Sine, `matugen` ≥ 4, the Google Sans Flex variable font.
+
+The installer copies the font into the mod (`fonts/`): Gecko ignores
+`font-variation-settings` in the browser UI for a font that only comes from the system,
+so the width/weight axes need the `@font-face` the mod declares.
 
 ```sh
 git clone https://github.com/P3DROVFX/zen-m3e ~/Projects/zen-m3e

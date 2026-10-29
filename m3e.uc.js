@@ -6,6 +6,8 @@
 //    shell), it is loaded into the window as an author sheet at once, instead of on the
 //    next restart. A stat every few seconds, skipped while the window is hidden.
 //  * Popup motion: popups get [m3e-open] while open so their content can spring in.
+//  * Scroll edges: the tab list gets [m3e-at-start]/[m3e-at-end]/[m3e-scrolled] so its
+//    edges fade only where there is something hidden (the shell's top/bottom gradient).
 
 (() => {
   "use strict";
@@ -77,6 +79,43 @@
   const onPopupShowing = (e) => isPopup(e.target) && e.target.setAttribute("m3e-open", "");
   const onPopupHidden = (e) => isPopup(e.target) && e.target.removeAttribute("m3e-open");
 
+  // Scroll edges of the spaces' tab lists. One rAF per burst of scroll events, and an
+  // attribute write only when a state flips.
+  const EDGE = 2;
+  let edgeFrame = 0;
+  const pendingEdges = new Set();
+
+  function updateEdges(box) {
+    const sb = box.scrollbox;
+    if (!sb) return;
+    const top = sb.scrollTop <= EDGE;
+    const end = sb.scrollTop + sb.clientHeight >= sb.scrollHeight - EDGE;
+    box.toggleAttribute("m3e-at-start", top);
+    box.toggleAttribute("m3e-at-end", end);
+    box.toggleAttribute("m3e-scrolled", true);
+  }
+
+  function queueEdges(box) {
+    if (!box?.classList?.contains("workspace-arrowscrollbox")) return;
+    pendingEdges.add(box);
+    if (edgeFrame) return;
+    edgeFrame = requestAnimationFrame(() => {
+      edgeFrame = 0;
+      for (const b of pendingEdges) updateEdges(b);
+      pendingEdges.clear();
+    });
+  }
+
+  const onScroll = (e) => queueEdges(e.target);
+  const onOverflow = (e) => queueEdges(e.target);
+  // Tab changes scroll the list programmatically (sometimes after a smooth scroll), so
+  // re-check once things settle.
+  const onTabsChanged = () => {
+    setTimeout(() => {
+      for (const b of document.querySelectorAll(".workspace-arrowscrollbox")) queueEdges(b);
+    }, 400);
+  };
+
   const prefObserver = { observe: () => { lastMtime = -2; refresh(); } };
 
   function init() {
@@ -86,6 +125,14 @@
     });
     window.addEventListener("popupshowing", onPopupShowing, true);
     window.addEventListener("popuphidden", onPopupHidden, true);
+    window.addEventListener("scroll", onScroll, { capture: true, passive: true });
+    window.addEventListener("overflow", onOverflow, true);
+    window.addEventListener("underflow", onOverflow, true);
+    window.addEventListener("scrollend", onScroll, { capture: true, passive: true });
+    for (const type of ["TabSelect", "TabOpen", "TabClose", "TabPinned", "TabUnpinned", "ZenWorkspaceChanged"]) {
+      window.addEventListener(type, onTabsChanged);
+    }
+    onTabsChanged();
     Services.prefs.addObserver(PREF_PATH, prefObserver);
     window.addEventListener("unload", () => {
       clearTimeout(timer);

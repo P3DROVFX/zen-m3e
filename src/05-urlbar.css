@@ -1,8 +1,9 @@
 /*
  * URL bar. Docked: a filled pill in the sidebar. Floating (the search overlay): a sheet
- * with a shape badge that morphs while you type, a "top result" hero card in primary
- * container with a clipped ornament, group headings in the wide display face, favicon
- * tiles and pill selection. The overlay springs in; the first reveal staggers its rows.
+ * with a shape badge that morphs while you type, a compact "top result" hero in primary
+ * container with a clipped ornament, and the other results as a grouped list with the
+ * shell's dynamic radius (joins, outer corners, a pill for the current row with its
+ * neighbours rounding in). Group headings in the wide display face.
  */
 
 /* ---------- Docked ---------- */
@@ -12,8 +13,8 @@
     border: none !important;
     outline: none !important;
     box-shadow: none !important;
-    border-radius: var(--m3e-r-full) !important;
-    transition: background-color var(--m3e-d-effects) var(--m3e-effects), border-radius var(--m3e-d-fast) var(--m3e-spatial-fast) !important;
+    border-radius: 20px !important;
+    transition: var(--m3e-color-motion), var(--m3e-shape-motion) !important;
   }
   &:hover > .urlbar-background {
     background: color-mix(in srgb, var(--m3-on-surface) 6%, var(--m3-surface-container-highest)) !important;
@@ -24,7 +25,7 @@
     outline-offset: -2px !important;
   }
   & .urlbar-input {
-    font-variation-settings: "ROND" 100, "wght" 500 !important;
+    font-variation-settings: var(--m3e-type-label) !important;
   }
 }
 
@@ -43,11 +44,14 @@
 #urlbar-zoom-button {
   background: var(--m3-secondary-container) !important;
   color: var(--m3-on-secondary-container) !important;
+  font-variation-settings: var(--m3e-type-condensed) !important;
 }
 
 /* ---------- Floating: the search overlay ---------- */
 #urlbar[breakout-extend] {
   --m3e-overlay-pad: 10px;
+  --m3e-row-inline: 10px;     /* shared start padding: hero and rows line up */
+  --m3e-row-icon: 36px;
   --urlbar-height: 56px !important;
 
   & > .urlbar-background {
@@ -76,7 +80,7 @@
   }
   & .urlbar-input {
     font-size: 17px !important;
-    font-variation-settings: "ROND" 100, "wght" 500 !important;
+    font-variation-settings: var(--m3e-type-input) !important;
     color: var(--m3-on-surface) !important;
   }
 
@@ -91,7 +95,7 @@
     background: var(--m3-primary) !important;
     border-radius: 0 !important;
     clip-path: var(--m3e-shape-clover-4);
-    transition: clip-path var(--m3e-d) var(--m3e-spatial), background-color var(--m3e-d-effects) var(--m3e-effects) !important;
+    transition: clip-path var(--m3e-d) var(--m3e-spatial), var(--m3e-color-motion) !important;
   }
   & #identity-icon {
     fill: var(--m3-on-primary) !important;
@@ -115,7 +119,6 @@
   }
 }
 
-/* Spring in when the overlay opens. */
 @keyframes m3e-overlay-in {
   from { opacity: 0; transform: translateY(-10px) scale(0.94); }
   to { opacity: 1; transform: none; }
@@ -129,30 +132,28 @@
 #urlbar .urlbarView {
   border: none !important;
 }
-#urlbar[breakout-extend] .urlbarView-body-outer {
-  padding-inline: 2px !important;
-}
 #urlbar .urlbarView-body-inner {
   border-top: none !important;
 }
+#urlbar[breakout-extend] .urlbarView-body-outer {
+  padding-inline: 2px !important;
+}
 #urlbar-results {
-  padding-block: 2px 8px !important;
+  padding-block: 0 8px !important;
 }
 
 .urlbarView-row {
-  border-radius: var(--m3e-r-md) !important;
   padding-block: 0 !important;
-  margin-block: 1px !important;
+  margin-block: 0 !important;
   border: none !important;
   outline: none !important;
   box-shadow: none !important;
-  transition: border-radius var(--m3e-d) var(--m3e-spatial), background-color var(--m3e-d-effects) var(--m3e-effects) !important;
 
   & > .urlbarView-row-inner {
     box-sizing: border-box !important;
     min-height: 48px !important;
     padding-block: 6px !important;
-    padding-inline: 8px 14px !important;
+    padding-inline: var(--m3e-row-inline, 10px) 14px !important;
     border-radius: inherit !important;
     background: transparent !important;
     align-items: center !important;
@@ -160,135 +161,176 @@
     color: inherit !important;
   }
 
-  & :is(.urlbarView-title, .urlbarView-url) strong {
-    color: inherit !important;
-    font-variation-settings: "ROND" 100, "wght" 760 !important;
-  }
-
-  &:not([selected]):hover {
-    background: color-mix(in srgb, var(--m3-on-surface) var(--m3e-tint-idle), transparent) !important;
-  }
-
-  &[selected] {
-    background: var(--m3-secondary-container) !important;
-    color: var(--m3-on-secondary-container) !important;
-    border-radius: var(--m3e-r-full) !important;
-    & :is(.urlbarView-url, .urlbarView-action, .urlbarView-title-separator) {
-      color: var(--m3-on-secondary-container) !important;
-    }
-  }
-
-  /* Favicon in a rounded-square tile. */
   & .urlbarView-no-wrap {
     position: static !important;
+    align-items: center !important;
   }
 
+  /* Favicon in a rounded-square tile; same size in every row so text columns align. */
   & .urlbarView-favicon {
     box-sizing: border-box !important;
-    width: 32px !important;
-    height: 32px !important;
-    padding: 8px !important;
-    margin-inline-end: 12px !important;
-    border-radius: 10px !important;
-    background-color: var(--m3-surface-container-highest) !important;
+    width: var(--m3e-row-icon, 36px) !important;
+    height: var(--m3e-row-icon, 36px) !important;
+    min-width: var(--m3e-row-icon, 36px) !important;
+    padding: 10px !important;
+    margin-inline: 0 12px !important;
+    border-radius: var(--m3e-r-sm) !important;
+    background-color: color-mix(in srgb, var(--m3-on-surface) 7%, transparent) !important;
     fill: var(--m3-on-surface-variant) !important;
     -moz-context-properties: fill, fill-opacity !important;
+  }
+  & .urlbarView-type-icon {
+    margin-inline-start: calc(var(--m3e-row-icon, 36px) - 12px) !important;
   }
 
   & .urlbarView-title {
     font-size: 14px !important;
-    font-variation-settings: "ROND" 100, "wght" 550 !important;
+    font-variation-settings: var(--m3e-type-label) !important;
   }
-  & .urlbarView-url {
-    font-size: 12px !important;
+  & :is(.urlbarView-title, .urlbarView-url) strong {
+    color: inherit !important;
+    font-variation-settings: var(--m3e-type-strong) !important;
+  }
+  /* Secondary text: condensed, so it contrasts with the title by width, not just size. */
+  & .urlbarView-url,
+  & .urlbarView-action {
+    font-size: 12.5px !important;
+    font-variation-settings: var(--m3e-type-condensed) !important;
     color: var(--m3-on-surface-variant) !important;
   }
-  & .urlbarView-action,
   & .urlbarView-title-separator {
     color: var(--m3-on-surface-variant) !important;
+    opacity: 0.6;
   }
 }
 
-/* Group headings ("Firefox Suggest", "Search suggestions"): the wide display face. */
+/* ---------- Grouped list: every row after the hero ---------- */
+#urlbar[breakout-extend] #urlbar-results > .urlbarView-row:not(:first-child) {
+  margin-block-start: 2px !important;
+  background: var(--m3e-row-on-sheet) !important;
+  border-radius: var(--res-r-top, var(--m3e-r-join)) var(--res-r-top, var(--m3e-r-join))
+                 var(--res-r-bottom, var(--m3e-r-join)) var(--res-r-bottom, var(--m3e-r-join)) !important;
+  transition: border-radius var(--m3e-d) var(--m3e-morph), var(--m3e-color-motion) !important;
+
+  &:hover:not([selected]) {
+    background: color-mix(in srgb, var(--m3-on-surface) 7%, var(--m3e-row-on-sheet)) !important;
+  }
+
+  /* Group edges: after the hero, at each heading, and at the end. */
+  &:nth-child(2),
+  &[label] {
+    --res-r-top: var(--m3e-r-lg);
+  }
+  &:last-child,
+  &:has(+ .urlbarView-row[label]) {
+    --res-r-bottom: var(--m3e-r-lg);
+  }
+  /* Neighbours of the current row round towards it. */
+  &:has(+ .urlbarView-row[selected]) {
+    --res-r-bottom: var(--m3e-r-md);
+  }
+  &[selected] + .urlbarView-row {
+    --res-r-top: var(--m3e-r-md);
+  }
+
+  &[selected] {
+    --res-r-top: 24px;
+    --res-r-bottom: 24px;
+    background: var(--m3-secondary-container) !important;
+    color: var(--m3-on-secondary-container) !important;
+    & :is(.urlbarView-url, .urlbarView-action, .urlbarView-title-separator) {
+      color: var(--m3-on-secondary-container) !important;
+    }
+    & .urlbarView-favicon {
+      background-color: color-mix(in srgb, var(--m3-on-secondary-container) 12%, transparent) !important;
+      fill: var(--m3-on-secondary-container) !important;
+    }
+    & .urlbarView-title {
+      font-variation-settings: var(--m3e-type-strong) !important;
+    }
+  }
+
+  /* A heading starts a new group: leave room for its label above the row. */
+  &[label] {
+    margin-block-start: calc(1.6em + 14px) !important;
+  }
+}
+
 .urlbarView-row[label]::before {
   font-size: 15px !important;
-  font-variation-settings: "ROND" 100, "wght" 760, "wdth" 128 !important;
+  font-variation-settings: var(--m3e-type-display) !important;
   color: var(--m3-on-surface) !important;
   opacity: 1 !important;
-  padding-inline-start: 10px !important;
-  margin-block-start: 6px;
+  padding-inline-start: 6px !important;
 }
 
 /* ---------- Hero: the first result, in primary container ---------- */
 #urlbar[breakout-extend] #urlbar-results > .urlbarView-row:first-child:not([label]) {
   position: relative;
   overflow: clip;
-  margin-block-end: 8px;
-  border-radius: var(--m3e-r-xl) !important;
+  margin-block: 0 8px !important;
+  border-radius: var(--m3e-r-lg) !important;
   background: var(--m3-primary-container) !important;
   color: var(--m3-on-primary-container) !important;
 
   & > .urlbarView-row-inner {
-    min-height: 84px !important;
-    padding: 14px 16px !important;
-    flex-wrap: wrap !important;
-    align-content: center !important;
+    min-height: 64px !important;
+    padding-block: 10px !important;
+    padding-inline-end: 112px !important;   /* room for the action pill */
     position: relative;
     z-index: 1;
   }
 
-  /* Caption over the value (forms vocabulary): small, bold, tracked. */
-  & > .urlbarView-row-inner::before {
-    content: "Top result";
-    flex-basis: 100%;
-    order: -1;
-    padding-inline-start: 50px;
-    margin-block-end: 1px;
-    font-size: 10.5px;
-    text-transform: uppercase;
-    letter-spacing: 0.09em;
-    font-variation-settings: "ROND" 100, "wght" 760;
-    opacity: 0.8;
-  }
-
-  & .urlbarView-favicon {
-    width: 38px !important;
-    height: 38px !important;
-    padding: 10px !important;
-    border-radius: var(--m3e-r-sm) !important;
-    background-color: color-mix(in srgb, var(--m3-on-primary-container) 12%, transparent) !important;
-    fill: var(--m3-on-primary-container) !important;
+  /* Title column: the caption over the value (forms vocabulary). */
+  & .urlbarView-no-wrap {
+    flex: 1 1 auto;
+    min-width: 0;
   }
   & .urlbarView-title {
-    font-size: 20px !important;
-    font-variation-settings: "ROND" 100, "wght" 720, "wdth" 100 !important;
+    font-size: 19px !important;
+    line-height: 1.2 !important;
+    font-variation-settings: var(--m3e-type-title) !important;
     color: var(--m3-on-primary-container) !important;
   }
-  & .urlbarView-title-separator {
+  & .urlbarView-title::before {
+    content: "Top result";
+    display: block;
+    font-size: 10px;
+    line-height: 1.4;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-variation-settings: var(--m3e-type-caption);
+    opacity: 0.78;
+  }
+  & .urlbarView-favicon {
+    background-color: color-mix(in srgb, var(--m3-on-primary-container) 13%, transparent) !important;
+    fill: var(--m3-on-primary-container) !important;
+  }
+  & :is(.urlbarView-title-separator, .urlbarView-url, .urlbarView-tags) {
     display: none !important;
-  }
-  & :is(.urlbarView-url, .urlbarView-action) {
-    color: var(--m3-on-primary-container) !important;
   }
 
   /* Action as the "Open ↵" pill on the right; it springs in when the hero is current. */
   & .urlbarView-action {
     position: absolute !important;
-    inset-inline-end: 14px;
+    inset-inline-end: 12px;
     inset-block: 0;
     height: max-content;
     margin-block: auto !important;
     margin-inline: 0 !important;
-    padding: 10px 18px !important;
+    padding: 9px 16px !important;
     border-radius: var(--m3e-r-full) !important;
     background: var(--m3-primary) !important;
     color: var(--m3-on-primary) !important;
-    font-size: 14px !important;
-    font-variation-settings: "ROND" 100, "wght" 650 !important;
+    font-size: 13.5px !important;
+    font-variation-settings: var(--m3e-type-strong) !important;
     transform: none !important;
     opacity: 0;
     scale: 0.7;
     transition: opacity var(--m3e-d-effects) var(--m3e-effects), scale var(--m3e-d-fast) var(--m3e-spatial-fast) !important;
+  }
+  & .urlbarView-action:empty::before {
+    content: "Open";
   }
   & .urlbarView-action::after {
     content: "  \21B5";
@@ -302,10 +344,10 @@
   &::after {
     content: "";
     position: absolute;
-    inset-inline-end: -46px;
+    inset-inline-end: -42px;
     top: 50%;
-    width: 190px;
-    height: 190px;
+    width: 150px;
+    height: 150px;
     translate: 0 -50%;
     background: var(--m3-on-primary-container);
     opacity: 0.09;
@@ -314,7 +356,6 @@
   }
 
   &[selected] {
-    border-radius: var(--m3e-r-xl) !important;
     background: var(--m3-primary-container) !important;
   }
 }
@@ -340,21 +381,21 @@
   padding: 4px 6px 10px !important;
 }
 #urlbar .search-panel-one-offs-header-label {
-  font-size: 11px !important;
-  font-variation-settings: "ROND" 100, "wght" 700 !important;
+  font-size: 10.5px !important;
+  font-variation-settings: var(--m3e-type-caption) !important;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.1em;
   color: var(--m3-on-surface-variant) !important;
 }
 #urlbar .searchbar-engine-one-off-item {
   min-width: 40px !important;
   height: 32px !important;
-  border-radius: var(--m3e-r-full) !important;
+  border-radius: 16px !important;
   background: var(--m3e-field) !important;
   margin-inline-end: 4px !important;
-  transition: background-color var(--m3e-d-effects) var(--m3e-effects), border-radius var(--m3e-d-fast) var(--m3e-spatial-fast) !important;
+  transition: var(--m3e-color-motion), var(--m3e-shape-motion) !important;
   &:hover {
-    border-radius: var(--m3e-r-sm) !important;
+    border-radius: 10px !important;
     background: color-mix(in srgb, var(--m3-on-surface) 10%, var(--m3-surface-container-highest)) !important;
   }
   &[selected] {
@@ -363,7 +404,6 @@
   }
 }
 
-/* Result buttons (dismiss, menu) — tinted with the row's content colour. */
 .urlbarView-button {
   border-radius: var(--m3e-r-full) !important;
   &:hover {
@@ -371,7 +411,6 @@
   }
 }
 
-/* Search mode chip ("Bookmarks", "History", an engine). */
 #urlbar-search-mode-indicator,
 #urlbar-label-box {
   border-radius: var(--m3e-r-full) !important;
@@ -379,5 +418,5 @@
   color: var(--m3-on-tertiary-container) !important;
   border: none !important;
   outline: none !important;
-  font-variation-settings: "ROND" 100, "wght" 650 !important;
+  font-variation-settings: var(--m3e-type-strong) !important;
 }

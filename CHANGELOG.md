@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.2.0 — 2026-10-29
+
+- Type: Google Sans Flex through `@font-face` so the variable axes actually apply; type
+  roles (display, title, strong, caption, condensed); selected tabs/results/menu rows gain
+  weight with an animated `wght`.
+- Corners no longer flash square on hover: concrete pill radii and a soft morph curve.
+- Sidebar: space header and folders as panes; collapse chevron and "Clear" button gone;
+  tighter tab rows (2 px gap); pinned tile icons centred; the tab list fades at its edges
+  while scrolling instead of drawing divider lines; update card opaque.
+- Search: compact hero (caption + title, no wrapping); results as a grouped list with the
+  shell's dynamic radius; hero and rows share one text column.
+- Menus and app menu in the shell's style: separate rows, icon badges (Zen icons mapped
+  onto context-menu items), group gaps.
+
 ## 0.1.0 — 2026-10-29
 
 First release.

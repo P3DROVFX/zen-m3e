@@ -2,6 +2,22 @@
  * Tokens: shape, motion, type and the surface ladder. Every other file reads these;
  * nothing below this file hard-codes a colour, radius or duration.
  */
+
+/*
+ * The variable font has to come in through @font-face: with the system (fontconfig)
+ * face Gecko ignores font-variation-settings in chrome, so every axis below would be a
+ * no-op. install.sh copies the font next to this file; the Fedora path is a fallback.
+ */
+@font-face {
+  font-family: "M3E Flex";
+  src:
+    url("fonts/GoogleSansFlex.ttf") format("truetype"),
+    url("file:///usr/share/fonts/google-sans-flex-vf-fonts/GoogleSansFlex-VariableFont_GRAD%2CROND%2Copsz%2Cslnt%2Cwdth%2Cwght.ttf") format("truetype");
+  font-weight: 1 1000;
+  font-stretch: 25% 151%;
+  font-style: normal;
+}
+
 :root {
   /* Shape scale (shell: small 12, normal 17, large 23, verylarge 32). */
   --m3e-r-xs: 4px;
@@ -9,7 +25,8 @@
   --m3e-r-md: 17px;
   --m3e-r-lg: 23px;
   --m3e-r-xl: 32px;
-  --m3e-r-full: 999px;
+  --m3e-r-full: 999px;        /* static pills only: never animate to or from it */
+  --m3e-r-pill: 22px;         /* animated pills: half of the tallest morphing control */
   --m3e-r-join: 5px;          /* joins inside a grouped list */
 
   /* Motion (shell Appearance.animationCurves). */
@@ -20,19 +37,28 @@
   --m3e-decel: cubic-bezier(0.05, 0.7, 0.1, 1);
   --m3e-accel: cubic-bezier(0.3, 0, 0.8, 0.15);
   --m3e-standard: cubic-bezier(0.2, 0, 0, 1);
+  /* Corner morphs: a soft spring. The spatial curves overshoot by up to 67 %, which on
+     a radius dips through 0 (a square flash) before settling. */
+  --m3e-morph: cubic-bezier(0.34, 1.24, 0.64, 1);
   --m3e-d-fast: 350ms;
   --m3e-d: 500ms;
   --m3e-d-slow: 650ms;
   --m3e-d-effects: 200ms;
   --m3e-d-enter: 400ms;
   --m3e-d-exit: 200ms;
+  --m3e-shape-motion: border-radius var(--m3e-d-fast) var(--m3e-morph);
+  --m3e-color-motion: background-color var(--m3e-d-effects) var(--m3e-effects), color var(--m3e-d-effects) var(--m3e-effects);
 
-  /* Type. Google Sans Flex axes: wght, wdth (25–151), ROND, opsz, GRAD, slnt. */
-  --m3e-font: "Google Sans Flex", "Google Sans", "Roboto Flex", system-ui, sans-serif;
-  --m3e-axes: "ROND" 100;
-  --m3e-axes-title: "ROND" 100, "wdth" 100;
-  --m3e-axes-display: "ROND" 100, "wdth" 128;   /* wide headings ("Applications") */
-  --m3e-axes-condensed: "ROND" 100, "wdth" 72;
+  /* Type. Every role names all three axes in the same order so weights interpolate. */
+  --m3e-font: "M3E Flex", "Google Sans Flex", "Google Sans", "Roboto Flex", system-ui, sans-serif;
+  --m3e-type-body: "wght" 440, "wdth" 100, "ROND" 100;
+  --m3e-type-label: "wght" 560, "wdth" 100, "ROND" 100;
+  --m3e-type-strong: "wght" 760, "wdth" 104, "ROND" 100;     /* selected / current */
+  --m3e-type-title: "wght" 780, "wdth" 100, "ROND" 100;      /* hero titles, folders */
+  --m3e-type-display: "wght" 840, "wdth" 140, "ROND" 100;    /* wide headings ("Applications") */
+  --m3e-type-caption: "wght" 820, "wdth" 118, "ROND" 100;    /* TOP RESULT, section captions */
+  --m3e-type-condensed: "wght" 600, "wdth" 74, "ROND" 100;   /* urls, shortcuts, counts */
+  --m3e-type-input: "wght" 580, "wdth" 100, "ROND" 100;
 
   /* Tinted actions on any surface (§2.3): 8 / 16 / 24 % of the content colour. */
   --m3e-tint-idle: 8%;
@@ -46,6 +72,8 @@
   --m3e-sheet: var(--m3-surface-container-high);
   --m3e-field: var(--m3-surface-container-highest);
   --m3e-popup: var(--m3-surface-container);
+  --m3e-row: var(--m3-surface-container-high);       /* rows on a popup */
+  --m3e-row-on-sheet: var(--m3-surface-container-highest);
 }
 
 /* Reduced motion: from the OS, or forced by the mod preference. */

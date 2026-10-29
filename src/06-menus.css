@@ -1,86 +1,122 @@
 /*
- * Context menus and menupopups. One rounded container, items that morph into a pill
- * when active, separators as gaps (no lines). Content springs in from the anchor side
- * (the popup window itself only fades on Linux, so we animate what's inside it).
+ * Menus in the shell's style: a large rounded container, every item its own rounded
+ * row on a raised surface with a gap between rows, the icon in a circular badge, groups
+ * split by a wider gap. Active rows fill with secondary container and round further.
+ * Content springs from the anchor side (on Linux the popup window itself only fades).
  */
 menupopup,
 panel:not([type="arrow"]) {
   --panel-background-color: var(--m3e-popup) !important;
   --panel-text-color: var(--m3-on-surface) !important;
   --panel-border-color: transparent !important;
-  --panel-border-radius: var(--m3e-r-lg) !important;
-  --panel-padding: 6px !important;
-  --panel-box-shadow: 0 8px 24px -6px color-mix(in srgb, var(--m3-shadow) 45%, transparent),
+  --panel-border-radius: 26px !important;
+  --panel-padding: 8px !important;
+  --panel-box-shadow: 0 10px 28px -6px color-mix(in srgb, var(--m3-shadow) 50%, transparent),
                       0 1px 4px color-mix(in srgb, var(--m3-shadow) 25%, transparent) !important;
   --panel-box-shadow-margin: 14px !important;
-  --menuitem-border-radius: var(--m3e-r-sm) !important;
-  --menuitem-padding-block: 9px !important;
-  --menuitem-padding-inline: 12px !important;
-  --menuitem-margin: 1px 0 !important;
+  --menuitem-border-radius: 16px !important;
+  --menuitem-padding-block: 0 !important;
+  --menuitem-padding-inline: 8px 14px !important;
+  --menuitem-margin: 0 !important;
   --menuitem-icon-fill: var(--m3-on-surface-variant) !important;
   --text-color-disabled: color-mix(in srgb, var(--m3-on-surface) 38%, transparent) !important;
+  --m3e-menu-row: 42px;
+  --m3e-menu-badge: 30px;
 }
 
 menupopup::part(content) {
-  min-width: 200px !important;
+  min-width: 220px !important;
 }
 
-/* Items: rounded square idle, pill when active. */
+/* ---------- Rows ---------- */
 menupopup > :is(menuitem, menu) {
-  border-radius: var(--m3e-r-sm) !important;
+  min-height: var(--m3e-menu-row) !important;
+  margin-block: 0 3px !important;
+  padding-inline: 6px 14px !important;
+  gap: 10px;
+  background: var(--m3e-row) !important;
+  border-radius: 16px !important;
   font-size: 13px !important;
-  font-variation-settings: "ROND" 100, "wght" 480 !important;
-  transition:
-    border-radius var(--m3e-d-fast) var(--m3e-spatial-fast),
-    background-color var(--m3e-d-effects) var(--m3e-effects) !important;
+  font-variation-settings: var(--m3e-type-label) !important;
+  transition: var(--m3e-shape-motion), var(--m3e-color-motion), font-variation-settings var(--m3e-d) var(--m3e-spatial) !important;
+
+  &:last-child { margin-block-end: 0 !important; }
 
   &[_moz-menuactive]:not([disabled]) {
     background-color: var(--m3-secondary-container) !important;
     color: var(--m3-on-secondary-container) !important;
     --menuitem-icon-fill: var(--m3-on-secondary-container) !important;
-    border-radius: var(--m3e-r-full) !important;
+    --m3e-icon-bg: color-mix(in srgb, var(--m3-on-secondary-container) 12%, transparent) !important;
+    border-radius: 21px !important;
+    font-variation-settings: var(--m3e-type-strong) !important;
   }
 
-  &[_moz-menuactive][disabled] {
-    background-color: transparent !important;
+  &[disabled] {
+    background: color-mix(in srgb, var(--m3e-row) 50%, transparent) !important;
   }
 
   /* An open submenu stays lit in the tertiary voice while you're inside it. */
   &:is(menu)[open] {
     background-color: var(--m3-tertiary-container) !important;
     color: var(--m3-on-tertiary-container) !important;
-    border-radius: var(--m3e-r-full) !important;
+    --menuitem-icon-fill: var(--m3-on-tertiary-container) !important;
+    border-radius: 21px !important;
+  }
+
+  & .menu-text {
+    margin-inline-start: 0 !important;
   }
 
   & .menu-accel,
   & .menu-accel-container {
     color: var(--m3-on-surface-variant) !important;
-    font-size: 11px !important;
-    font-variation-settings: "ROND" 100, "wght" 600, "wdth" 90 !important;
+    font-size: 11.5px !important;
+    font-variation-settings: var(--m3e-type-condensed) !important;
     opacity: 0.85;
   }
 
-  & .menu-icon {
+  /* Icon badge: a circle tinted with the row's content colour. Rows without an icon keep
+     an empty slot so every label starts on the same column (08-menu-icons.css fills it). */
+  & > .menu-icon {
+    display: flex !important;
+    box-sizing: border-box !important;
+    width: var(--m3e-menu-badge) !important;
+    height: var(--m3e-menu-badge) !important;
+    min-width: var(--m3e-menu-badge) !important;
+    padding: 7px !important;
+    margin: 0 !important;
+    border-radius: var(--m3e-r-full) !important;
+    background-color: var(--m3e-icon-bg, transparent) !important;
     -moz-context-properties: fill, fill-opacity !important;
     fill: var(--menuitem-icon-fill) !important;
+    fill-opacity: 1 !important;
+    transition: var(--m3e-color-motion) !important;
+  }
+
+  & .menu-right {
+    fill: currentColor !important;
+    opacity: 0.8;
   }
 }
 
-/* Checked items: the check sits in a tertiary dot. */
-menupopup > menuitem:is([type="checkbox"], [type="radio"])[checked] .menu-icon {
+/* Native icons (bookmarks, favicons, extensions) sit in the same badge. */
+menupopup > :is(menuitem, menu):is(.menuitem-iconic, .menu-iconic, [image]) {
+  --m3e-icon-bg: color-mix(in srgb, var(--m3-on-surface) 8%, transparent);
+}
+
+/* Checked items: the badge fills with tertiary and shows the check. */
+menupopup > menuitem:is([type="checkbox"], [type="radio"])[checked] > .menu-icon {
   background-color: var(--m3-tertiary-container) !important;
   fill: var(--m3-on-tertiary-container) !important;
-  border-radius: var(--m3e-r-full) !important;
 }
 
-/* The default item reads bolder. */
 menupopup > menuitem:is([default="true"], .spell-suggestion) {
-  font-variation-settings: "ROND" 100, "wght" 700 !important;
+  font-variation-settings: var(--m3e-type-strong) !important;
 }
 
-/* Separators become breathing room: a gap, no line. */
+/* Groups: a wider gap, no line. */
 menupopup > menuseparator {
-  padding-block: 5px !important;
+  padding-block: 3px !important;
   margin: 0 !important;
   border: none !important;
   appearance: none !important;
@@ -89,22 +125,39 @@ menupopup > menuseparator {
   }
 }
 
-/* Captions inside menus (headers like "Recent Chats"). */
+/* Captions inside menus ("Recent Chats" …). */
 menupopup > menucaption,
 menupopup > .recent-chats-header {
-  font-size: 11px !important;
+  font-size: 10.5px !important;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
-  font-variation-settings: "ROND" 100, "wght" 760 !important;
+  letter-spacing: 0.1em;
+  font-variation-settings: var(--m3e-type-caption) !important;
   color: var(--m3-on-surface-variant) !important;
+  background: transparent !important;
 }
 
-/* Context-menu nav row (back / forward / reload / bookmark): circular icon buttons. */
-#context-navigation > menuitem {
-  border-radius: var(--m3e-r-full) !important;
-  transition: border-radius var(--m3e-d-fast) var(--m3e-spatial-fast), background-color var(--m3e-d-effects) var(--m3e-effects) !important;
-  &[_moz-menuactive]:not([disabled]) {
-    border-radius: var(--m3e-r-sm) !important;
+/* Context-menu nav row (back / forward / reload / bookmark): round buttons, no row. */
+#context-navigation {
+  background: transparent !important;
+  margin-block-end: 3px !important;
+  gap: 4px;
+  & > menuitem {
+    min-height: 40px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    justify-content: center;
+    background: var(--m3e-row) !important;
+    border-radius: 20px !important;
+    & > .menu-icon {
+      background: transparent !important;
+      padding: 0 !important;
+      width: 16px !important;
+      height: 16px !important;
+      min-width: 16px !important;
+    }
+    &[_moz-menuactive]:not([disabled]) {
+      border-radius: var(--m3e-r-sm) !important;
+    }
   }
 }
 

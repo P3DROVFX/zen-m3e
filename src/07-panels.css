@@ -6,40 +6,72 @@ panel[type="arrow"] {
   --panel-background-color: var(--m3e-popup) !important;
   --panel-text-color: var(--m3-on-surface) !important;
   --panel-border-color: transparent !important;
-  --panel-border-radius: var(--m3e-r-xl) !important;
+  --panel-border-radius: 28px !important;
   --panel-padding: 8px !important;
   --panel-box-shadow: 0 12px 32px -8px color-mix(in srgb, var(--m3-shadow) 45%, transparent) !important;
+  --arrowpanel-menuitem-margin: 0 !important;
 }
 
-/* Subview items: same morph as menu items. */
-.subviewbutton,
-.PanelUI-subView .toolbarbutton-1,
+/* Subview items: the menu rows (own surface, gap, icon badge, pill when active). */
+.subviewbutton:not(#appMenu-zoom-controls > .subviewbutton, .subviewbutton-iconic.subviewbutton-back),
 .unified-extensions-item-action-button,
 .protections-popup-category {
-  border-radius: var(--m3e-r-sm) !important;
-  min-height: 38px !important;
-  font-variation-settings: "ROND" 100, "wght" 480 !important;
-  transition:
-    border-radius var(--m3e-d-fast) var(--m3e-spatial-fast),
-    background-color var(--m3e-d-effects) var(--m3e-effects) !important;
+  min-height: 42px !important;
+  margin: 0 0 3px !important;
+  padding-inline: 6px 14px !important;
+  gap: 10px;
+  background: var(--m3e-row) !important;
+  border-radius: 16px !important;
+  font-variation-settings: var(--m3e-type-label) !important;
+  transition: var(--m3e-shape-motion), var(--m3e-color-motion), font-variation-settings var(--m3e-d) var(--m3e-spatial) !important;
 
-  &:not([disabled]):hover {
+  & > .toolbarbutton-icon {
+    box-sizing: border-box !important;
+    width: 30px !important;
+    height: 30px !important;
+    padding: 7px !important;
+    margin: 0 !important;
+    border-radius: var(--m3e-r-full) !important;
+    background-color: color-mix(in srgb, currentColor 10%, transparent) !important;
+  }
+  &:not([disabled]):is(:hover, [open]) {
     background-color: var(--m3-secondary-container) !important;
     color: var(--m3-on-secondary-container) !important;
-    border-radius: var(--m3e-r-full) !important;
+    border-radius: 21px !important;
+    font-variation-settings: var(--m3e-type-strong) !important;
   }
   &:not([disabled]):hover:active {
     background-color: color-mix(in srgb, var(--m3-on-secondary-container) 14%, var(--m3-secondary-container)) !important;
   }
+  & .toolbarbutton-text {
+    padding-inline-start: 0 !important;
+  }
+  & .subviewbutton-shortcut,
+  & .panel-banner-item-shortcut {
+    font-size: 11.5px !important;
+    font-variation-settings: var(--m3e-type-condensed) !important;
+    color: var(--m3-on-surface-variant) !important;
+  }
+}
+/* Rows without an icon keep the badge column so labels line up. */
+
+/* The account row at the top: a hero in primary container. */
+#appMenu-fxa-label2,
+#appMenu-fxa-status2 {
+  background: var(--m3-primary-container) !important;
+  color: var(--m3-on-primary-container) !important;
+  min-height: 52px !important;
+  border-radius: var(--m3e-r-lg) !important;
+  margin-block-end: 6px !important;
 }
 
-/* Panel headers: the title face. */
+/* Panel headers: the wide display face. */
 .panel-header > h1,
 .panel-header > .panel-header-title,
 .panel-header > label,
 #unified-extensions-view .panel-header h1 {
   font-size: 15px !important;
-  font-variation-settings: "ROND" 100, "wght" 760, "wdth" 118 !important;
+  font-variation-settings: var(--m3e-type-display) !important;
 }
 
 /* Lines out; gaps in. */
@@ -52,16 +84,30 @@ toolbarseparator,
   margin-block: 3px !important;
 }
 
-/* Zoom controls in the app menu: a connected button group. */
+/* Zoom row: a connected button group on its own row surface. */
 #appMenu-zoom-controls {
   gap: 2px;
   & > .subviewbutton {
-    background: var(--m3-surface-container-highest) !important;
+    min-height: 34px !important;
+    background-color: var(--m3-surface-container-highest) !important;
     border-radius: var(--m3e-r-join) !important;
+    transition: var(--m3e-shape-motion), var(--m3e-color-motion) !important;
   }
-  & > .subviewbutton:first-of-type { border-radius: var(--m3e-r-full) var(--m3e-r-join) var(--m3e-r-join) var(--m3e-r-full) !important; }
-  & > .subviewbutton:last-of-type { border-radius: var(--m3e-r-join) var(--m3e-r-full) var(--m3e-r-full) var(--m3e-r-join) !important; }
-  & > .subviewbutton:hover { border-radius: var(--m3e-r-full) !important; }
+  & > .subviewbutton:first-of-type { border-radius: 17px var(--m3e-r-join) var(--m3e-r-join) 17px !important; }
+  & > .subviewbutton:last-of-type { border-radius: var(--m3e-r-join) 17px 17px var(--m3e-r-join) !important; }
+  & > .subviewbutton:hover {
+    border-radius: 17px !important;
+    background-color: var(--m3-secondary-container) !important;
+  }
+  & #appMenu-zoomReset-button2 {
+    font-variation-settings: var(--m3e-type-condensed) !important;
+  }
+}
+.toolbaritem-combined-buttons:has(#appMenu-zoom-controls) {
+  background: var(--m3e-row) !important;
+  border-radius: 16px !important;
+  padding: 4px 4px 4px 14px !important;
+  margin-block-end: 3px !important;
 }
 
 /* Primary buttons in panels and notifications. */
@@ -107,7 +153,7 @@ findbar {
   }
   & checkbox,
   & .findbar-label {
-    font-variation-settings: "ROND" 100, "wght" 500 !important;
+    font-variation-settings: var(--m3e-type-label) !important;
   }
 }
 
@@ -117,7 +163,7 @@ findbar {
   color: var(--m3-inverse-on-surface) !important;
   border: none !important;
   border-radius: var(--m3e-r-md) !important;
-  font-variation-settings: "ROND" 100, "wght" 550 !important;
+  font-variation-settings: var(--m3e-type-label) !important;
   box-shadow: 0 8px 20px -6px color-mix(in srgb, var(--m3-shadow) 50%, transparent) !important;
   & button {
     color: var(--m3-inverse-primary) !important;
