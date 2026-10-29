@@ -13,7 +13,8 @@ panel[type="arrow"] {
 }
 
 /* Subview items: the menu rows (own surface, gap, icon badge, pill when active). */
-.subviewbutton:not(#appMenu-zoom-controls > .subviewbutton, .subviewbutton-iconic.subviewbutton-back),
+/* Scoped to panels: some sidebar buttons (the spaces switcher) also carry .subviewbutton. */
+panelview .subviewbutton:not(#appMenu-zoom-controls, #appMenu-zoom-controls > .subviewbutton, .subviewbutton-iconic.subviewbutton-back),
 .unified-extensions-item-action-button,
 .protections-popup-category {
   min-height: 42px !important;
@@ -55,6 +56,11 @@ panel[type="arrow"] {
 }
 /* Rows without an icon keep the badge column so labels line up. */
 
+/* Rows keep a margin from the panel edge, like the shell's menu. */
+panelview .panel-subview-body {
+  padding: 8px !important;
+}
+
 /* The account row at the top: a hero in primary container. */
 #appMenu-fxa-label2,
 #appMenu-fxa-status2 {
@@ -84,30 +90,44 @@ toolbarseparator,
   margin-block: 3px !important;
 }
 
-/* Zoom row: a connected button group on its own row surface. */
+/* Zoom row: a row like the others holding a connected − 100% + group and a separate
+   full-screen button. */
 #appMenu-zoom-controls {
+  min-height: 46px !important;
+  margin: 0 0 3px !important;
+  padding: 4px 6px 4px 14px !important;
   gap: 2px;
+  background: var(--m3e-row) !important;
+  border-radius: 16px !important;
+  font-variation-settings: var(--m3e-type-label) !important;
+
   & > .subviewbutton {
-    min-height: 34px !important;
+    min-height: 36px !important;
+    min-width: 40px !important;
+    margin: 0 !important;
+    padding: 0 10px !important;
+    justify-content: center !important;
     background-color: var(--m3-surface-container-highest) !important;
     border-radius: var(--m3e-r-join) !important;
     transition: var(--m3e-shape-motion), var(--m3e-color-motion) !important;
+    & > .toolbarbutton-icon {
+      margin: 0 !important;
+    }
   }
-  & > .subviewbutton:first-of-type { border-radius: 17px var(--m3e-r-join) var(--m3e-r-join) 17px !important; }
-  & > .subviewbutton:last-of-type { border-radius: var(--m3e-r-join) 17px 17px var(--m3e-r-join) !important; }
+  & > #appMenu-zoomReduce-button2 { border-radius: 18px var(--m3e-r-join) var(--m3e-r-join) 18px !important; }
+  & > #appMenu-zoomEnlarge-button2 { border-radius: var(--m3e-r-join) 18px 18px var(--m3e-r-join) !important; }
+  & > #appMenu-fullscreen-button2 {
+    margin-inline-start: 8px !important;
+    border-radius: 18px !important;
+  }
   & > .subviewbutton:hover {
-    border-radius: 17px !important;
+    border-radius: 12px !important;
     background-color: var(--m3-secondary-container) !important;
+    color: var(--m3-on-secondary-container) !important;
   }
   & #appMenu-zoomReset-button2 {
     font-variation-settings: var(--m3e-type-condensed) !important;
   }
-}
-.toolbaritem-combined-buttons:has(#appMenu-zoom-controls) {
-  background: var(--m3e-row) !important;
-  border-radius: 16px !important;
-  padding: 4px 4px 4px 14px !important;
-  margin-block-end: 3px !important;
 }
 
 /* Primary buttons in panels and notifications. */

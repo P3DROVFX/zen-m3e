@@ -982,7 +982,7 @@ zen-folder {
   background: var(--m3e-layer1) !important;
   border-radius: var(--m3e-r-lg) !important;
   padding: 2px 4px 6px !important;
-  margin: 0 -4px 6px !important;   /* line up with the tab rows */
+  margin: 0 0 8px !important;
 
   & > .tab-group-label-container {
     min-height: 40px !important;
@@ -1006,6 +1006,11 @@ zen-folder {
 tab-group {
   --zen-folder-behind-bgcolor: var(--m3-tertiary-container) !important;
   --zen-folder-front-bgcolor: var(--m3-tertiary) !important;
+}
+
+/* The pinned section spans the full width so folders line up with the space header. */
+.zen-workspace-pinned-tabs-section {
+  padding-inline: 0 !important;
 }
 
 /* ---------- Scroll area: edges fade instead of a line (shell technique) ---------- */
@@ -1044,6 +1049,7 @@ tab-group {
   outline-offset: -1.5px !important;
   background: transparent !important;
   min-height: 38px !important;
+  justify-content: center !important;
   color: var(--m3-on-surface-variant) !important;
   transition: var(--m3e-color-motion), outline-color var(--m3e-d-effects) var(--m3e-effects), var(--m3e-shape-motion) !important;
 
@@ -1062,16 +1068,29 @@ tab-group {
   }
 }
 
+/* The label carries flex="1" (a UA rule no user sheet can beat); cap its width so the
+   button's justify-content centres icon + label as one group. */
+:root #navigator-toolbox :is(#tabs-newtab-button, #vertical-tabs-newtab-button) > .toolbarbutton-text {
+  max-width: max-content !important;
+}
+
 /* ---------- Foot: spaces switcher chips and the create FAB ---------- */
 #zen-workspaces-button {
   gap: 2px !important;
   & toolbarbutton {
+    padding: 0 !important;
+    justify-content: center !important;
+    align-items: center !important;
     border-radius: 16px !important;
     transition: var(--m3e-shape-motion), var(--m3e-color-motion) !important;
   }
   & toolbarbutton:hover {
     background: var(--toolbarbutton-hover-background) !important;
     border-radius: 10px !important;
+  }
+  & .zen-workspace-icon {
+    margin: 0 !important;
+    text-align: center !important;
   }
   & toolbarbutton[active="true"] {
     background: var(--m3-secondary-container) !important;
@@ -1192,6 +1211,7 @@ tab-group {
 
   /* Query field: a pill on the field layer, like the shell's search. */
   & .urlbar-input-box {
+    margin-inline: 8px 0 !important;   /* Zen adds ~8px on both sides; end flush with the list */
     background: var(--m3e-field) !important;
     border-radius: var(--m3e-r-full) !important;
     padding-inline: 18px !important;
@@ -1259,6 +1279,13 @@ tab-group {
 }
 #urlbar-results {
   padding-block: 0 8px !important;
+}
+/* The results scroll: round the scroller so rows are clipped by a radius, not cut square,
+   and fade the bottom edge while there is more below (the shell's scroll fade). */
+#urlbar[breakout-extend] #urlbar-results {
+  border-radius: var(--m3e-r-lg) !important;
+  margin-block-end: 8px !important;
+  padding-block-end: 0 !important;
 }
 
 .urlbarView-row {
@@ -1559,7 +1586,7 @@ panel:not([type="arrow"]) {
   --panel-box-shadow-margin: 14px !important;
   --menuitem-border-radius: 16px !important;
   --menuitem-padding-block: 0 !important;
-  --menuitem-padding-inline: 8px 14px !important;
+  --menuitem-padding-inline: 14px !important;
   --menuitem-margin: 0 !important;
   --menuitem-icon-fill: var(--m3-on-surface-variant) !important;
   --text-color-disabled: color-mix(in srgb, var(--m3-on-surface) 38%, transparent) !important;
@@ -1575,7 +1602,7 @@ menupopup::part(content) {
 menupopup > :is(menuitem, menu) {
   min-height: var(--m3e-menu-row) !important;
   margin-block: 0 3px !important;
-  padding-inline: 6px 14px !important;
+  padding: 0 14px 0 6px !important;
   gap: 10px;
   background: var(--m3e-row) !important;
   border-radius: 16px !important;
@@ -1736,7 +1763,8 @@ panel[type="arrow"] {
 }
 
 /* Subview items: the menu rows (own surface, gap, icon badge, pill when active). */
-.subviewbutton:not(#appMenu-zoom-controls > .subviewbutton, .subviewbutton-iconic.subviewbutton-back),
+/* Scoped to panels: some sidebar buttons (the spaces switcher) also carry .subviewbutton. */
+panelview .subviewbutton:not(#appMenu-zoom-controls, #appMenu-zoom-controls > .subviewbutton, .subviewbutton-iconic.subviewbutton-back),
 .unified-extensions-item-action-button,
 .protections-popup-category {
   min-height: 42px !important;
@@ -1778,6 +1806,11 @@ panel[type="arrow"] {
 }
 /* Rows without an icon keep the badge column so labels line up. */
 
+/* Rows keep a margin from the panel edge, like the shell's menu. */
+panelview .panel-subview-body {
+  padding: 8px !important;
+}
+
 /* The account row at the top: a hero in primary container. */
 #appMenu-fxa-label2,
 #appMenu-fxa-status2 {
@@ -1807,30 +1840,44 @@ toolbarseparator,
   margin-block: 3px !important;
 }
 
-/* Zoom row: a connected button group on its own row surface. */
+/* Zoom row: a row like the others holding a connected − 100% + group and a separate
+   full-screen button. */
 #appMenu-zoom-controls {
+  min-height: 46px !important;
+  margin: 0 0 3px !important;
+  padding: 4px 6px 4px 14px !important;
   gap: 2px;
+  background: var(--m3e-row) !important;
+  border-radius: 16px !important;
+  font-variation-settings: var(--m3e-type-label) !important;
+
   & > .subviewbutton {
-    min-height: 34px !important;
+    min-height: 36px !important;
+    min-width: 40px !important;
+    margin: 0 !important;
+    padding: 0 10px !important;
+    justify-content: center !important;
     background-color: var(--m3-surface-container-highest) !important;
     border-radius: var(--m3e-r-join) !important;
     transition: var(--m3e-shape-motion), var(--m3e-color-motion) !important;
+    & > .toolbarbutton-icon {
+      margin: 0 !important;
+    }
   }
-  & > .subviewbutton:first-of-type { border-radius: 17px var(--m3e-r-join) var(--m3e-r-join) 17px !important; }
-  & > .subviewbutton:last-of-type { border-radius: var(--m3e-r-join) 17px 17px var(--m3e-r-join) !important; }
+  & > #appMenu-zoomReduce-button2 { border-radius: 18px var(--m3e-r-join) var(--m3e-r-join) 18px !important; }
+  & > #appMenu-zoomEnlarge-button2 { border-radius: var(--m3e-r-join) 18px 18px var(--m3e-r-join) !important; }
+  & > #appMenu-fullscreen-button2 {
+    margin-inline-start: 8px !important;
+    border-radius: 18px !important;
+  }
   & > .subviewbutton:hover {
-    border-radius: 17px !important;
+    border-radius: 12px !important;
     background-color: var(--m3-secondary-container) !important;
+    color: var(--m3-on-secondary-container) !important;
   }
   & #appMenu-zoomReset-button2 {
     font-variation-settings: var(--m3e-type-condensed) !important;
   }
-}
-.toolbaritem-combined-buttons:has(#appMenu-zoom-controls) {
-  background: var(--m3e-row) !important;
-  border-radius: 16px !important;
-  padding: 4px 4px 4px 14px !important;
-  margin-block-end: 3px !important;
 }
 
 /* Primary buttons in panels and notifications. */
@@ -2193,4 +2240,216 @@ findbar {
   content: url("chrome://browser/skin/zen-icons/settings.svg") !important;
   visibility: visible !important;
   --m3e-icon-bg: color-mix(in srgb, currentColor 10%, transparent);
+}
+
+/* ===== 09-library.css ===== */
+/*
+ * Zen Library (Media / Downloads / Boosts / Spaces / History). The side column is the
+ * shell's navigation rail: destinations are pills at rest and a rounded square in primary
+ * container when current. The search is the field pill, filters are chips (dashed when
+ * off), group headings are captions, rows get a favicon tile and the history list fades
+ * at its top edge once scrolled instead of drawing a line.
+ */
+zen-library {
+  --zen-library-radius: var(--m3e-r-md);
+  --zen-library-pill-bg: var(--m3e-field);
+  --zen-library-pill-hover-bg: color-mix(in srgb, var(--m3-on-surface) 8%, var(--m3-surface-container-highest));
+  color: var(--m3-on-surface) !important;
+  color-scheme: var(--m3e-scheme, dark) !important;
+  font-variation-settings: var(--m3e-type-body);
+
+  & #zen-library-side {
+    background: var(--m3e-layer1) !important;
+    box-shadow: none !important;
+    border-radius: 0 var(--m3e-r-xl) var(--m3e-r-xl) 0;
+  }
+}
+:root[zen-right-side="true"] zen-library #zen-library-side {
+  border-radius: var(--m3e-r-xl) 0 0 var(--m3e-r-xl);
+}
+#zen-library-content {
+  background: var(--m3e-window);
+}
+
+/* ---------- Rail destinations ---------- */
+.zen-library-tab {
+  margin: 4px 10px !important;
+  padding: 14px 0 12px !important;
+  color: var(--m3-on-surface-variant);
+  font-size: 12px;
+  font-variation-settings: var(--m3e-type-label);
+  transition: var(--m3e-color-motion), font-variation-settings var(--m3e-d) var(--m3e-spatial);
+
+  &::before {
+    border-radius: 34px !important;
+    transition:
+      border-radius var(--m3e-d) var(--m3e-morph),
+      background-color var(--m3e-d-effects) var(--m3e-effects),
+      transform var(--m3e-d-fast) var(--m3e-spatial-fast) !important;
+  }
+  &:hover::before {
+    background: color-mix(in srgb, var(--m3-on-surface) var(--m3e-tint-idle), transparent) !important;
+    border-radius: 26px !important;
+  }
+  &:hover:active::before {
+    transform: scale(0.95) !important;
+  }
+  &[active] {
+    color: var(--m3-on-primary-container);
+    font-variation-settings: var(--m3e-type-strong);
+  }
+  &[active]::before {
+    background: var(--m3-primary-container) !important;
+    border-radius: var(--m3e-r-md) !important;
+  }
+}
+
+/* ---------- Search and filters ---------- */
+.zen-library-search-box {
+  height: 40px !important;
+  border-radius: 20px !important;
+  padding-inline: 14px !important;
+  & input {
+    font-variation-settings: var(--m3e-type-label) !important;
+  }
+}
+.zen-library-filter-button {
+  height: 40px !important;
+  border-radius: 20px !important;
+  background: var(--m3-secondary-container) !important;
+  color: var(--m3-on-secondary-container) !important;
+  font-variation-settings: var(--m3e-type-strong) !important;
+  transition: var(--m3e-shape-motion), var(--m3e-color-motion) !important;
+  &:hover {
+    border-radius: var(--m3e-r-sm) !important;
+  }
+}
+.zen-library-filter-header h2 {
+  font-size: 15px !important;
+  font-variation-settings: var(--m3e-type-display) !important;
+}
+.zen-library-filter-done {
+  border-radius: 18px !important;
+  background: var(--m3-primary) !important;
+  color: var(--m3-on-primary) !important;
+  font-variation-settings: var(--m3e-type-strong) !important;
+}
+.zen-library-filter-group h3 {
+  font-size: 10.5px !important;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-variation-settings: var(--m3e-type-caption) !important;
+  color: var(--m3-on-surface-variant);
+  opacity: 1 !important;
+}
+.zen-library-filter-chip {
+  border-radius: 18px !important;
+  background: transparent !important;
+  outline: 1.5px dashed color-mix(in srgb, var(--m3-outline) 70%, transparent);
+  outline-offset: -1.5px;
+  font-variation-settings: var(--m3e-type-label) !important;
+  transition: var(--m3e-shape-motion), var(--m3e-color-motion), outline-color var(--m3e-d-effects) var(--m3e-effects) !important;
+  &:hover {
+    background: color-mix(in srgb, var(--m3-on-surface) var(--m3e-tint-idle), transparent) !important;
+  }
+  &[active] {
+    background: var(--m3-secondary-container) !important;
+    color: var(--m3-on-secondary-container) !important;
+    outline-color: transparent;
+    border-radius: var(--m3e-r-sm) !important;
+  }
+}
+
+/* ---------- Results ---------- */
+.zen-library-search-results {
+  border-top: none !important;
+  &[scrolled] {
+    mask-image: linear-gradient(to bottom, transparent 0, #000 32px);
+  }
+}
+.zen-library-group h3 {
+  margin: 14px 10px 6px !important;
+  font-size: 10.5px !important;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-variation-settings: var(--m3e-type-caption) !important;
+  color: var(--m3-on-surface-variant);
+  opacity: 1 !important;
+}
+.zen-library-row {
+  gap: 12px !important;
+  padding: 7px 12px 7px 8px !important;
+  border-radius: var(--m3e-r-md) !important;
+  transition: var(--m3e-shape-motion), var(--m3e-color-motion) !important;
+  &:hover {
+    background: var(--m3-surface-container-high) !important;
+    border-radius: 24px !important;
+  }
+  &:hover:active {
+    background: var(--m3-secondary-container) !important;
+    color: var(--m3-on-secondary-container) !important;
+  }
+}
+/* Favicon tile (downloads with a preview keep their thumbnail). */
+.zen-library-row-icon:not([preview]) {
+  box-sizing: content-box !important;
+  padding: 9px !important;
+  margin: 0 !important;
+  border-radius: var(--m3e-r-sm) !important;
+  background: color-mix(in srgb, var(--m3-on-surface) 7%, transparent);
+}
+.zen-library-row-title {
+  font-variation-settings: var(--m3e-type-label) !important;
+}
+.zen-library-row:hover .zen-library-row-title {
+  font-variation-settings: var(--m3e-type-strong) !important;
+}
+.zen-library-row-subtitle,
+.zen-library-download-url {
+  font-size: 12px !important;
+  font-variation-settings: var(--m3e-type-condensed) !important;
+  color: var(--m3-on-surface-variant) !important;
+  opacity: 1 !important;
+}
+.zen-library-row-progress-arc {
+  stroke: var(--m3-primary) !important;
+}
+.zen-library-empty {
+  font-variation-settings: var(--m3e-type-label);
+  color: var(--m3-on-surface-variant);
+}
+
+/* ---------- Spaces: each space a pane ---------- */
+.zen-library-space {
+  background: var(--m3e-layer1) !important;
+  border-radius: var(--m3e-r-xl) !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+.zen-library-space-name,
+.zen-library-space-name-input {
+  font-size: 15px !important;
+  font-variation-settings: var(--m3e-type-display) !important;
+}
+
+/* ---------- Media ---------- */
+.zen-library-media-item,
+.zen-library-media-frame,
+.zen-library-media-thumb {
+  border-radius: var(--m3e-r-md) !important;
+}
+.zen-library-media-opt-in-button {
+  border-radius: 20px !important;
+  background: var(--m3-primary) !important;
+  color: var(--m3-on-primary) !important;
+}
+
+/* ---------- Footer icon buttons ---------- */
+#zen-library-footer .toolbarbutton-1 > .toolbarbutton-icon {
+  border-radius: 16px !important;
+  transition: var(--m3e-shape-motion), var(--m3e-color-motion) !important;
+}
+#zen-library-footer .toolbarbutton-1:hover > .toolbarbutton-icon {
+  border-radius: 10px !important;
+  background-color: var(--toolbarbutton-hover-background) !important;
 }

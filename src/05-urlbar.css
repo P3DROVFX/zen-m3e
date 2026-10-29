@@ -73,6 +73,7 @@
 
   /* Query field: a pill on the field layer, like the shell's search. */
   & .urlbar-input-box {
+    margin-inline: 8px 0 !important;   /* Zen adds ~8px on both sides; end flush with the list */
     background: var(--m3e-field) !important;
     border-radius: var(--m3e-r-full) !important;
     padding-inline: 18px !important;
@@ -140,6 +141,13 @@
 }
 #urlbar-results {
   padding-block: 0 8px !important;
+}
+/* The results scroll: round the scroller so rows are clipped by a radius, not cut square,
+   and fade the bottom edge while there is more below (the shell's scroll fade). */
+#urlbar[breakout-extend] #urlbar-results {
+  border-radius: var(--m3e-r-lg) !important;
+  margin-block-end: 8px !important;
+  padding-block-end: 0 !important;
 }
 
 .urlbarView-row {

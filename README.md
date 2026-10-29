@@ -32,6 +32,8 @@ ladder, same curves (`Appearance.animationCurves`), same rules (`docs/design.md`
 - **Menus and the app menu** — the shell's menu: every item its own rounded row with a
   gap, the icon in a circular badge (Zen's icon set mapped onto context-menu items),
   wider gaps between groups, active rows fill and round further, content springs in.
+- **Library** — the navigation rail, search pill, filter chips, caption headings,
+  favicon tiles and scroll fade.
 - **Also** — tooltips (inverse surface), find bar, toasts as snackbars, notifications,
   glance and split view, scrollbars, focus rings.
 

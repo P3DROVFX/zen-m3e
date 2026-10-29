@@ -1,0 +1,210 @@
+/*
+ * Zen Library (Media / Downloads / Boosts / Spaces / History). The side column is the
+ * shell's navigation rail: destinations are pills at rest and a rounded square in primary
+ * container when current. The search is the field pill, filters are chips (dashed when
+ * off), group headings are captions, rows get a favicon tile and the history list fades
+ * at its top edge once scrolled instead of drawing a line.
+ */
+zen-library {
+  --zen-library-radius: var(--m3e-r-md);
+  --zen-library-pill-bg: var(--m3e-field);
+  --zen-library-pill-hover-bg: color-mix(in srgb, var(--m3-on-surface) 8%, var(--m3-surface-container-highest));
+  color: var(--m3-on-surface) !important;
+  color-scheme: var(--m3e-scheme, dark) !important;
+  font-variation-settings: var(--m3e-type-body);
+
+  & #zen-library-side {
+    background: var(--m3e-layer1) !important;
+    box-shadow: none !important;
+    border-radius: 0 var(--m3e-r-xl) var(--m3e-r-xl) 0;
+  }
+}
+:root[zen-right-side="true"] zen-library #zen-library-side {
+  border-radius: var(--m3e-r-xl) 0 0 var(--m3e-r-xl);
+}
+#zen-library-content {
+  background: var(--m3e-window);
+}
+
+/* ---------- Rail destinations ---------- */
+.zen-library-tab {
+  margin: 4px 10px !important;
+  padding: 14px 0 12px !important;
+  color: var(--m3-on-surface-variant);
+  font-size: 12px;
+  font-variation-settings: var(--m3e-type-label);
+  transition: var(--m3e-color-motion), font-variation-settings var(--m3e-d) var(--m3e-spatial);
+
+  &::before {
+    border-radius: 34px !important;
+    transition:
+      border-radius var(--m3e-d) var(--m3e-morph),
+      background-color var(--m3e-d-effects) var(--m3e-effects),
+      transform var(--m3e-d-fast) var(--m3e-spatial-fast) !important;
+  }
+  &:hover::before {
+    background: color-mix(in srgb, var(--m3-on-surface) var(--m3e-tint-idle), transparent) !important;
+    border-radius: 26px !important;
+  }
+  &:hover:active::before {
+    transform: scale(0.95) !important;
+  }
+  &[active] {
+    color: var(--m3-on-primary-container);
+    font-variation-settings: var(--m3e-type-strong);
+  }
+  &[active]::before {
+    background: var(--m3-primary-container) !important;
+    border-radius: var(--m3e-r-md) !important;
+  }
+}
+
+/* ---------- Search and filters ---------- */
+.zen-library-search-box {
+  height: 40px !important;
+  border-radius: 20px !important;
+  padding-inline: 14px !important;
+  & input {
+    font-variation-settings: var(--m3e-type-label) !important;
+  }
+}
+.zen-library-filter-button {
+  height: 40px !important;
+  border-radius: 20px !important;
+  background: var(--m3-secondary-container) !important;
+  color: var(--m3-on-secondary-container) !important;
+  font-variation-settings: var(--m3e-type-strong) !important;
+  transition: var(--m3e-shape-motion), var(--m3e-color-motion) !important;
+  &:hover {
+    border-radius: var(--m3e-r-sm) !important;
+  }
+}
+.zen-library-filter-header h2 {
+  font-size: 15px !important;
+  font-variation-settings: var(--m3e-type-display) !important;
+}
+.zen-library-filter-done {
+  border-radius: 18px !important;
+  background: var(--m3-primary) !important;
+  color: var(--m3-on-primary) !important;
+  font-variation-settings: var(--m3e-type-strong) !important;
+}
+.zen-library-filter-group h3 {
+  font-size: 10.5px !important;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-variation-settings: var(--m3e-type-caption) !important;
+  color: var(--m3-on-surface-variant);
+  opacity: 1 !important;
+}
+.zen-library-filter-chip {
+  border-radius: 18px !important;
+  background: transparent !important;
+  outline: 1.5px dashed color-mix(in srgb, var(--m3-outline) 70%, transparent);
+  outline-offset: -1.5px;
+  font-variation-settings: var(--m3e-type-label) !important;
+  transition: var(--m3e-shape-motion), var(--m3e-color-motion), outline-color var(--m3e-d-effects) var(--m3e-effects) !important;
+  &:hover {
+    background: color-mix(in srgb, var(--m3-on-surface) var(--m3e-tint-idle), transparent) !important;
+  }
+  &[active] {
+    background: var(--m3-secondary-container) !important;
+    color: var(--m3-on-secondary-container) !important;
+    outline-color: transparent;
+    border-radius: var(--m3e-r-sm) !important;
+  }
+}
+
+/* ---------- Results ---------- */
+.zen-library-search-results {
+  border-top: none !important;
+  &[scrolled] {
+    mask-image: linear-gradient(to bottom, transparent 0, #000 32px);
+  }
+}
+.zen-library-group h3 {
+  margin: 14px 10px 6px !important;
+  font-size: 10.5px !important;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-variation-settings: var(--m3e-type-caption) !important;
+  color: var(--m3-on-surface-variant);
+  opacity: 1 !important;
+}
+.zen-library-row {
+  gap: 12px !important;
+  padding: 7px 12px 7px 8px !important;
+  border-radius: var(--m3e-r-md) !important;
+  transition: var(--m3e-shape-motion), var(--m3e-color-motion) !important;
+  &:hover {
+    background: var(--m3-surface-container-high) !important;
+    border-radius: 24px !important;
+  }
+  &:hover:active {
+    background: var(--m3-secondary-container) !important;
+    color: var(--m3-on-secondary-container) !important;
+  }
+}
+/* Favicon tile (downloads with a preview keep their thumbnail). */
+.zen-library-row-icon:not([preview]) {
+  box-sizing: content-box !important;
+  padding: 9px !important;
+  margin: 0 !important;
+  border-radius: var(--m3e-r-sm) !important;
+  background: color-mix(in srgb, var(--m3-on-surface) 7%, transparent);
+}
+.zen-library-row-title {
+  font-variation-settings: var(--m3e-type-label) !important;
+}
+.zen-library-row:hover .zen-library-row-title {
+  font-variation-settings: var(--m3e-type-strong) !important;
+}
+.zen-library-row-subtitle,
+.zen-library-download-url {
+  font-size: 12px !important;
+  font-variation-settings: var(--m3e-type-condensed) !important;
+  color: var(--m3-on-surface-variant) !important;
+  opacity: 1 !important;
+}
+.zen-library-row-progress-arc {
+  stroke: var(--m3-primary) !important;
+}
+.zen-library-empty {
+  font-variation-settings: var(--m3e-type-label);
+  color: var(--m3-on-surface-variant);
+}
+
+/* ---------- Spaces: each space a pane ---------- */
+.zen-library-space {
+  background: var(--m3e-layer1) !important;
+  border-radius: var(--m3e-r-xl) !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+.zen-library-space-name,
+.zen-library-space-name-input {
+  font-size: 15px !important;
+  font-variation-settings: var(--m3e-type-display) !important;
+}
+
+/* ---------- Media ---------- */
+.zen-library-media-item,
+.zen-library-media-frame,
+.zen-library-media-thumb {
+  border-radius: var(--m3e-r-md) !important;
+}
+.zen-library-media-opt-in-button {
+  border-radius: 20px !important;
+  background: var(--m3-primary) !important;
+  color: var(--m3-on-primary) !important;
+}
+
+/* ---------- Footer icon buttons ---------- */
+#zen-library-footer .toolbarbutton-1 > .toolbarbutton-icon {
+  border-radius: 16px !important;
+  transition: var(--m3e-shape-motion), var(--m3e-color-motion) !important;
+}
+#zen-library-footer .toolbarbutton-1:hover > .toolbarbutton-icon {
+  border-radius: 10px !important;
+  background-color: var(--toolbarbutton-hover-background) !important;
+}

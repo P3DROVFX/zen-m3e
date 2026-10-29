@@ -28,11 +28,11 @@ The guide asks not to repeat a technique. Where each one lives:
 | Grouped list (joins + notch around the selection) | sidebar tabs, search results | the browser's rail, and the list under the hero (asked for explicitly) |
 | Separate rows with a gap + icon badge | menus, app menu | the shell's own menu style |
 | Pane on its own surface | space header, folders | sections, so their edges never need a line |
-| Edge fade on scroll | the tab list | shell technique; replaces divider lines |
+| Edge fade on scroll | the tab list, library history | shell technique; replaces divider lines |
 | Shape is state (circle ↔ rounded square) | essentials, icon buttons, create FAB | small, frequent state changes |
 | Polygon morph (equal-vertex `clip-path`) | search badge (Clover-4 → Sunny while typing), space icon (Cookie-9 → 12 on hover) | the two identity marks of the window |
 | Clipped ornament | the search overlay's top-result card | the one hero on screen |
-| Dashed unselected chip | "New tab", secondary buttons | an action that is not a state |
+| Dashed unselected chip | "New tab", secondary buttons, library filters | an action that is not a state |
 | Wide display face (`wdth 140`) | space name, result group headings, panel titles | headings only, never body text |
 | Caption over value | "TOP RESULT" | forms vocabulary from the timetable rail |
 | Pill selection | menu items, results, subview buttons | keyboard/hover target |

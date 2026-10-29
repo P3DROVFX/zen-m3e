@@ -1,5 +1,20 @@
 # Changelog
 
+## 0.3.0 — 2026-10-29
+
+- Zen Library themed: navigation rail (pill → rounded square in primary container),
+  field-pill search, tonal filter button, dashed filter chips, caption group headings,
+  favicon tiles, condensed subtitles, scroll fade instead of a border, space panes.
+- Spaces switcher icons centred (panel row rules no longer leak onto `.subviewbutton`s
+  outside panels).
+- "New" menu rows centred (a two-value padding variable had become `padding-bottom`).
+- Folders span the same width as the space header, with 8 px between them.
+- "New tab" chip content centred.
+- App menu rows keep an 8 px margin from the panel edge; zoom row rebuilt (connected
+  − 100% + group, separate full-screen button).
+- Search: the field ends flush with the results; the results scroller has a radius, so
+  rows are clipped round instead of cut square.
+
 ## 0.2.0 — 2026-10-29
 
 - Type: Google Sans Flex through `@font-face` so the variable axes actually apply; type

@@ -257,7 +257,7 @@ zen-folder {
   background: var(--m3e-layer1) !important;
   border-radius: var(--m3e-r-lg) !important;
   padding: 2px 4px 6px !important;
-  margin: 0 -4px 6px !important;   /* line up with the tab rows */
+  margin: 0 0 8px !important;
 
   & > .tab-group-label-container {
     min-height: 40px !important;
@@ -281,6 +281,11 @@ zen-folder {
 tab-group {
   --zen-folder-behind-bgcolor: var(--m3-tertiary-container) !important;
   --zen-folder-front-bgcolor: var(--m3-tertiary) !important;
+}
+
+/* The pinned section spans the full width so folders line up with the space header. */
+.zen-workspace-pinned-tabs-section {
+  padding-inline: 0 !important;
 }
 
 /* ---------- Scroll area: edges fade instead of a line (shell technique) ---------- */
@@ -319,6 +324,7 @@ tab-group {
   outline-offset: -1.5px !important;
   background: transparent !important;
   min-height: 38px !important;
+  justify-content: center !important;
   color: var(--m3-on-surface-variant) !important;
   transition: var(--m3e-color-motion), outline-color var(--m3e-d-effects) var(--m3e-effects), var(--m3e-shape-motion) !important;
 
@@ -337,16 +343,29 @@ tab-group {
   }
 }
 
+/* The label carries flex="1" (a UA rule no user sheet can beat); cap its width so the
+   button's justify-content centres icon + label as one group. */
+:root #navigator-toolbox :is(#tabs-newtab-button, #vertical-tabs-newtab-button) > .toolbarbutton-text {
+  max-width: max-content !important;
+}
+
 /* ---------- Foot: spaces switcher chips and the create FAB ---------- */
 #zen-workspaces-button {
   gap: 2px !important;
   & toolbarbutton {
+    padding: 0 !important;
+    justify-content: center !important;
+    align-items: center !important;
     border-radius: 16px !important;
     transition: var(--m3e-shape-motion), var(--m3e-color-motion) !important;
   }
   & toolbarbutton:hover {
     background: var(--toolbarbutton-hover-background) !important;
     border-radius: 10px !important;
+  }
+  & .zen-workspace-icon {
+    margin: 0 !important;
+    text-align: center !important;
   }
   & toolbarbutton[active="true"] {
     background: var(--m3-secondary-container) !important;

@@ -16,7 +16,7 @@ panel:not([type="arrow"]) {
   --panel-box-shadow-margin: 14px !important;
   --menuitem-border-radius: 16px !important;
   --menuitem-padding-block: 0 !important;
-  --menuitem-padding-inline: 8px 14px !important;
+  --menuitem-padding-inline: 14px !important;
   --menuitem-margin: 0 !important;
   --menuitem-icon-fill: var(--m3-on-surface-variant) !important;
   --text-color-disabled: color-mix(in srgb, var(--m3-on-surface) 38%, transparent) !important;
@@ -32,7 +32,7 @@ menupopup::part(content) {
 menupopup > :is(menuitem, menu) {
   min-height: var(--m3e-menu-row) !important;
   margin-block: 0 3px !important;
-  padding-inline: 6px 14px !important;
+  padding: 0 14px 0 6px !important;
   gap: 10px;
   background: var(--m3e-row) !important;
   border-radius: 16px !important;
