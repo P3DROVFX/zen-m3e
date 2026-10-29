@@ -78,9 +78,10 @@ m3e.uc.js  ── reloads colors.css as an author sheet when it changes (optiona
 top bar · library        ← moved up from the foot (absolute, no layout change saved)
 URL field
 essentials tiles
+[ + New Tab ]            dashed chip, outside the scroller (always visible)
 PINNED                   caption only when there are pins
   pins / folders         closed folder = 1 row: icon · name · favicons · count
-TABS               +     the new-tab button, restyled as the caption
+TABS                     caption
   tab list
 foot: (◆ Space) ◇ ◇   [+] current space expands with its name; FAB
 ```

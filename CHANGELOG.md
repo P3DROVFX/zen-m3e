@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.4.1 — 2026-10-29
+
+- New tab is the dashed chip again, at the top of the list and outside the scroller (so
+  it never scrolls away); TABS and PINNED stay as captions.
+- Pinned rows, folders, the tab list, the URL field and the new-tab chip share one box
+  (the spaces wrapper is clipped instead of scrollable, and each space is no wider than
+  the list); pinned rows are as tall and as tightly spaced as tab rows; folders sit 8 px
+  apart.
+- The first and last tab get the group's outer radius again (Zen's hidden empty tab no
+  longer counts).
+- Closed-folder favicon preview: each icon on its own round chip with a ring.
+- Spaces with an icon (not an emoji) keep a 14 px icon inside the 26 px cookie.
+- The spaces strip never widens the sidebar.
+
 ## 0.4.0 — 2026-10-29
 
 Sidebar reorganised so the tab list starts near the top:

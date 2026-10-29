@@ -19,8 +19,8 @@ ladder, same curves (`Appearance.animationCurves`), same rules (`docs/design.md`
 - **Sidebar** — reorganised so your tabs start high. Top bar (with the library moved up),
   URL field, essentials; then a **PINNED** caption over pinned tabs and folders as rows
   (a closed folder is one row with a favicon preview and a count; an open one lists its
-  tabs indented under it); then a **TABS** caption whose `+` is the new-tab button, and
-  the tab list. Every list is a grouped shape: joins, outer corners, the current tab a
+  tabs indented under it); then a **TABS** caption over the tab list. The dashed "New tab" chip sits at the
+  top, outside the scrolling area. Every list is a grouped shape: joins, outer corners, the current tab a
   primary pill with its neighbours rounding in and its label gaining weight. The space
   header is gone: the current space's chip in the foot expands with its name and its
   mark in a morphing cookie. Lists fade at their edges while scrolling, no divider lines.

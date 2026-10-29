@@ -132,14 +132,28 @@
       const count = String(tabs.length);
       if (header.getAttribute("m3e-count") !== count) header.setAttribute("m3e-count", count);
       const icons = tabs.map((t) => t.getAttribute("image")).filter(Boolean).slice(0, 3);
-      for (let i = 0; i < 3; i++) {
-        const value = icons[i] ? cssURL(icons[i]) : "";
-        if (header.style.getPropertyValue(`--m3e-fav-${i + 1}`) !== value) {
-          if (value) header.style.setProperty(`--m3e-fav-${i + 1}`, value);
-          else header.style.removeProperty(`--m3e-fav-${i + 1}`);
-        }
+      // Each favicon: a 12px icon over a 22px chip with a 2px ring (radial gradient),
+      // 15px apart so neighbours overlap by a ring's width. The first one is on top.
+      const STEP = 15, CHIP = 22, ICON = 12;
+      const ring = "radial-gradient(circle closest-side, var(--m3e-fav-chip) 0 9px, var(--m3e-fav-ring) 9px 11px, transparent 11px)";
+      const layers = [], positions = [], sizes = [];
+      icons.forEach((icon, i) => {
+        const x = i * STEP;
+        layers.push(cssURL(icon), ring);
+        positions.push(`${x + (CHIP - ICON) / 2}px ${(CHIP - ICON) / 2}px`, `${x}px 0`);
+        sizes.push(`${ICON}px ${ICON}px`, `${CHIP}px ${CHIP}px`);
+      });
+      const vars = {
+        "--m3e-fav-layers": layers.join(", "),
+        "--m3e-fav-positions": positions.join(", "),
+        "--m3e-fav-sizes": sizes.join(", "),
+        "--m3e-fav-width": icons.length ? `${CHIP + STEP * (icons.length - 1)}px` : "",
+      };
+      for (const [name, value] of Object.entries(vars)) {
+        if (header.style.getPropertyValue(name) === value) continue;
+        if (value) header.style.setProperty(name, value);
+        else header.style.removeProperty(name);
       }
-      header.style.setProperty("--m3e-fav-count", String(icons.length));
     }
   }
   const queueFolders = () => {
