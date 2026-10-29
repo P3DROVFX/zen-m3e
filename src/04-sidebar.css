@@ -424,6 +424,19 @@ tab-group {
 #zen-essentials > .zen-essentials-container:not([hidden="true"]) {
   position: relative !important;
 }
+/* In the flow, Zen's "100% + 2× padding" bleed would overflow the sidebar: one box with
+   the URL field and the lists instead. */
+#navigator-toolbox #zen-essentials {
+  margin-inline: 0 !important;
+  min-width: 0 !important;
+}
+#navigator-toolbox #zen-essentials > .zen-essentials-container {
+  box-sizing: border-box !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  margin-inline: 0 !important;
+  padding-inline: 0 !important;
+}
 #tabbrowser-arrowscrollbox > zen-workspace {
   padding-top: 2px !important;
 }

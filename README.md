@@ -57,7 +57,7 @@ cd ~/Projects/zen-m3e
 `~/.config/matugen/config.toml` (backup next to it) and renders a first palette from the
 shell's current source colour. `./install.sh --uninstall` reverts both.
 
-Then disable **MatugenZen** and **Transparent Zen** in Sine: this mod replaces them.
+Then disable **MatugenZen**, **Transparent Zen** and **SuperPins** in Sine: this mod replaces them.
 
 ## Colour and light/dark
 
@@ -75,6 +75,13 @@ hidden) and the popup entrance flag. Sine runs scripts of locally installed mods
 | `m3e.translucent` | translucent surfaces, for compositor blur with a transparent window |
 | `m3e.system-font` | use the system font instead of Google Sans Flex |
 | `m3e.reduced-motion` | no springs or staggered entrances (the OS setting is honoured too) |
+| `m3e.essentials.width` | `thin` / `normal` / `wide` essentials tiles |
+| `m3e.essentials.gap` | `small` / `normal` / `big` gap between essentials |
+| `m3e.essentials.no-grow` | keep essentials at a fixed width instead of filling the row |
+| `m3e.essentials.transparent` | transparent essentials until hovered or current |
+| `m3e.favicon-size` | `small` 16 / `normal` 18 / `large` 20 px (default large) |
+| `m3e.dim-unloaded` | dim tabs that aren't loaded yet |
+| `m3e.show-sidebar-scrollbar` | bring the sidebar scrollbar back (hidden by default) |
 
 ## Weight
 
@@ -91,3 +98,10 @@ The script does one `stat` per 2.5 s while visible.
 
 Edit `src/`, never `chrome.css`. Visual tests run in a sandboxed, headless Zen — see
 [`tests/README.md`](tests/README.md).
+
+## Credits
+
+The essentials and tab-row options (tile width, gap, auto-grow, favicon size, hidden
+scrollbar, dimmed unloaded tabs) are adapted from
+[SuperPins](https://github.com/CosmoCreeper/Zen-Themes/tree/main/SuperPins) — MIT,
+© 2025 JLBlk, CosmoCreeper and contributors.

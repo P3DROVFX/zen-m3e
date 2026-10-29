@@ -1,0 +1,81 @@
+/*
+ * Essentials and tab-row options adapted from SuperPins
+ * (https://github.com/CosmoCreeper/Zen-Themes/tree/main/SuperPins, MIT,
+ * © 2025 JLBlk, CosmoCreeper and contributors). Only what still fits this layout:
+ * pinned tabs are rows here, so the pins grid and its script are not carried over.
+ * Prefs are m3e.*; each one's unset value is the default described in preferences.json.
+ */
+
+/* Essentials never clip at the bottom (hover scale, focus rings). */
+.zen-essentials-container {
+  overflow: visible !important;
+}
+
+/* ---------- Essentials: tile width, gap, auto-grow ---------- */
+:root,
+.zen-essentials-container {
+  --min-essentials-width-wrap: 60px !important;
+  --m3e-essentials-gap: 4px;
+}
+@media -moz-pref("m3e.essentials.width", "thin") {
+  :root, .zen-essentials-container { --min-essentials-width-wrap: 50px !important; }
+}
+@media -moz-pref("m3e.essentials.width", "wide") {
+  :root, .zen-essentials-container { --min-essentials-width-wrap: 70px !important; }
+}
+@media -moz-pref("m3e.essentials.gap", "small") {
+  :root, .zen-essentials-container { --m3e-essentials-gap: 2px; }
+}
+@media -moz-pref("m3e.essentials.gap", "big") {
+  :root, .zen-essentials-container { --m3e-essentials-gap: 8px; }
+}
+/* Auto-grow (default): a wrapping row where every tile, the last row's too, stretches
+   to fill — a grid would leave the last row's leftover columns empty. */
+#navigator-toolbox#navigator-toolbox .zen-essentials-container {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: var(--m3e-essentials-gap) !important;
+  & > .tabbrowser-tab[zen-essential] {
+    flex: 1 1 var(--min-essentials-width-wrap) !important;
+    width: auto !important;
+    min-width: var(--min-essentials-width-wrap) !important;
+  }
+}
+@media -moz-pref("m3e.essentials.no-grow") {
+  #navigator-toolbox#navigator-toolbox .zen-essentials-container > .tabbrowser-tab[zen-essential] {
+    flex: 0 0 var(--min-essentials-width-wrap) !important;
+  }
+}
+
+/* Transparent essentials until hovered or current. */
+@media -moz-pref("m3e.essentials.transparent") {
+  #tabbrowser-tabs .tabbrowser-tab[zen-essential]:not(:hover, [selected]) > .tab-stack > .tab-background {
+    background-color: transparent !important;
+  }
+}
+
+/* ---------- Favicon size (default large, 20px) ---------- */
+#tabbrowser-tabs .tabbrowser-tab :is(.tab-icon-pending, .tab-icon-image, .tab-sharing-icon-overlay, .tab-icon-overlay) {
+  width: var(--m3e-favicon, 20px) !important;
+  height: var(--m3e-favicon, 20px) !important;
+}
+#tabbrowser-tabs .tabbrowser-tab .tab-throbber {
+  transform: scale(calc(var(--m3e-favicon, 20px) / 16px));
+}
+@media -moz-pref("m3e.favicon-size", "small") {
+  :root { --m3e-favicon: 16px; }
+}
+@media -moz-pref("m3e.favicon-size", "normal") {
+  :root { --m3e-favicon: 18px; }
+}
+
+/* Sidebar scrollbar: hidden by m3e.uc.js (it lives in a shadow tree); the edge fade
+   already shows there is more. m3e.show-sidebar-scrollbar brings it back. */
+
+/* ---------- Unloaded tabs ---------- */
+@media -moz-pref("m3e.dim-unloaded") {
+  #tabbrowser-tabs .tabbrowser-tab[pending]:not([selected]) :is(.tab-icon-image, .tab-label) {
+    opacity: 0.55;
+    transition: opacity var(--m3e-d-effects) var(--m3e-effects);
+  }
+}

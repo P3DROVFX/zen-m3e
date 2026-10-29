@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.5.0 — 2026-10-29
+
+- Essentials no longer overflow the sidebar: the in-flow grid shares the URL field's box.
+- SuperPins integrated (MIT, credited): essentials width / gap / auto-grow (the last row
+  stretches too), transparent essentials, favicon size (default 20 px), dimmed unloaded
+  tabs, hidden sidebar scrollbar — all as `m3e.*` preferences. SuperPins can be disabled.
+- The sidebar scrollbar is hidden from the script (it lives in a shadow tree whose sheet
+  marks it `!important`).
+
 ## 0.4.2 — 2026-10-29
 
 - The new-tab chip no longer slides under the essentials: the current essentials grid is

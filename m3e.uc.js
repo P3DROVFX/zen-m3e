@@ -87,9 +87,21 @@
   let edgeFrame = 0;
   const pendingEdges = new Set();
 
+  // The list's scrollbar lives in the arrowscrollbox's shadow tree, which mod CSS can't
+  // reach (its own sheet sets scrollbar-width/colour). Hide it inline unless asked not to.
+  const hideScrollbar = () => !Services.prefs.getBoolPref("m3e.show-sidebar-scrollbar", false);
+
   function updateEdges(box) {
     const sb = box.scrollbox;
     if (!sb) return;
+    // !important: Zen's shadow sheet sets the active space's scrollbar with !important.
+    if (hideScrollbar()) {
+      if (sb.style.getPropertyPriority("scrollbar-width") !== "important") {
+        sb.style.setProperty("scrollbar-width", "none", "important");
+      }
+    } else if (sb.style.scrollbarWidth) {
+      sb.style.removeProperty("scrollbar-width");
+    }
     const top = sb.scrollTop <= EDGE;
     const end = sb.scrollTop + sb.clientHeight >= sb.scrollHeight - EDGE;
     box.toggleAttribute("m3e-at-start", top);
@@ -186,9 +198,11 @@
     window.addEventListener("TabAttrModified", onTabAttr);
     setTimeout(queueFolders, 1500);
     Services.prefs.addObserver(PREF_PATH, prefObserver);
+    Services.prefs.addObserver("m3e.show-sidebar-scrollbar", onTabsChanged);
     window.addEventListener("unload", () => {
       clearTimeout(timer);
       Services.prefs.removeObserver(PREF_PATH, prefObserver);
+      Services.prefs.removeObserver("m3e.show-sidebar-scrollbar", onTabsChanged);
     }, { once: true });
   }
 

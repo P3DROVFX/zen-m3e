@@ -53,5 +53,92 @@
     "type": "checkbox",
     "property": "m3e.reduced-motion",
     "label": "Reduce motion (no springs or staggered entrances)"
+  },
+  {
+    "type": "separator",
+    "label": "Essentials & tabs (from SuperPins)"
+  },
+  {
+    "type": "dropdown",
+    "property": "m3e.essentials.width",
+    "label": "Essentials tile width",
+    "defaultValue": "normal",
+    "placeholder": false,
+    "options": [
+      {
+        "label": "Thin",
+        "value": "thin"
+      },
+      {
+        "label": "Normal",
+        "value": "normal"
+      },
+      {
+        "label": "Wide",
+        "value": "wide"
+      }
+    ]
+  },
+  {
+    "type": "dropdown",
+    "property": "m3e.essentials.gap",
+    "label": "Gap between essentials",
+    "defaultValue": "normal",
+    "placeholder": false,
+    "options": [
+      {
+        "label": "Small",
+        "value": "small"
+      },
+      {
+        "label": "Normal",
+        "value": "normal"
+      },
+      {
+        "label": "Big",
+        "value": "big"
+      }
+    ]
+  },
+  {
+    "type": "checkbox",
+    "property": "m3e.essentials.no-grow",
+    "label": "Keep essentials at a fixed width (don't stretch to fill the row)"
+  },
+  {
+    "type": "checkbox",
+    "property": "m3e.essentials.transparent",
+    "label": "Transparent essentials until hovered or current"
+  },
+  {
+    "type": "dropdown",
+    "property": "m3e.favicon-size",
+    "label": "Tab favicon size",
+    "defaultValue": "large",
+    "placeholder": false,
+    "options": [
+      {
+        "label": "Small (16px)",
+        "value": "small"
+      },
+      {
+        "label": "Normal (18px)",
+        "value": "normal"
+      },
+      {
+        "label": "Large (20px)",
+        "value": "large"
+      }
+    ]
+  },
+  {
+    "type": "checkbox",
+    "property": "m3e.dim-unloaded",
+    "label": "Dim unloaded tabs"
+  },
+  {
+    "type": "checkbox",
+    "property": "m3e.show-sidebar-scrollbar",
+    "label": "Show the sidebar scrollbar"
   }
 ]
