@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.4.2 — 2026-10-29
+
+- The new-tab chip no longer slides under the essentials: the current essentials grid is
+  back in the flow and the space's inline padding-top is dropped.
+- Menus: M3 checkbox (outlined → primary fill with a check) and radio (outlined →
+  primary ring with a dot) in the badge column.
+
 ## 0.4.1 — 2026-10-29
 
 - New tab is the dashed chip again, at the top of the list and outside the scroller (so

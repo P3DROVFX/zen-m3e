@@ -416,6 +416,18 @@ tab-group {
   &::before, &::after { display: none !important; }
 }
 
+/* ---------- Essentials in the flow ---------- */
+/* Zen overlays the essentials grid (absolute) and pushes each space down with an inline
+   padding-top. The new-tab chip lives outside the space, so it would slide under the
+   grid: put the current grid back in the flow and drop that padding instead. Hidden grids
+   (other spaces) stay fixed/out of the flow as Zen has them. */
+#zen-essentials > .zen-essentials-container:not([hidden="true"]) {
+  position: relative !important;
+}
+#tabbrowser-arrowscrollbox > zen-workspace {
+  padding-top: 2px !important;
+}
+
 /* ---------- New tab: the dashed chip, at the top of the list and always visible ---------- */
 /* The list's own button (inside the scroller) goes; Zen's second button, a sibling of
    the scroller, is shown and ordered first, so it stays put while the list scrolls. */

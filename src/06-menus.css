@@ -104,10 +104,48 @@ menupopup > :is(menuitem, menu):is(.menuitem-iconic, .menu-iconic, [image]) {
   --m3e-icon-bg: color-mix(in srgb, var(--m3-on-surface) 8%, transparent);
 }
 
-/* Checked items: the badge fills with tertiary and shows the check. */
-menupopup > menuitem:is([type="checkbox"], [type="radio"])[checked] > .menu-icon {
-  background-color: var(--m3-tertiary-container) !important;
-  fill: var(--m3-on-tertiary-container) !important;
+/* ---------- M3 checkbox and radio in the badge column ---------- */
+/* An 18px control centred in the 30px slot: outlined when off; filled primary with an
+   on-primary mark when on, its corners easing (shape follows state). */
+menupopup > menuitem:is([type="checkbox"], [type="radio"]) > .menu-icon {
+  appearance: none !important;
+  box-sizing: border-box !important;
+  width: 18px !important;
+  height: 18px !important;
+  min-width: 18px !important;
+  margin: 6px !important;
+  padding: 1px !important;
+  border: 2px solid var(--m3-on-surface-variant) !important;
+  border-radius: 4px !important;
+  background: transparent !important;
+  content: none !important;
+  visibility: visible !important;
+  -moz-context-properties: fill !important;
+  fill: var(--m3-on-primary) !important;
+  transition:
+    border-radius var(--m3e-d-fast) var(--m3e-morph),
+    background-color var(--m3e-d-effects) var(--m3e-effects),
+    border-color var(--m3e-d-effects) var(--m3e-effects) !important;
+}
+menupopup > menuitem[type="checkbox"][checked="true"] > .menu-icon {
+  content: url("chrome://global/skin/icons/check.svg") !important;
+  border-color: var(--m3-primary) !important;
+  background: var(--m3-primary) !important;
+  border-radius: 6px !important;
+}
+menupopup > menuitem[type="radio"] > .menu-icon {
+  border-radius: 9px !important;
+}
+menupopup > menuitem[type="radio"][checked="true"] > .menu-icon {
+  border-color: var(--m3-primary) !important;
+  background: radial-gradient(circle closest-side, var(--m3-primary) 0 4px, transparent 4.5px) !important;
+}
+/* On an active (secondary container) row the outline follows the row's content colour. */
+menupopup > menuitem:is([type="checkbox"], [type="radio"])[_moz-menuactive]:not([checked="true"]) > .menu-icon {
+  border-color: var(--m3-on-secondary-container) !important;
+}
+menupopup > menuitem:is([type="checkbox"], [type="radio"])[disabled] > .menu-icon {
+  opacity: 0.38;
 }
 
 menupopup > menuitem:is([default="true"], .spell-suggestion) {
