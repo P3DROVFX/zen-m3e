@@ -8,6 +8,8 @@
 //  * Popup motion: popups get [m3e-open] while open so their content can spring in.
 //  * Scroll edges: the tab list gets [m3e-at-start]/[m3e-at-end]/[m3e-scrolled] so its
 //    edges fade only where there is something hidden (the shell's top/bottom gradient).
+//  * Folder rows: each folder header gets [m3e-count] and up to three favicons as CSS
+//    variables, so a closed folder previews what it holds.
 
 (() => {
   "use strict";
@@ -116,6 +118,37 @@
     }, 400);
   };
 
+  // Folder previews. Rebuilt in one rAF after any tab/folder change; attribute and
+  // property writes only when the value differs.
+  let folderFrame = 0;
+  const cssURL = (u) => `url("${u.replace(/["\\\n]/g, encodeURIComponent)}")`;
+
+  function updateFolders() {
+    folderFrame = 0;
+    for (const folder of document.querySelectorAll("zen-folder")) {
+      const header = folder.querySelector(":scope > .tab-group-label-container");
+      if (!header) continue;
+      const tabs = [...folder.querySelectorAll(":scope > .tab-group-container > .tabbrowser-tab:not([zen-empty-tab])")];
+      const count = String(tabs.length);
+      if (header.getAttribute("m3e-count") !== count) header.setAttribute("m3e-count", count);
+      const icons = tabs.map((t) => t.getAttribute("image")).filter(Boolean).slice(0, 3);
+      for (let i = 0; i < 3; i++) {
+        const value = icons[i] ? cssURL(icons[i]) : "";
+        if (header.style.getPropertyValue(`--m3e-fav-${i + 1}`) !== value) {
+          if (value) header.style.setProperty(`--m3e-fav-${i + 1}`, value);
+          else header.style.removeProperty(`--m3e-fav-${i + 1}`);
+        }
+      }
+      header.style.setProperty("--m3e-fav-count", String(icons.length));
+    }
+  }
+  const queueFolders = () => {
+    if (!folderFrame) folderFrame = requestAnimationFrame(updateFolders);
+  };
+  const onTabAttr = (e) => {
+    if (e.detail?.changed?.includes("image") && e.target.closest?.("zen-folder")) queueFolders();
+  };
+
   const prefObserver = { observe: () => { lastMtime = -2; refresh(); } };
 
   function init() {
@@ -133,6 +166,11 @@
       window.addEventListener(type, onTabsChanged);
     }
     onTabsChanged();
+    for (const type of ["TabOpen", "TabClose", "TabMove", "TabGrouped", "TabUngrouped", "TabPinned", "TabUnpinned", "TabGroupCreate", "TabGroupRemoved", "ZenWorkspaceChanged"]) {
+      window.addEventListener(type, queueFolders);
+    }
+    window.addEventListener("TabAttrModified", onTabAttr);
+    setTimeout(queueFolders, 1500);
     Services.prefs.addObserver(PREF_PATH, prefObserver);
     window.addEventListener("unload", () => {
       clearTimeout(timer);

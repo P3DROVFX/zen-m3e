@@ -724,10 +724,14 @@ zen-sidebar-notification {
 
 /* ===== 04-sidebar.css ===== */
 /*
- * Sidebar: tabs as a grouped list (§4), the space header and folders as panes on
- * their own surface, essentials and pinned tiles with shape-is-state, a scroll area that
- * fades at its edges (shell technique) instead of drawing a line, the dashed "new tab"
- * chip and the create FAB.
+ * Sidebar, reorganised so the user's tabs start high:
+ *   top bar (+ library) · URL field · essentials tiles
+ *   PINNED  caption · pinned tabs and folders as rows (folders: one row when closed,
+ *                     with a count and a favicon preview)
+ *   TABS +  caption that is also the new-tab button · the tab list
+ *   foot:   spaces switcher (the current space expands with its name) · create FAB
+ * Every list is a grouped shape (§4); sections are split by captions and negative space,
+ * never by panes or lines. The space header is gone: the switcher names the space.
  */
 
 #navigator-toolbox {
@@ -738,8 +742,8 @@ zen-sidebar-notification {
   --tab-block-margin: 0px !important;
 }
 
-/* ---------- Tabs (unpinned): one grouped shape per section ---------- */
-#tabbrowser-tabs .tabbrowser-tab:not([pinned], [zen-essential]) {
+/* ---------- Tab rows (pinned and unpinned): one grouped shape per group ---------- */
+#navigator-toolbox #tabbrowser-tabs .tabbrowser-tab:not([zen-essential]) {
   margin-block: 0 !important;
   padding-block: calc(var(--m3e-tab-gap) / 2) !important;
   min-height: 0 !important;
@@ -832,13 +836,24 @@ zen-sidebar-notification {
   }
 }
 
-/* Outer corners of each section's group. */
+/* Outer corners. The tab list is one group. In the pinned section, loose pins form a
+   group wherever they run together, and every folder is its own group (header + rows). */
 .zen-workspace-normal-tabs-section > .tabbrowser-tab:nth-child(1 of .tabbrowser-tab:not([hidden], [zen-glance-tab])) {
   --tab-r-top: var(--m3e-tab-outer);
 }
 .zen-workspace-normal-tabs-section > .tabbrowser-tab:nth-last-child(1 of .tabbrowser-tab:not([hidden], [zen-glance-tab])) {
   --tab-r-bottom: var(--m3e-tab-outer);
 }
+.zen-workspace-pinned-tabs-section > .tabbrowser-tab:not(.tabbrowser-tab + .tabbrowser-tab) {
+  --tab-r-top: var(--m3e-tab-outer);
+}
+.zen-workspace-pinned-tabs-section > .tabbrowser-tab:not(:has(+ .tabbrowser-tab)) {
+  --tab-r-bottom: var(--m3e-tab-outer);
+}
+zen-folder > .tab-group-container > .tabbrowser-tab:nth-last-child(1 of .tabbrowser-tab:not([hidden])) {
+  --tab-r-bottom: var(--m3e-tab-outer);
+}
+
 
 /* Close / reset: a circle tinted with the row's content colour. */
 .tabbrowser-tab :is(.tab-close-button, .tab-reset-button) {
@@ -861,9 +876,61 @@ zen-sidebar-notification {
   fill: var(--m3-primary) !important;
 }
 
-/* ---------- Pinned tiles and essentials: rounded square idle → shape when current ---------- */
-/* Layout (grid, sizes, centring) stays with Zen / SuperPins; only surface and shape here. */
-#tabbrowser-tabs .tabbrowser-tab:is([pinned], [zen-essential]) > .tab-stack > .tab-background {
+/* Pinned tabs are rows too. SuperPins' legacy layout turns them into an icon grid with
+   selectors up to (1,7,1); the doubled id outranks them. */
+#navigator-toolbox#navigator-toolbox .zen-workspace-pinned-tabs-section {
+  & .tabbrowser-tab[pinned]:not([zen-essential]) {
+    width: auto !important;
+    max-width: none !important;
+    height: auto !important;          /* SuperPins: uc.pinned.height */
+    grid-column: auto !important;
+    & .tab-label-container {
+      display: flex !important;
+    }
+    & .tab-icon-stack {
+      position: relative !important;
+      left: 0 !important;
+      top: 0 !important;
+      margin: 0 !important;
+      transform: none !important;
+    }
+    & .tab-icon-image {
+      margin-inline: 0 10px !important;
+    }
+  }
+  & zen-folder > .tab-group-container,
+  & zen-folder:not([collapsed]) > .tab-group-container {
+    display: flex !important;
+    flex-direction: column !important;
+    grid-template-columns: none !important;
+    margin: 0 !important;            /* Zen indents the whole row; we indent its content */
+    width: auto !important;
+    max-width: none !important;
+    align-self: stretch !important;
+  }
+  & .tabbrowser-tab[pinned]:not([zen-essential]) > .tab-stack,
+  & .tabbrowser-tab[pinned]:not([zen-essential]) > .tab-stack > :is(.tab-background, .tab-content) {
+    height: var(--m3e-tab-height) !important;
+    min-height: var(--m3e-tab-height) !important;
+  }
+  & .tabbrowser-tab[pinned]:not([zen-essential]) > .tab-stack > .tab-background {
+    margin-inline: 0 !important;
+  }
+  & zen-folder .tabbrowser-tab > .tab-stack > .tab-content {
+    padding-inline-start: 24px !important;
+  }
+}
+/* Same box as the tab list: no extra side margin, no 25px hole before the TABS caption. */
+#navigator-toolbox .zen-workspace-pinned-tabs-section {
+  margin-inline: 0 !important;
+  padding-block-end: 2px !important;
+  & zen-folder {
+    margin-inline: 0 !important;
+  }
+}
+
+/* ---------- Essentials: rounded square idle → smaller corners when current ---------- */
+#tabbrowser-tabs .tabbrowser-tab[zen-essential] > .tab-stack > .tab-background {
   background: var(--m3e-layer2) !important;
   box-shadow: none !important;
   border: none !important;
@@ -871,23 +938,15 @@ zen-sidebar-notification {
   border-radius: var(--m3e-r-md) !important;
   transition: border-radius var(--m3e-d) var(--m3e-morph), var(--m3e-color-motion) !important;
 }
-#tabbrowser-tabs .tabbrowser-tab:is([pinned], [zen-essential]):hover > .tab-stack > .tab-background {
+#tabbrowser-tabs .tabbrowser-tab[zen-essential]:hover > .tab-stack > .tab-background {
   background: var(--m3-surface-container-highest) !important;
   border-radius: var(--m3e-r-lg) !important;
 }
-#tabbrowser-tabs .tabbrowser-tab:is([pinned], [zen-essential]):is([selected], [multiselected]) > .tab-stack > .tab-background {
+#tabbrowser-tabs .tabbrowser-tab[zen-essential]:is([selected], [multiselected]) > .tab-stack > .tab-background {
   background: var(--m3-primary-container) !important;
   border-radius: var(--m3e-r-sm) !important;
 }
-#tabbrowser-tabs .tabbrowser-tab[pinned]:not([zen-essential]) .tab-label {
-  font-variation-settings: var(--m3e-type-label) !important;
-}
-#tabbrowser-tabs .tabbrowser-tab[pinned]:not([zen-essential])[selected] .tab-label {
-  font-variation-settings: var(--m3e-type-strong) !important;
-  color: var(--m3-on-primary-container) !important;
-}
-/* Icons sit dead centre in their tile: drop the list-mode gap (3px / 10px) on the icon. */
-#tabbrowser-tabs .tabbrowser-tab:is([pinned], [zen-essential]) .tab-icon-image {
+#tabbrowser-tabs .tabbrowser-tab[zen-essential] .tab-icon-image {
   margin-inline: 0 !important;
 }
 
@@ -909,108 +968,125 @@ zen-sidebar-notification {
   opacity: 0 !important;
 }
 
-/* ---------- Space header: a pane with the space's mark and its name ---------- */
+/* ---------- The space header goes: the switcher in the foot names the space ---------- */
 .zen-current-workspace-indicator {
-  /* Same inset as the tab rows (Zen gives the header the full sidebar width). */
-  box-sizing: border-box !important;
-  width: calc(100% - 16px) !important;
-  min-height: 46px !important;
-  margin: 4px 8px 8px !important;
-  padding: 0 14px 0 8px !important;
-  gap: 10px !important;
-  border-radius: var(--m3e-r-lg) !important;
-  background: var(--m3e-layer2) !important;
-  transition: var(--m3e-color-motion), var(--m3e-shape-motion) !important;
-
-  &::before {
-    display: none !important;
-  }
-  &:hover {
-    background: var(--m3-surface-container-high) !important;
-    border-radius: var(--m3e-r-md) !important;
-  }
-
-  & .zen-current-workspace-indicator-name {
-    font-size: 16px !important;
-    font-variation-settings: var(--m3e-type-display) !important;
-    letter-spacing: 0 !important;
-    color: var(--m3-on-surface) !important;
-    opacity: 1 !important;
-    text-align: start !important;
-    margin: 0 !important;
-  }
-
-  /* The collapse chevron opens nothing here: the space mark stays. */
-  & .zen-current-workspace-indicator-chevron {
-    display: none !important;
-  }
-  & .zen-current-workspace-indicator-icon {
-    display: flex !important;
-    opacity: 1 !important;
-    visibility: visible !important;
-    justify-content: center !important;
-    align-items: center !important;
-  }
-
-  /* The mark in a cookie that morphs 9 → 12 sides on hover. */
-  & .zen-current-workspace-indicator-stack {
-    width: 32px !important;
-    height: 32px !important;
-    margin: 0 !important;
-    display: grid !important;
-    place-items: center !important;
-    background: var(--m3-tertiary-container) !important;
-    color: var(--m3-on-tertiary-container) !important;
-    fill: var(--m3-on-tertiary-container) !important;
-    clip-path: var(--m3e-shape-cookie-9);
-    transition: clip-path var(--m3e-d) var(--m3e-spatial) !important;
-  }
-  &:hover .zen-current-workspace-indicator-stack {
-    clip-path: var(--m3e-shape-cookie-12);
-  }
-
-  & .zen-workspaces-actions {
-    margin-inline-start: auto !important;
-  }
+  display: none !important;
 }
 
-/* ---------- Folders: a pane holding their header and tiles ---------- */
+/* ---------- Section captions ---------- */
+.zen-workspace-pinned-tabs-section:has(> .tabbrowser-tab:not([hidden]), > zen-folder)::before {
+  content: "Pinned";
+  display: block;
+  order: -1;
+  padding: 10px 12px 6px;
+  font-size: 10.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-variation-settings: var(--m3e-type-caption);
+  color: var(--m3-on-surface-variant);
+}
+
+/* ---------- Folders: one row when closed; rows of tabs when open ---------- */
 zen-folder {
   --zen-folder-behind-bgcolor: var(--m3-tertiary-container) !important;
   --zen-folder-front-bgcolor: var(--m3-tertiary) !important;
   --zen-folder-stroke: var(--m3-on-tertiary-container) !important;
-  background: var(--m3e-layer1) !important;
-  border-radius: var(--m3e-r-lg) !important;
-  padding: 2px 4px 6px !important;
-  margin: 0 0 8px !important;
+  background: none !important;
+  padding: 0 !important;
+  margin-block: 4px !important;
 
   & > .tab-group-label-container {
-    min-height: 40px !important;
-    padding-inline: 8px !important;
-    border-radius: var(--m3e-r-md) !important;
-    background: transparent !important;
-    transition: var(--m3e-color-motion) !important;
-    &::before { display: none !important; }
-    &:hover { background: color-mix(in srgb, var(--m3-on-surface) var(--m3e-tint-idle), transparent) !important; }
+    box-sizing: border-box !important;
+    min-height: var(--m3e-tab-height) !important;
+    height: var(--m3e-tab-height) !important;
+    margin: 0 0 var(--m3e-tab-gap) !important;
+    padding-inline: 10px 8px !important;
+    gap: 8px !important;
+    background: var(--m3e-layer1) !important;
+    border-radius: var(--m3e-tab-outer) var(--m3e-tab-outer) var(--m3e-r-join) var(--m3e-r-join) !important;
+    transition: border-radius var(--m3e-d) var(--m3e-morph), var(--m3e-color-motion) !important;
+
+    &:hover {
+      background: var(--m3-surface-container-high) !important;
+    }
+
+    /* Favicon preview: the first three tabs, overlapping (set by m3e.uc.js). */
+    &::before {
+      content: "" !important;
+      display: block !important;
+      position: static !important;
+      inset: auto !important;
+      z-index: 1 !important;            /* Zen's squircle layer sits at -1 */
+      order: 5;
+      flex: none;
+      width: calc(16px + 9px * (var(--m3e-fav-count, 0) - 1)) !important;
+      height: 16px !important;
+      margin: 0 !important;
+      border-radius: 0 !important;
+      background-color: transparent !important;
+      background-image: var(--m3e-fav-1, none), var(--m3e-fav-2, none), var(--m3e-fav-3, none) !important;
+      background-position: 0 0, 9px 0, 18px 0 !important;
+      background-size: 16px 16px !important;
+      background-repeat: no-repeat !important;
+      -moz-context-properties: fill;
+      fill: currentColor;
+      opacity: 0.9;
+      transition: opacity var(--m3e-d-effects) var(--m3e-effects) !important;
+    }
+    /* Count, in the tertiary voice. */
+    &::after {
+      content: attr(m3e-count) !important;
+      display: flex !important;
+      order: 6;
+      flex: none;
+      min-width: 22px;
+      height: 20px;
+      padding-inline: 6px;
+      box-sizing: border-box;
+      align-items: center;
+      justify-content: center;
+      border-radius: 10px;
+      background: var(--m3-tertiary-container);
+      color: var(--m3-on-tertiary-container);
+      font-size: 11px;
+      font-variation-settings: var(--m3e-type-condensed);
+    }
+    &:not([m3e-count])::after {
+      display: none !important;
+    }
   }
+  /* Closed: the header is the whole group. */
+  &[collapsed] > .tab-group-label-container {
+    border-radius: var(--m3e-tab-outer) !important;
+  }
+  /* Open: the preview folds away — the tabs are right there. */
+  &:not([collapsed]) > .tab-group-label-container::before {
+    opacity: 0;
+    width: 0 !important;
+  }
+
   & .tab-group-label {
-    font-size: 14px !important;
+    flex: 1 !important;
+    min-width: 0 !important;
+    margin: 0 !important;
+    font-size: 13.5px !important;
     font-variation-settings: var(--m3e-type-title) !important;
     color: var(--m3-on-surface) !important;
   }
   & .tab-group-folder-icon {
     display: grid !important;
     place-items: center !important;
+    width: 20px !important;
+    height: 20px !important;
+    & svg {
+      width: 20px !important;
+      height: 20px !important;
+    }
   }
 }
 tab-group {
   --zen-folder-behind-bgcolor: var(--m3-tertiary-container) !important;
   --zen-folder-front-bgcolor: var(--m3-tertiary) !important;
-}
-
-/* The pinned section spans the full width so folders line up with the space header. */
-.zen-workspace-pinned-tabs-section {
-  padding-inline: 0 !important;
 }
 
 /* ---------- Scroll area: edges fade instead of a line (shell technique) ---------- */
@@ -1040,49 +1116,69 @@ tab-group {
   &::before, &::after { display: none !important; }
 }
 
-/* ---------- New tab: the dashed "unselected chip" ---------- */
-#tabs-newtab-button,
-#vertical-tabs-newtab-button {
-  margin-block: 2px 4px !important;
-  border-radius: 19px !important;
-  outline: 1.5px dashed color-mix(in srgb, var(--m3-outline) 70%, transparent) !important;
-  outline-offset: -1.5px !important;
+/* ---------- New tab → the "TABS" caption with a + at its end ---------- */
+#navigator-toolbox :is(#tabs-newtab-button, #vertical-tabs-newtab-button) {
+  min-height: 34px !important;
+  margin: 8px 0 2px !important;
+  padding: 0 4px 0 12px !important;
   background: transparent !important;
-  min-height: 38px !important;
-  justify-content: center !important;
+  outline: none !important;
+  border-radius: 0 !important;
   color: var(--m3-on-surface-variant) !important;
-  transition: var(--m3e-color-motion), outline-color var(--m3e-d-effects) var(--m3e-effects), var(--m3e-shape-motion) !important;
+  fill: var(--m3-on-surface-variant) !important;
 
-  & > .toolbarbutton-icon,
-  & > .toolbarbutton-text {
-    background: transparent !important;
+  /* Zen owns this button's ::before (its hover surface); the caption is ::after. */
+  &::after {
+    content: "Tabs" !important;
+    flex: 1;
+    order: -1;
+    font-size: 10.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-variation-settings: var(--m3e-type-caption);
   }
   & > .toolbarbutton-text {
-    font-variation-settings: var(--m3e-type-label) !important;
+    display: none !important;
   }
-  &:hover {
-    background: var(--m3-secondary-container) !important;
-    color: var(--m3-on-secondary-container) !important;
-    outline-color: transparent !important;
-    border-radius: var(--m3e-r-sm) !important;
+  & > .toolbarbutton-icon {
+    order: 1;
+    box-sizing: border-box !important;
+    width: 28px !important;
+    height: 28px !important;
+    padding: 6px !important;
+    margin: 0 !important;
+    border-radius: 14px !important;
+    background-color: transparent !important;
+    transition: var(--m3e-shape-motion), var(--m3e-color-motion) !important;
+  }
+  &:hover > .toolbarbutton-icon {
+    border-radius: 9px !important;
+    background-color: var(--m3-secondary-container) !important;
+    fill: var(--m3-on-secondary-container) !important;
+  }
+  &:hover:active > .toolbarbutton-icon {
+    transform: scale(0.95);
   }
 }
 
-/* The label carries flex="1" (a UA rule no user sheet can beat); cap its width so the
-   button's justify-content centres icon + label as one group. */
-:root #navigator-toolbox :is(#tabs-newtab-button, #vertical-tabs-newtab-button) > .toolbarbutton-text {
-  max-width: max-content !important;
-}
+/* ---------- Foot: spaces switcher — the current space expands with its name ---------- */
+#zen-workspaces-button#zen-workspaces-button {
+  gap: 4px !important;
+  align-items: center !important;
 
-/* ---------- Foot: spaces switcher chips and the create FAB ---------- */
-#zen-workspaces-button {
-  gap: 2px !important;
   & toolbarbutton {
+    width: auto !important;          /* Zen sets an inline 32px */
+    max-width: none !important;
+    min-width: 32px !important;
+    flex-shrink: 0 !important;
+    height: 32px !important;
     padding: 0 !important;
     justify-content: center !important;
     align-items: center !important;
+    gap: 0;
     border-radius: 16px !important;
-    transition: var(--m3e-shape-motion), var(--m3e-color-motion) !important;
+    background: transparent !important;
+    transition: var(--m3e-shape-motion), var(--m3e-color-motion), padding var(--m3e-d) var(--m3e-spatial) !important;
   }
   & toolbarbutton:hover {
     background: var(--toolbarbutton-hover-background) !important;
@@ -1092,11 +1188,63 @@ tab-group {
     margin: 0 !important;
     text-align: center !important;
   }
+
+  /* The name, folded away on the others. */
+  & toolbarbutton::after {
+    content: attr(tooltiptext);
+    flex-shrink: 0;
+    max-width: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    opacity: 0;
+    font-size: 12.5px;
+    font-variation-settings: var(--m3e-type-strong);
+    transition: max-width var(--m3e-d) var(--m3e-spatial), opacity var(--m3e-d-effects) var(--m3e-effects), margin var(--m3e-d) var(--m3e-spatial);
+  }
+
   & toolbarbutton[active="true"] {
+    padding: 0 12px 0 3px !important;
     background: var(--m3-secondary-container) !important;
     color: var(--m3-on-secondary-container) !important;
-    border-radius: var(--m3e-r-sm) !important;
+    border-radius: 16px !important;
+
+    &::after {
+      max-width: 90px;
+      opacity: 1;
+      margin-inline-start: 8px;
+    }
+    /* The space's mark in a cookie (it moved here from the header). */
+    & .zen-workspace-icon {
+      position: static !important;     /* Zen centres it absolutely in a 32px box */
+      transform: none !important;
+      display: grid !important;
+      place-items: center !important;
+      width: 26px !important;
+      height: 26px !important;
+      background: var(--m3-tertiary-container) !important;
+      color: var(--m3-on-tertiary-container) !important;
+      clip-path: var(--m3e-shape-cookie-9);
+      transition: clip-path var(--m3e-d) var(--m3e-spatial) !important;
+    }
+    &:hover .zen-workspace-icon {
+      clip-path: var(--m3e-shape-cookie-12);
+    }
   }
+}
+
+/* ---------- Library: up to the top bar, next to the compact-mode toggle ---------- */
+#zen-sidebar-foot-buttons {
+  position: static !important;
+}
+#zen-sidebar-top-buttons-separator {
+  min-width: 34px !important;
+}
+#navigator-toolbox #zen-library-button {
+  position: absolute !important;
+  top: var(--m3e-library-top, 7px);
+  inset-inline-start: var(--m3e-library-start, 66px);
+  z-index: 2;
 }
 
 #zen-create-new-button {

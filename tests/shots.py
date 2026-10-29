@@ -71,7 +71,15 @@ def setup():
         for (const t of pins) gBrowser.pinTab(t);
         for (let i = 0; i < 12; i++) gBrowser.addTab(page('Reading list ' + i, '#ddd'), { triggeringPrincipal: sys });
         await new Promise(r => setTimeout(r, 600));
-        try { await gZenFolders.createFolder(pins, { label: 'Design Quickshell', renameFolder: false }); } catch {}
+        const icons = ['palette', 'paintbrush', 'folder', 'mail', 'sparkles', 'developer'];
+        const more = ['GitHub A', 'GitHub B'].map(t => gBrowser.addTab(page(t, '#eee'), { triggeringPrincipal: sys }));
+        for (const t of more) gBrowser.pinTab(t);
+        [...pins, ...more].forEach((t, i) => gBrowser.setIcon(t, `chrome://browser/skin/zen-icons/${icons[i % icons.length]}.svg`));
+        try {
+          await gZenFolders.createFolder(pins, { label: 'Design Quickshell', renameFolder: false });
+          const f2 = await gZenFolders.createFolder(more, { label: 'Quickshell', renameFolder: false });
+          if (f2) f2.collapsed = true;
+        } catch {}
         gBrowser.selectedTab = tabs[3];
         const now = Date.now() * 1000;
         const visits = [['https://github.com/', 'GitHub'], ['https://github.com/P3DROVFX/zen-m3e', 'P3DROVFX/zen-m3e'],

@@ -25,12 +25,13 @@ The guide asks not to repeat a technique. Where each one lives:
 
 | Technique | Where | Why there |
 |---|---|---|
-| Grouped list (joins + notch around the selection) | sidebar tabs, search results | the browser's rail, and the list under the hero (asked for explicitly) |
+| Grouped list (joins + notch around the selection) | sidebar tabs, pinned rows and folders, search results | the browser's rail, and the list under the hero (asked for explicitly) |
 | Separate rows with a gap + icon badge | menus, app menu | the shell's own menu style |
-| Pane on its own surface | space header, folders | sections, so their edges never need a line |
+| Section caption (caption face, no surface) | PINNED, TABS (the + is the new-tab button) | sections split by type and space, not panes |
+| Expanding chip | the current space in the foot | names the space without a header block |
 | Edge fade on scroll | the tab list, library history | shell technique; replaces divider lines |
 | Shape is state (circle ↔ rounded square) | essentials, icon buttons, create FAB | small, frequent state changes |
-| Polygon morph (equal-vertex `clip-path`) | search badge (Clover-4 → Sunny while typing), space icon (Cookie-9 → 12 on hover) | the two identity marks of the window |
+| Polygon morph (equal-vertex `clip-path`) | search badge (Clover-4 → Sunny while typing), space mark in the foot chip (Cookie-9 → 12 on hover) | the two identity marks of the window |
 | Clipped ornament | the search overlay's top-result card | the one hero on screen |
 | Dashed unselected chip | "New tab", secondary buttons, library filters | an action that is not a state |
 | Wide display face (`wdth 140`) | space name, result group headings, panel titles | headings only, never body text |
@@ -70,3 +71,19 @@ chrome.css ── @import ───┘   unlayered: wins over the fallback palet
            └─ -moz-pref("m3e.scheme", …) blocks (!important) force light/dark/system
 m3e.uc.js  ── reloads colors.css as an author sheet when it changes (optional)
 ```
+
+## Sidebar order
+
+```
+top bar · library        ← moved up from the foot (absolute, no layout change saved)
+URL field
+essentials tiles
+PINNED                   caption only when there are pins
+  pins / folders         closed folder = 1 row: icon · name · favicons · count
+TABS               +     the new-tab button, restyled as the caption
+  tab list
+foot: (◆ Space) ◇ ◇   [+] current space expands with its name; FAB
+```
+
+SuperPins' icon grid for pinned tabs is overridden inside the pinned section (doubled-id
+selectors); essentials keep their tiles.

@@ -16,13 +16,14 @@ ladder, same curves (`Appearance.animationCurves`), same rules (`docs/design.md`
 
 ## What it themes
 
-- **Sidebar** — tabs as one grouped shape per section (joins 5 px, outer corners 23 px);
-  the current tab becomes a primary pill, its label gains weight, and its neighbours
-  round towards it. The space header and each folder are panes on their own surface; the
-  space name uses the wide display face (`wdth 140`, `wght 840`) next to its mark in a
-  cookie that morphs 9 → 12 sides. Pinned tiles and essentials are shape-is-state. The
-  list fades at its top/bottom edges while there is more to scroll (no divider lines).
-  "New tab" is the dashed unselected chip; "create" is a small FAB.
+- **Sidebar** — reorganised so your tabs start high. Top bar (with the library moved up),
+  URL field, essentials; then a **PINNED** caption over pinned tabs and folders as rows
+  (a closed folder is one row with a favicon preview and a count; an open one lists its
+  tabs indented under it); then a **TABS** caption whose `+` is the new-tab button, and
+  the tab list. Every list is a grouped shape: joins, outer corners, the current tab a
+  primary pill with its neighbours rounding in and its label gaining weight. The space
+  header is gone: the current space's chip in the foot expands with its name and its
+  mark in a morphing cookie. Lists fade at their edges while scrolling, no divider lines.
 - **Search overlay** (floating URL bar) — a sheet with a Clover-4 badge that morphs into
   Sunny while you type, the query in a filled pill, the first result as a **top result**
   hero card (primary container, caption, title, an "Open ↵" pill that springs in, a

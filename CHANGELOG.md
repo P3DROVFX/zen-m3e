@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.4.0 — 2026-10-29
+
+Sidebar reorganised so the tab list starts near the top:
+- Space header removed; the current space's chip in the foot expands with its name and
+  carries the space mark in a morphing cookie.
+- Pinned tabs and folders are rows under a PINNED caption (SuperPins' grid overridden in
+  the pinned section). A closed folder is one row with a three-favicon preview and a tab
+  count (m3e.uc.js); an open folder lists its tabs indented, as its own group.
+- The new-tab button becomes the TABS caption with a `+` at its end.
+- The library button moves up to the top bar.
+- Pinned section matches the tab list's box; no 25 px hole before TABS.
+
 ## 0.3.0 — 2026-10-29
 
 - Zen Library themed: navigation rail (pill → rounded square in primary container),
