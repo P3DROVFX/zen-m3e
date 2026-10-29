@@ -192,6 +192,11 @@ zen-folder > .tab-group-container > .tabbrowser-tab:nth-last-child(1 of .tabbrow
   & .tabbrowser-tab[pinned]:not([zen-essential]) > .tab-stack > .tab-background {
     margin-inline: 2px !important;   /* same inset as the tab list's rows */
   }
+  /* Zen indents each tab in a folder (margin-inline-start: 14px, which SuperPins used
+     to cancel). Rows keep the header's column; only their content is indented. */
+  & zen-folder .tabbrowser-tab {
+    margin-inline: 0 !important;
+  }
   & zen-folder .tabbrowser-tab > .tab-stack > .tab-content {
     padding-inline-start: 24px !important;
   }

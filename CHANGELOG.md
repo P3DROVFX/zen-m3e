@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.5.1 — 2026-10-29
+
+- Folder rows share the header's column without SuperPins: Zen's 14 px per-tab indent in
+  folders is cancelled (only the row content is indented).
+
 ## 0.5.0 — 2026-10-29
 
 - Essentials no longer overflow the sidebar: the in-flow grid shares the URL field's box.
