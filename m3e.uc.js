@@ -8,6 +8,8 @@
 //  * Popup motion: popups get [m3e-open] while open so their content can spring in.
 //  * Scroll edges: the tab list gets [m3e-at-start]/[m3e-at-end]/[m3e-scrolled] so its
 //    edges fade only where there is something hidden (the shell's top/bottom gradient).
+//  * Media cards: the Media Session artwork of each playing tab becomes its card's
+//    background (--m3e-media-art), like Android's media player.
 //  * Folder rows: each folder header gets [m3e-count] and up to three favicons as CSS
 //    variables, so a closed folder previews what it holds.
 
@@ -175,6 +177,44 @@
     if (e.detail?.changed?.includes("image") && e.target.closest?.("zen-folder")) queueFolders();
   };
 
+  // Media cards. Zen's cards know their tab only internally; a card shows its
+  // metadata title, so match it against the tabs' media controllers. Re-evaluated in
+  // one rAF whenever the media bar's markup or labels change.
+  let mediaFrame = 0;
+  function artworkByTitle() {
+    const map = new Map();
+    for (const tab of gBrowser.tabs) {
+      let meta = null;
+      try {
+        meta = tab.linkedBrowser?.browsingContext?.mediaController?.getMetadata();
+      } catch {}
+      if (!meta?.title || !meta.artwork?.length) continue;
+      const size = (a) => Math.max(...String(a.sizes || "0x0").split(/[x\s]/i).map(Number).filter(Number.isFinite), 0);
+      const best = [...meta.artwork].sort((a, b) => size(b) - size(a))[0];
+      if (best?.src) map.set(meta.title, best.src);
+    }
+    return map;
+  }
+  function updateMedia() {
+    mediaFrame = 0;
+    const cards = document.querySelectorAll("#zen-media-controls-toolbar .zen-media-card");
+    if (!cards.length) return;
+    const art = artworkByTitle();
+    for (const card of cards) {
+      const title = card.querySelector(".zen-media-title")?.getAttribute("value") ||
+        card.querySelector(".zen-media-title")?.textContent || "";
+      const src = art.get(title);
+      const value = src ? cssURL(src) : "";
+      if (card.style.getPropertyValue("--m3e-media-art") === value) continue;
+      if (value) card.style.setProperty("--m3e-media-art", value);
+      else card.style.removeProperty("--m3e-media-art");
+      card.toggleAttribute("m3e-has-art", !!value);
+    }
+  }
+  const queueMedia = () => {
+    if (!mediaFrame) mediaFrame = requestAnimationFrame(updateMedia);
+  };
+
   const prefObserver = { observe: () => { lastMtime = -2; refresh(); } };
 
   function init() {
@@ -196,6 +236,12 @@
       window.addEventListener(type, queueFolders);
     }
     window.addEventListener("TabAttrModified", onTabAttr);
+    const mediaBar = document.getElementById("zen-media-controls-toolbar");
+    if (mediaBar) {
+      new MutationObserver(queueMedia).observe(mediaBar, {
+        childList: true, subtree: true, attributes: true, attributeFilter: ["value", "hidden", "class"],
+      });
+    }
     setTimeout(queueFolders, 1500);
     Services.prefs.addObserver(PREF_PATH, prefObserver);
     Services.prefs.addObserver("m3e.show-sidebar-scrollbar", onTabsChanged);

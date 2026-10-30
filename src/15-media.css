@@ -1,0 +1,253 @@
+/*
+ * Media player — the Android / shell media card.
+ *
+ *   ┌───────────────────────────────────────────┐
+ *   │ (app)                      🔈  ⧉  ✕        │   app = the tab's favicon
+ *   │ Title in the title face           ┌────┐   │
+ *   │ Artist                            │ ❚❚ │   │   play/pause: rounded square while
+ *   │ ⏮  ∿∿∿∿∿∿∿∿∿∿━━━━━━━━━━━━━━━━━  ⏭  └────┘   │   playing, circle when paused
+ *   └───────────────────────────────────────────┘
+ *
+ * The album art (Media Session artwork, set by m3e.uc.js as --m3e-media-art) fills the
+ * card under a scrim of the scheme's surface; without art the card is secondary
+ * container. Zen's markup is kept: its wrappers become `display: contents` so every
+ * control lands in one grid. Always expanded (no hover reveal); Zen's stacking of
+ * several cards still works (it is relative to the card's height).
+ */
+#zen-media-controls-toolbar {
+  --m3e-media-pad: 12px;
+
+  & .zen-media-card {
+    min-height: 0;
+    padding: var(--m3e-media-pad) !important;
+    border-radius: var(--m3e-r-xl) !important;
+    background-color: var(--m3-secondary-container) !important;
+    color: var(--m3-on-secondary-container) !important;
+    fill: currentColor !important;
+    outline: none !important;
+    box-shadow: none !important;
+    overflow: clip;
+    isolation: isolate;
+
+    /* Art + scrim, one layer. */
+    &::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      border-radius: inherit;
+      background:
+        linear-gradient(to right,
+          color-mix(in srgb, var(--m3-surface) 82%, transparent),
+          color-mix(in srgb, var(--m3-surface) 46%, transparent)),
+        var(--m3e-media-art, none) center / cover no-repeat;
+      opacity: 0;
+      transition: opacity var(--m3e-d) var(--m3e-effects);
+    }
+    &[m3e-has-art]::before {
+      opacity: 1;
+    }
+    &[m3e-has-art] {
+      color: var(--m3-on-surface) !important;
+    }
+  }
+
+  /* One grid: Zen's wrappers dissolve into it. */
+  & .zen-media-main-vbox {
+    display: grid !important;
+    grid-template-columns: auto minmax(0, 1fr) auto auto;
+    grid-template-areas:
+      "app  .    mute tools"
+      "info info info play"
+      "prev bar  bar  next";
+    align-items: center;
+    column-gap: 6px;
+    row-gap: 4px;
+    height: auto !important;
+  }
+  & .zen-media-main-vbox > vbox,
+  & .zen-media-info-container,
+  & .zen-media-progress-hbox,
+  & .zen-media-controls-hbox,
+  & .zen-media-playback-buttons {
+    display: contents !important;
+  }
+
+  /* No hover reveal: the card always shows everything. */
+  & .show-on-hover {
+    max-height: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+    padding: 0 !important;
+    pointer-events: auto !important;
+  }
+
+  & .toolbarbutton-1 {
+    margin: 0 !important;
+    border-radius: 16px !important;
+    transition: var(--m3e-shape-motion), var(--m3e-color-motion), scale var(--m3e-d-fast) var(--m3e-spatial-fast) !important;
+    & > .toolbarbutton-icon {
+      width: 32px !important;
+      height: 32px !important;
+      padding: 8px !important;
+      border-radius: inherit !important;
+      background: transparent !important;
+    }
+    &:hover {
+      border-radius: 10px !important;
+      background: color-mix(in srgb, currentColor var(--m3e-tint-hover), transparent) !important;
+    }
+    &:hover:active {
+      scale: 0.92;
+    }
+  }
+
+  /* App: the tab's favicon in a round chip; the floating notes (a loop) go. */
+  & .zen-media-focus-button {
+    grid-area: app;
+    justify-self: start;
+    & > .toolbarbutton-icon {
+      width: 30px !important;
+      height: 30px !important;
+      padding: 6px !important;
+      border-radius: 50% !important;
+      background: color-mix(in srgb, currentColor 12%, transparent) !important;
+    }
+  }
+  & .zen-media-notes {
+    display: none !important;
+  }
+
+  & .zen-media-buttons-hbox {
+    grid-area: tools;
+    margin: 0 !important;
+    gap: 0;
+  }
+  & .zen-media-mute-button {
+    grid-area: mute;
+  }
+  & .media-device-buttons {
+    grid-area: mute;
+  }
+
+  /* Title and artist. */
+  & .zen-media-info-vbox {
+    grid-area: info;
+    width: auto !important;
+    min-width: 0 !important;
+    align-self: end;
+    padding-block: 6px 2px;
+    mask-image: linear-gradient(to left, transparent, #000 1.2em) !important;
+    &::before {
+      display: none !important;
+    }
+    & label {
+      margin: 0 !important;
+      min-height: 0 !important;
+    }
+  }
+  & .zen-media-title {
+    height: auto !important;
+    font-size: 17px !important;
+    line-height: 1.25 !important;
+    font-variation-settings: var(--m3e-type-title) !important;
+  }
+  & .zen-media-artist {
+    opacity: 0.8 !important;
+    font-size: 12.5px !important;
+    font-variation-settings: var(--m3e-type-label) !important;
+  }
+
+  /* Play / pause: the big control. Rounded square while playing, circle when paused. */
+  & .zen-media-playpause-button {
+    grid-area: play;
+    align-self: end;
+    width: 56px !important;
+    height: 56px !important;
+    justify-content: center !important;
+    border-radius: 28px !important;
+    background: var(--m3-primary) !important;
+    color: var(--m3-on-primary) !important;
+    fill: var(--m3-on-primary) !important;
+    & > .toolbarbutton-icon {
+      width: 56px !important;
+      height: 56px !important;
+      padding: 18px !important;
+    }
+    &:hover {
+      border-radius: 20px !important;
+      background: color-mix(in srgb, var(--m3-on-primary) 10%, var(--m3-primary)) !important;
+    }
+  }
+  & .zen-media-card.playing .zen-media-playpause-button {
+    border-radius: 18px !important;
+    &:hover {
+      border-radius: 24px !important;
+    }
+  }
+
+  & .zen-media-previoustrack-button { grid-area: prev; }
+  & .zen-media-nexttrack-button { grid-area: next; }
+
+  /* Progress: a thick track; while playing the elapsed part is the M3E wave. */
+  & .zen-media-current-time,
+  & .zen-media-duration {
+    display: none !important;
+  }
+  & .zen-media-progress-bar {
+    grid-area: bar;
+    width: auto !important;
+    min-width: 0;
+    height: 16px !important;
+    margin: 0 4px !important;
+    background: transparent !important;
+
+    &::-moz-range-track {
+      height: 4px !important;
+      border-radius: 2px !important;
+      background: color-mix(in srgb, currentColor 22%, transparent) !important;
+    }
+    &::-moz-range-progress {
+      height: 4px !important;
+      border-radius: 2px !important;
+      background: var(--m3-primary) !important;
+    }
+    &::-moz-range-thumb {
+      width: 4px !important;
+      height: 16px !important;
+      border-radius: 2px !important;
+      background: var(--m3-primary) !important;
+      transform: none !important;
+    }
+  }
+  & .zen-media-card.playing .zen-media-progress-bar::-moz-range-progress {
+    height: 8px !important;
+    border-radius: 0 !important;
+    /* A sine of the track's height, repeated: the wavy progress of M3E. Static —
+       it reads as "playing" without a looping animation. */
+    mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 8'%3E%3Cpath d='M0 4 Q4 0 8 4 T16 4' fill='none' stroke='black' stroke-width='2.4' stroke-linecap='round'/%3E%3C/svg%3E") left center / 16px 8px repeat-x;
+  }
+}
+
+/* Collapsed sidebar: just the play/pause control. */
+:root:not([zen-sidebar-expanded="true"]) #zen-media-controls-toolbar {
+  & .zen-media-card {
+    padding: 4px !important;
+  }
+  & .zen-media-main-vbox {
+    grid-template-columns: auto;
+    grid-template-areas: "play";
+  }
+  & .zen-media-main-vbox > :not(.zen-media-controls-hbox),
+  & :is(.zen-media-focus-button, .zen-media-previoustrack-button, .zen-media-nexttrack-button, .zen-media-mute-button, .media-device-buttons, .zen-media-progress-bar, .zen-media-info-vbox, .zen-media-buttons-hbox) {
+    display: none !important;
+  }
+  & .zen-media-playpause-button,
+  & .zen-media-playpause-button > .toolbarbutton-icon {
+    width: 44px !important;
+    height: 44px !important;
+  }
+  & .zen-media-playpause-button > .toolbarbutton-icon {
+    padding: 13px !important;
+  }
+}

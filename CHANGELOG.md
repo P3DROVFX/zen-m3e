@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.9.0 — 2026-10-30
+
+- Media player redesigned after Android's / the shell's media card: album art (Media
+  Session artwork, read by m3e.uc.js) under a surface scrim — secondary container
+  without art —, the tab's favicon as the app chip, mute / PiP / close top-right, title
+  in the title face and artist, a 56 px play/pause that is a rounded square while
+  playing and a circle when paused, prev · progress · next below; while playing the
+  elapsed progress is a static M3E wave. Always expanded (no hover reveal); Zen's card
+  stacking still works. Collapsed sidebar: just the play/pause control.
+
 ## 0.8.1 — 2026-10-30
 
 - New-tab chip: the label sat ~3.5 px above the "+" (its 28 px box left spare height
