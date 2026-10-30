@@ -40,8 +40,8 @@ shell for Hyprland), but it works on any Linux desktop with Zen, Sine and matuge
 |---|---|
 | **Zen Browser** with **Sine** | tested on Zen 1.22.x (native build) |
 | **matugen** ≥ 4 | optional — without it a built-in amber palette is used |
-| **Google Sans Flex** (variable) | optional — without it, the system font and plain weights (it's on Google Fonts) |
-| `bash`, `python3`, `fontconfig` | for `install.sh` |
+| **Google Sans Flex** (variable) | installed for you if missing (SIL OFL 1.1, from google/fonts) |
+| `bash`, `python3`, `fontconfig`, `curl` | for `install.sh` (`curl` only to fetch the font) |
 | A compositor that blurs translucent windows | only for *glass* (Hyprland tested) |
 
 ## Install
@@ -60,6 +60,7 @@ cd ~/Projects/zen-m3e
 | `--copy` | copy instead of symlink (default symlink: `git pull` + restart updates it) |
 | `--profile DIR` | a profile other than the default (`~/.zen`, or the Flatpak's) |
 | `--no-matugen` | don't touch matugen; use the built-in palette |
+| `--no-font-download` | don't fetch Google Sans Flex if it isn't installed |
 | `--glass` | glass window — see [Glass](#glass-transparent-zen) |
 | `--uninstall` | remove the mod and its matugen block (backups are kept) |
 
@@ -67,8 +68,11 @@ What it does:
 
 1. links (or copies) the mod into `<profile>/chrome/sine-mods/m3-expressive` and adds it
    to Sine's `mods.json`;
-2. copies Google Sans Flex into the mod — Gecko only applies variable-font axes in the
-   browser UI to a face loaded through `@font-face`;
+2. finds your variable Google Sans Flex — or, if there is none, downloads it from
+   [google/fonts](https://github.com/google/fonts/tree/main/ofl/googlesansflex) (pinned
+   commit, SHA-256 checked) into `~/.local/share/fonts` — and copies it into the mod:
+   Gecko only applies variable-font axes in the browser UI to a face loaded through
+   `@font-face`;
 3. appends the template to `~/.config/matugen/config.toml` (created if missing), so every
    later `matugen` run also recolours Zen;
 4. renders a first palette from `--source`.
@@ -186,5 +190,6 @@ technique per place, nothing that loops.
 
 ## License
 
-[MIT](LICENSE). Google Sans Flex is not bundled in the repository; the installer copies
-your installed copy into the mod.
+[MIT](LICENSE). Google Sans Flex is © The Google Sans Flex Authors, under the
+[SIL Open Font License 1.1](https://openfontlicense.org); it isn't stored in this
+repository — the installer uses your copy or fetches the official one (with its `OFL.txt`).

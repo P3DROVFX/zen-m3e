@@ -14,10 +14,12 @@ matugen 4.1, Google Sans Flex (variable). Nothing else has been run.
 | Zen Browser + **Sine** | loads the mod, its preferences and its script | nothing works |
 | A recent Zen (1.22-era markup) | selectors target Zen's DOM, which changes between releases | parts can break after a Zen update |
 | **matugen** (tested 4.1) | writes `colors.css` from your wallpaper | a built-in amber palette is used |
-| **Google Sans Flex**, variable | the expressive width/weight axes | system font, plain weights; layout still fine |
+| **Google Sans Flex**, variable | the expressive width/weight axes | fetched by the installer; with `--no-font-download` or offline: system font, plain weights |
 | `sine.allow-unsafe-js = true` (local installs) | runs `m3e.uc.js` | see "Without the script" below |
 
-Google Sans Flex is on Google Fonts. `install.sh` copies it into the mod (`fonts/`):
+Google Sans Flex (SIL OFL 1.1): `install.sh` uses your installed variable copy or, if
+there is none, downloads the official one from google/fonts (pinned, checksum-verified)
+into `~/.local/share/fonts`, then copies it into the mod (`fonts/`):
 Gecko ignores `font-variation-settings` in the browser UI for a font that only comes from
 fontconfig, so it must be loaded through the mod's `@font-face`.
 
@@ -92,7 +94,8 @@ Zen Internet works the same everywhere once transparent pages are allowed.
 - Finds the default profile in `~/.zen` (native) or the Flatpak's
   `~/.var/app/app.zen_browser.zen/.zen`; otherwise use `--profile DIR`. Other
   packagings (Snap, AppImage with a custom profile dir) need `--profile`.
-- Needs `bash`, `python3`, `fc-list` (fontconfig) and `matugen` (or `--no-matugen`).
+- Needs `bash`, `python3`, `fc-list` (fontconfig), `curl` (only to fetch the font) and
+  `matugen` (or `--no-matugen`).
 - `--glass` and installing must happen with Zen closed (Zen rewrites `prefs.js` and Sine
   rewrites `mods.json`).
 - `--copy` copies the mod (including the matugen template) so the repo can be deleted;

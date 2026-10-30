@@ -34,8 +34,10 @@ C = palette()
 
 def font(size, wght=400, wdth=100, slnt=0, rond=100):
     f = ImageFont.truetype(str(FONT), size)
-    # Axis order: opsz, wdth, wght, GRAD, ROND, slnt
-    f.set_variation_by_axes([min(max(size, 6), 144), wdth, wght, 0, rond, slnt])
+    # By axis name: builds differ (google/fonts has no GRAD axis, end-4's has).
+    want = {b"Optical Size": min(max(size, 6), 144), b"Width": wdth, b"Weight": wght,
+            b"Grade": 0, b"Roundness": rond, b"Slant": slnt}
+    f.set_variation_by_axes([want.get(a["name"], a["default"]) for a in f.get_variation_axes()])
     return f
 
 

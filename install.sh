@@ -5,6 +5,8 @@
 #   ./install.sh --copy          copy instead of symlink
 #   ./install.sh --profile DIR   pick the profile explicitly
 #   ./install.sh --no-matugen    skip the matugen template
+#   ./install.sh --no-font-download
+#                                don't fetch Google Sans Flex when it isn't installed
 #   ./install.sh --source SRC    first palette from an image or a #hex colour (default:
 #                                the ii shell's current colour, if there is one)
 #   ./install.sh --uninstall     remove the mod and the matugen template block
@@ -21,7 +23,7 @@ MATUGEN_CFG="${XDG_CONFIG_HOME:-$HOME/.config}/matugen/config.toml"
 MARK_BEGIN="# >>> zen-m3e >>>"
 MARK_END="# <<< zen-m3e <<<"
 
-mode=symlink profile="" matugen=1 uninstall=0 glass=0 source=""
+mode=symlink profile="" matugen=1 uninstall=0 glass=0 source="" download_font=1
 while (($#)); do
     case "$1" in
         --copy) mode=copy ;;
@@ -30,7 +32,8 @@ while (($#)); do
         --uninstall) uninstall=1 ;;
         --glass) glass=1 ;;
         --source) source="$2"; shift ;;
-        -h|--help) sed -n '2,15p' "$0"; exit 0 ;;
+        --no-font-download) download_font=0 ;;
+        -h|--help) sed -n '2,17p' "$0"; exit 0 ;;
         *) echo "unknown option: $1" >&2; exit 2 ;;
     esac
     shift
@@ -198,14 +201,49 @@ fi
 edit_mods_json add
 
 # Google Sans Flex next to chrome.css: Gecko only honours the variable axes
-# (font-variation-settings) for a face loaded through @font-face.
-font="$(fc-list --format '%{file}\n' 'Google Sans Flex' 2>/dev/null | grep -m1 -i 'GoogleSansFlex-VariableFont' || true)"
+# (font-variation-settings) for a face loaded through @font-face. Use the installed
+# variable font; if there is none, fetch it (SIL OFL 1.1) from google/fonts, pinned to a
+# commit and checked against its SHA-256, into ~/.local/share/fonts.
+FONT_COMMIT="bd8f81ddb5c74d5c8897b36ad88b440266245103"
+FONT_URL="https://raw.githubusercontent.com/google/fonts/$FONT_COMMIT/ofl/googlesansflex"
+FONT_FILE="GoogleSansFlex%5BROND%2Copsz%2Cslnt%2Cwdth%2Cwght%5D.ttf"
+FONT_SHA256="a9ac770798857d5e8ac593ced42b22e40a7c08cec98319f92b0eccc2783a77ba"
+
+find_font() {   # the variable face (it has a width axis), whatever the file is called
+    fc-list --format '%{file}|%{variable}\n' 'Google Sans Flex' 2>/dev/null \
+        | grep -m1 -i 'googlesansflex.*|true' | cut -d'|' -f1 || true
+}
+
+fetch_font() {
+    local dir="${XDG_DATA_HOME:-$HOME/.local/share}/fonts/GoogleSansFlex" tmp
+    command -v curl >/dev/null || { echo "warning: curl not found; can't download Google Sans Flex." >&2; return 1; }
+    tmp="$(mktemp -d)"
+    if ! curl -fsSL -o "$tmp/font.ttf" "$FONT_URL/$FONT_FILE" || ! curl -fsSL -o "$tmp/OFL.txt" "$FONT_URL/OFL.txt"; then
+        rm -rf "$tmp"; echo "warning: downloading Google Sans Flex failed." >&2; return 1
+    fi
+    if [[ "$(sha256sum "$tmp/font.ttf" | cut -d' ' -f1)" != "$FONT_SHA256" ]]; then
+        rm -rf "$tmp"; echo "warning: Google Sans Flex download didn't match its checksum; not installed." >&2; return 1
+    fi
+    mkdir -p "$dir"
+    mv "$tmp/font.ttf" "$dir/GoogleSansFlex[ROND,opsz,slnt,wdth,wght].ttf"
+    mv "$tmp/OFL.txt" "$dir/OFL.txt"
+    rm -rf "$tmp"
+    fc-cache -f "$dir" >/dev/null 2>&1 || true
+    echo "font: installed Google Sans Flex (OFL 1.1) into $dir"
+}
+
+font="$(find_font)"
+if [[ -z "$font" ]] && ((download_font)); then
+    fetch_font && font="$(find_font)"
+    # fc-cache may lag; fall back to the file just installed
+    [[ -n "$font" ]] || font="$(ls "${XDG_DATA_HOME:-$HOME/.local/share}"/fonts/GoogleSansFlex/*.ttf 2>/dev/null | head -1 || true)"
+fi
 if [[ -n "$font" ]]; then
     mkdir -p "$target/fonts"
     cp -f "$font" "$target/fonts/GoogleSansFlex.ttf"
     echo "font: $font"
 else
-    echo "warning: Google Sans Flex (variable) not found; expressive axes fall back to plain weights." >&2
+    echo "warning: no Google Sans Flex; the system font is used and the expressive axes fall back to plain weights." >&2
 fi
 
 if ((matugen)); then
