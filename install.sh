@@ -7,9 +7,12 @@
 #   ./install.sh --no-matugen    skip the matugen template
 #   ./install.sh --no-font-download
 #                                don't fetch Google Sans Flex when it isn't installed
-#   ./install.sh --source SRC    first palette from an image or a #hex colour (default:
-#                                the ii shell's colour, else the detected wallpaper:
-#                                swww/awww, hyprpaper, waypaper, KDE, GNOME)
+#   ./install.sh --source SRC    colours from a specific image or #hex colour, e.g.
+#                                  ./install.sh --source ~/Pictures/wall.jpg
+#                                  ./install.sh --source '#8c4a00'
+#                                without it: the ii shell's colour, else the detected
+#                                wallpaper (swww/awww, hyprpaper, waypaper, KDE, GNOME).
+#                                Re-run with it any time to change the palette.
 #   ./install.sh --uninstall     remove the mod and the matugen template block
 #   ./install.sh --glass         translucent window (Linux "Mica"): window alpha on, pages
 #                                opaque; moves out userChrome/userContent rules that make
@@ -34,7 +37,7 @@ while (($#)); do
         --glass) glass=1 ;;
         --source) source="$2"; shift ;;
         --no-font-download) download_font=0 ;;
-        -h|--help) sed -n '2,18p' "$0"; exit 0 ;;
+        -h|--help) sed -n '2,21p' "$0"; exit 0 ;;
         *) echo "unknown option: $1" >&2; exit 2 ;;
     esac
     shift
@@ -284,8 +287,10 @@ installed $MOD_ID ($mode) into
 
 Next:
   * Start Zen. Settings > Sine shows "M3 Expressive" with its preferences.
-  * Disable MatugenZen and Transparent Zen: this mod replaces both (it has its own
-    matugen palette and a "translucent surfaces" option).
+  * Colours from a specific image or colour instead:
+      ./install.sh --source ~/Pictures/wall.jpg      (or --source '#rrggbb')
+  * Disable SuperPins, MatugenZen and Transparent Zen: this mod replaces them (glass:
+    ./install.sh --glass with Zen closed).
   * Live palette reload needs the mod's script; Sine only runs scripts of local mods
     when "sine.allow-unsafe-js" is true. Without it the palette updates on restart.
 EOF

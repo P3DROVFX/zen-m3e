@@ -8,7 +8,8 @@
   now finds any variable Google Sans Flex, whatever its file name.
 - First palette without `--source` on any desktop: after ii's colour, the installer
   detects the current wallpaper (swww/awww, hyprpaper, waypaper, KDE Plasma, GNOME) and
-  says which source it used.
+  says which source it used; `--help` and the end-of-install summary show how to pick
+  a specific image with `--source`.
 - `tools/banner.py` sets font axes by name (google/fonts' build has no GRAD axis).
 
 ## 1.0.0 — 2026-10-30

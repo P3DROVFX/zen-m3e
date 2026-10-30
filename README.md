@@ -78,6 +78,11 @@ What it does:
 4. renders a first palette. matugen keeps no state of its own, so the installer finds a
    source: `--source`, else the ii shell's current colour, else the wallpaper your desktop
    shows (swww/awww, hyprpaper, waypaper, KDE Plasma, GNOME) — and says which it used.
+   For a specific image or colour, run it with `--source`:
+
+   ```sh
+   ./install.sh --source ~/Pictures/wall.jpg     # or --source '#8c4a00'
+   ```
 
 Start Zen and open **Settings → Sine**: **M3 Expressive** is there with its preferences.
 Disable **SuperPins**, **MatugenZen** and **Transparent Zen** if you have them — this mod
