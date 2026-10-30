@@ -5,6 +5,8 @@
 #   ./install.sh --copy          copy instead of symlink
 #   ./install.sh --profile DIR   pick the profile explicitly
 #   ./install.sh --no-matugen    skip the matugen template
+#   ./install.sh --source SRC    first palette from an image or a #hex colour (default:
+#                                the ii shell's current colour, if there is one)
 #   ./install.sh --uninstall     remove the mod and the matugen template block
 #   ./install.sh --glass         translucent window (Linux "Mica"): window alpha on, pages
 #                                opaque; moves out userChrome/userContent rules that make
@@ -19,7 +21,7 @@ MATUGEN_CFG="${XDG_CONFIG_HOME:-$HOME/.config}/matugen/config.toml"
 MARK_BEGIN="# >>> zen-m3e >>>"
 MARK_END="# <<< zen-m3e <<<"
 
-mode=symlink profile="" matugen=1 uninstall=0 glass=0
+mode=symlink profile="" matugen=1 uninstall=0 glass=0 source=""
 while (($#)); do
     case "$1" in
         --copy) mode=copy ;;
@@ -27,7 +29,8 @@ while (($#)); do
         --no-matugen) matugen=0 ;;
         --uninstall) uninstall=1 ;;
         --glass) glass=1 ;;
-        -h|--help) sed -n '2,13p' "$0"; exit 0 ;;
+        --source) source="$2"; shift ;;
+        -h|--help) sed -n '2,15p' "$0"; exit 0 ;;
         *) echo "unknown option: $1" >&2; exit 2 ;;
     esac
     shift
@@ -37,8 +40,11 @@ die() { echo "error: $*" >&2; exit 1; }
 
 # ---------------------------------------------------------------- profile
 if [[ -z "$profile" ]]; then
-    zen_root="$HOME/.zen"
-    [[ -f "$zen_root/installs.ini" ]] || die "no Zen profiles in $zen_root (use --profile)"
+    # Native builds keep profiles in ~/.zen; the Flatpak in its sandbox.
+    for zen_root in "$HOME/.zen" "$HOME/.var/app/app.zen_browser.zen/.zen"; do
+        [[ -f "$zen_root/installs.ini" ]] && break
+    done
+    [[ -f "$zen_root/installs.ini" ]] || die "no Zen profiles found (use --profile DIR)"
     rel="$(grep -m1 '^Default=' "$zen_root/installs.ini" | cut -d= -f2-)"
     profile="$zen_root/$rel"
 fi
@@ -82,31 +88,46 @@ EOF
 }
 
 add_matugen_block() {
-    [[ -f "$MATUGEN_CFG" ]] || die "no matugen config at $MATUGEN_CFG (use --no-matugen)"
+    command -v matugen >/dev/null || die "matugen not found (install it, or use --no-matugen)"
+    if [[ ! -f "$MATUGEN_CFG" ]]; then
+        mkdir -p "$(dirname "$MATUGEN_CFG")"
+        printf '[config]\n' >"$MATUGEN_CFG"
+        echo "created $MATUGEN_CFG"
+    fi
     cp "$MATUGEN_CFG" "$MATUGEN_CFG.bak-zen-m3e"
     remove_matugen_block
     cat >>"$MATUGEN_CFG" <<EOF
 
 $MARK_BEGIN
 [templates.zen-m3e]
-input_path = '$REPO/matugen/zen-m3e.css'
+input_path = '$target/matugen/zen-m3e.css'
 output_path = '$target/colors.css'
 $MARK_END
 EOF
 }
 
-# First palette now, from the shell's current source colour, without re-running the
-# user's whole matugen config.
+# First palette now, without re-running the user's whole matugen config. Source: --source
+# (an image or a #hex), else the ii shell's current colour; otherwise colors.css is
+# written the next time the user runs matugen.
 render_now() {
-    local src mode tmp
-    src="$(cat "$HOME/.local/state/quickshell/user/generated/color.txt" 2>/dev/null || true)"
-    [[ "$src" =~ ^#[0-9A-Fa-f]{6}$ ]] || { echo "note: no shell source colour; colors.css is written on the next wallpaper change."; return 0; }
+    local src="$source" mode tmp
+    [[ -n "$src" ]] || src="$(cat "$HOME/.local/state/quickshell/user/generated/color.txt" 2>/dev/null || true)"
+    if [[ -z "$src" ]]; then
+        echo "note: no --source given; colors.css appears the next time you run matugen."
+        return 0
+    fi
     mode=dark
     [[ "$(gsettings get org.gnome.desktop.interface color-scheme 2>/dev/null)" == *light* ]] && mode=light
     tmp="$(mktemp -d)"
     printf "[config]\n[templates.m3e]\ninput_path = '%s'\noutput_path = '%s'\n" \
-        "$REPO/matugen/zen-m3e.css" "$target/colors.css" >"$tmp/config.toml"
-    matugen color hex "$src" -c "$tmp/config.toml" -m "$mode" -q
+        "$target/matugen/zen-m3e.css" "$target/colors.css" >"$tmp/config.toml"
+    if [[ "$src" =~ ^#[0-9A-Fa-f]{6}$ ]]; then
+        matugen color hex "$src" -c "$tmp/config.toml" -m "$mode" -q
+    elif [[ -f "$src" ]]; then
+        matugen image "$src" -c "$tmp/config.toml" -m "$mode" -q --prefer saturation
+    else
+        rm -rf "$tmp"; die "--source must be an image file or a #rrggbb colour"
+    fi
     rm -rf "$tmp"
     echo "palette: $src ($mode) -> $target/colors.css"
 }
@@ -146,10 +167,11 @@ if ((glass)); then
     neutralise "$profile/chrome/userContent.css"
     cat <<EOT
 glass on for $profile
-  * Start Zen. The sidebar, top bar and empty tabs show the Hyprland blur; pages and
-    video stay opaque. Tint: M3 Expressive settings > Glass tint.
-  * Menus stay nearly opaque. For translucent menus enable Hyprland's popup blur
-    (decoration { blur { popups = true } }) and tick "Translucent menus too".
+  * Start Zen. The sidebar, top bar and empty tabs show your compositor's blur (if it
+    blurs behind translucent windows: Hyprland, SwayFX, picom… — see
+    docs/compatibility.md); pages and video stay opaque. Tint: settings > Glass tint.
+  * Menus stay nearly opaque. For translucent menus your compositor must blur popups
+    (Hyprland: decoration { blur { popups = true } }); then tick "Translucent menus too".
   * Undo: restore the *.bak-zen-m3e files.
 EOT
     exit 0
@@ -171,13 +193,13 @@ if [[ $mode == symlink ]]; then
     ln -s "$REPO" "$target"
 else
     mkdir -p "$target"
-    cp -r "$REPO"/{theme.json,preferences.json,chrome.css,m3e.uc.js,README.md} "$target"/
+    cp -r "$REPO"/{theme.json,preferences.json,chrome.css,m3e.uc.js,README.md,matugen} "$target"/
 fi
 edit_mods_json add
 
 # Google Sans Flex next to chrome.css: Gecko only honours the variable axes
 # (font-variation-settings) for a face loaded through @font-face.
-font="$(fc-list --format '%{file}\n' 'Google Sans Flex' 2>/dev/null | grep -i 'GoogleSansFlex-VariableFont' | head -1)"
+font="$(fc-list --format '%{file}\n' 'Google Sans Flex' 2>/dev/null | grep -m1 -i 'GoogleSansFlex-VariableFont' || true)"
 if [[ -n "$font" ]]; then
     mkdir -p "$target/fonts"
     cp -f "$font" "$target/fonts/GoogleSansFlex.ttf"

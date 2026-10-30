@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.9.3 — 2026-10-30
+
+- `docs/compatibility.md`: what works for any Linux user, what is tied to ii / Hyprland,
+  glass by compositor, requirements, behaviour without the script.
+- Installer for non-ii systems: `--source IMAGE|#hex` for the first palette; creates the
+  matugen config if missing; finds Flatpak Zen profiles; `--copy` also copies the matugen
+  template. Fixed a silent exit (pipefail on `grep | head`) when several font files match.
+
 ## 0.9.2 — 2026-10-30
 
 - Contracted media card redone: it is the full card, shorter (60 px) — album art and

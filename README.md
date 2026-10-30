@@ -42,6 +42,10 @@ ladder, same curves (`Appearance.animationCurves`), same rules (`docs/design.md`
 
 ## Install
 
+> Built alongside the ii shell on Hyprland, but usable on any Linux desktop with Zen,
+> Sine and matugen — see [`docs/compatibility.md`](docs/compatibility.md) for what is
+> generic, what is ii/Hyprland-specific, and what depends on your compositor.
+
 Requirements: Zen with Sine, `matugen` ≥ 4, the Google Sans Flex variable font.
 
 The installer copies the font into the mod (`fonts/`): Gecko ignores
@@ -52,7 +56,8 @@ so the width/weight axes need the `@font-face` the mod declares.
 git clone https://github.com/P3DROVFX/zen-m3e ~/Projects/zen-m3e
 cd ~/Projects/zen-m3e
 # close Zen first
-./install.sh            # symlinks the repo into the default profile, hooks matugen
+./install.sh                       # symlink into the default profile, hook matugen
+./install.sh --source ~/wall.jpg   # …and render the first palette from an image (or '#hex')
 ```
 
 `install.sh` adds the mod to `sine-mods/mods.json`, appends a marked block to
