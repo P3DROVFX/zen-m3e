@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.7.1 — 2026-10-30
+
+- Zen Internet works with the glass: when `browser.tabs.allow_transparent_browser` is on,
+  nothing opaque is painted behind pages, so sites it makes transparent show the
+  Hyprland blur (before, they showed the scheme's surface colour instead).
+- `install.sh --glass` turns `allow_transparent_browser` on (it is what Zen Internet
+  needs); sites with their own background — and video — stay opaque.
+
 ## 0.7.0 — 2026-10-29
 
 Glass, tested on Hyprland: the browser UI is translucent (compositor blur shows through

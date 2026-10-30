@@ -139,7 +139,8 @@ if ((glass)); then
     fi
     cp "$profile/prefs.js" "$profile/prefs.js.bak-zen-m3e"
     set_pref zen.widget.linux.transparency true
-    set_pref browser.tabs.allow_transparent_browser false
+    # Pages may be transparent: Zen Internet's per-site styles let the glass through.
+    set_pref browser.tabs.allow_transparent_browser true
     set_pref m3e.translucent true
     neutralise "$profile/chrome/userChrome.css"
     neutralise "$profile/chrome/userContent.css"

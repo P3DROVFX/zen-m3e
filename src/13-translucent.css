@@ -4,8 +4,9 @@
  * The window gets an alpha channel (zen.widget.linux.transparency) and only the browser
  * UI paints translucent surfaces, so the compositor's blur (Hyprland) shows through the
  * sidebar, top bar, gaps and empty tabs. Web pages and video stay opaque: nothing here
- * touches the content process, and browser.tabs.allow_transparent_browser should stay
- * off (it would make pages without a background see-through).
+ * touches the content process. With browser.tabs.allow_transparent_browser on, a page
+ * may ask for transparency itself — that's how Zen Internet's per-site styles let the
+ * glass through, as on Windows — so nothing opaque is painted behind pages then.
  *
  * Surfaces that float over the page inside the window (search overlay, compact sidebar,
  * find bar) can't get compositor blur — they sit over our own pixels — and Gecko's
@@ -67,9 +68,16 @@
   }
 
   /* ---------- Pages and video stay opaque ---------- */
-  /* Behind a loading page: the scheme's surface instead of a white flash. */
+  /* Behind pages: the scheme's surface (no white flash while loading)… */
   .browserStack > browser {
     background-color: var(--m3-surface) !important;
+  }
+  /* …unless pages may be transparent (Zen Internet): then nothing is painted behind
+     them, or a transparent site would show this colour instead of the glass. */
+  @media -moz-pref("browser.tabs.allow_transparent_browser") {
+    .browserStack > browser {
+      background-color: transparent !important;
+    }
   }
   /* An empty tab shows the glass (like Mica's new-tab surface): its about:blank would
      paint an opaque canvas, so it isn't drawn while the empty tab is current. A page

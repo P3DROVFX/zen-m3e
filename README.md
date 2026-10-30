@@ -70,9 +70,14 @@ and video stay opaque**. With Zen closed:
 ./install.sh --glass
 ```
 
-It turns on `zen.widget.linux.transparency` (window alpha) and `m3e.translucent`, turns
-**off** `browser.tabs.allow_transparent_browser`, and moves out userChrome/userContent
-rules that force pages transparent (backups as `*.bak-zen-m3e`). Replaces Transparent Zen.
+It turns on `zen.widget.linux.transparency` (window alpha), `m3e.translucent` and
+`browser.tabs.allow_transparent_browser`, and moves out userChrome/userContent rules that
+force *every* page transparent (backups as `*.bak-zen-m3e`). Replaces Transparent Zen.
+
+Which sites go transparent is then up to the sites — in practice
+[Zen Internet](https://github.com/sameerasw/zen-internet), whose per-site styles clear a
+site's background so the glass shows through, as on Windows. Sites it doesn't style, and
+video, keep their own opaque background.
 
 - One translucent layer paints the window (`--m3e-glass`, Glass tint: light / medium /
   strong); everything else in the window is transparent so the tint stays even.
