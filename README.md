@@ -133,6 +133,7 @@ All in **Settings → Sine → M3 Expressive**.
 | `m3e.scheme` | light/dark: follow the shell (matugen's mode), the system, or force one |
 | `m3e.colors-path` | another palette file (empty = the mod's `colors.css`) |
 | `m3e.translucent`, `m3e.translucent-strength`, `m3e.translucent-popups` | glass |
+| `m3e.page-radius` | page corner radius (0–32 px); keep it ≤ your WM's corner radius minus the gap |
 | `m3e.media-expanded` | always show the full media card |
 | `m3e.essentials.width` / `.gap` / `.no-grow` / `.transparent` | essentials tiles |
 | `m3e.favicon-size` | 16 / 18 / 20 px (default 20) |

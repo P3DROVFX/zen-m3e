@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+- Page corner radius setting (`m3e.page-radius`: 0 / 4 / 8 / 12 / 17 / 23 / 32 px) for window
+  managers with smaller window corners, where the page's corner looked larger than the
+  window's. Falls back to the ii Dynamic Page Radius mod, then 23 px.
+
 ## 1.0.1 — 2026-10-30
 
 - The installer installs Google Sans Flex when it's missing: official file from

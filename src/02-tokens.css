@@ -117,7 +117,10 @@
   --zen-themed-toolbar-bg: var(--m3e-window) !important;
   --zen-themed-toolbar-bg-transparent: var(--m3e-window) !important;
   --zen-appcontent-border: none !important;
-  --zen-webview-border-radius: var(--ii-page-radius, var(--m3e-r-lg)) !important;
+  /* Page corners: the mod's setting (m3e.page-radius, exposed by Sine as a variable),
+     else the ii Dynamic Page Radius mod, else the large radius. Lower it when the window
+     manager's own corners are smaller, or the page corner looks larger than the window's. */
+  --zen-webview-border-radius: var(--m3e-page-radius, var(--ii-page-radius, var(--m3e-r-lg))) !important;
 
   --toolbar-bgcolor: var(--m3e-window) !important;
   --toolbar-color: var(--m3-on-surface) !important;

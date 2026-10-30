@@ -37,6 +37,49 @@
   },
   {
     "type": "separator",
+    "label": "Page"
+  },
+  {
+    "type": "dropdown",
+    "property": "m3e.page-radius",
+    "processAs": "var",
+    "value": "string",
+    "label": "Page corner radius — keep it at or below your window manager's corner radius minus the gap around the page (Hyprland: decoration:rounding − 8)",
+    "defaultValue": "23px",
+    "placeholder": false,
+    "options": [
+      {
+        "label": "Square (0)",
+        "value": "0px"
+      },
+      {
+        "label": "4 px",
+        "value": "4px"
+      },
+      {
+        "label": "8 px",
+        "value": "8px"
+      },
+      {
+        "label": "12 px (small)",
+        "value": "12px"
+      },
+      {
+        "label": "17 px (normal)",
+        "value": "17px"
+      },
+      {
+        "label": "23 px (large, default)",
+        "value": "23px"
+      },
+      {
+        "label": "32 px (very large)",
+        "value": "32px"
+      }
+    ]
+  },
+  {
+    "type": "separator",
     "label": "Glass (translucent window)"
   },
   {
