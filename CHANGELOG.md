@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.8.1 — 2026-10-30
+
+- New-tab chip: the label sat ~3.5 px above the "+" (its 28 px box left spare height
+  under one 25 px line). One 16 px line box plus a 1 px optical nudge; measured on the
+  rendered pixels, cap centre and "+" centre now within half a pixel.
+
 ## 0.8.0 — 2026-10-30
 
 - Collapsed sidebar: every icon exactly centred (measured on all rows — the expanded

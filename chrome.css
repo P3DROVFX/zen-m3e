@@ -1236,6 +1236,12 @@ tab-group {
   }
   & > .toolbarbutton-text {
     max-width: max-content !important;   /* flex="1" is a UA rule; cap it to centre */
+    /* One line box, no spare height under it: the label's 28px box left 3px below the
+       text, so the glyphs sat ~3.5px above the "+" (measured on the rendered pixels). */
+    min-height: 0 !important;
+    height: auto !important;
+    line-height: 16px !important;
+    translate: 0 1px;                    /* optical: cap centre onto the "+" centre */
     font-variation-settings: var(--m3e-type-label) !important;
   }
   &:hover {
