@@ -46,10 +46,12 @@ ii. What differs is *who runs matugen*:
 - **Anyone else** runs it themselves, e.g. `matugen image ~/wall.jpg -m dark`, or from
   their wallpaper tool. `install.sh` adds the template to `~/.config/matugen/config.toml`
   (creating the file if needed), so any later run updates the browser too.
-- **First palette:** `install.sh --source ~/wall.jpg` (or `--source '#8c4a00'`). Without
-  `--source`, the installer only finds a colour on an ii system
-  (`~/.local/state/quickshell/user/generated/color.txt`); elsewhere `colors.css` appears
-  the next time matugen runs.
+- **First palette:** matugen keeps no state, so the installer looks for a source:
+  `--source IMAGE|#hex`, else ii's colour (`~/.local/state/quickshell/user/generated/color.txt`),
+  else the current wallpaper from swww/awww, hyprpaper, waypaper, KDE Plasma or GNOME
+  (GNOME's setting can be stale when another tool draws the wallpaper — the installer
+  prints its source so you can rerun with `--source`). Nothing found: `colors.css`
+  appears the next time matugen runs.
 - **Light/dark — "Follow the shell"** means "the mode matugen was last run with" (`-m`).
   If your desktop switches light/dark without re-running matugen, use **"Follow the
   system"** instead (prefers-color-scheme).
@@ -81,7 +83,7 @@ Zen Internet works the same everywhere once transparent pages are allowed.
 
 | Piece | ii / Hyprland tie | Elsewhere |
 |---|---|---|
-| First palette from `color.txt` | reads ii's generated source colour | use `--source` |
+| First palette from `color.txt` | reads ii's generated source colour | the detected wallpaper, or `--source` |
 | Palette updates on wallpaper change | ii runs matugen | run matugen yourself / from your wallpaper tool |
 | `--ii-page-radius` | honours the author's own "ii Dynamic Page Radius" mod if present | ignored; page radius = 23 px |
 | Glass defaults, popup-blur advice | written against Hyprland | see the table above |

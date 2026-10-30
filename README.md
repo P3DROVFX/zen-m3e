@@ -51,12 +51,12 @@ One installer for everyone. Close Zen first (Sine rewrites `mods.json` while it 
 ```sh
 git clone https://github.com/P3DROVFX/zen-m3e ~/Projects/zen-m3e
 cd ~/Projects/zen-m3e
-./install.sh --source ~/Pictures/wallpaper.jpg
+./install.sh
 ```
 
 | Option | |
 |---|---|
-| `--source IMAGE` / `--source '#rrggbb'` | first palette from your wallpaper or a colour |
+| `--source IMAGE` / `--source '#rrggbb'` | first palette from this image or colour instead of the detected one |
 | `--copy` | copy instead of symlink (default symlink: `git pull` + restart updates it) |
 | `--profile DIR` | a profile other than the default (`~/.zen`, or the Flatpak's) |
 | `--no-matugen` | don't touch matugen; use the built-in palette |
@@ -75,7 +75,9 @@ What it does:
    `@font-face`;
 3. appends the template to `~/.config/matugen/config.toml` (created if missing), so every
    later `matugen` run also recolours Zen;
-4. renders a first palette from `--source`.
+4. renders a first palette. matugen keeps no state of its own, so the installer finds a
+   source: `--source`, else the ii shell's current colour, else the wallpaper your desktop
+   shows (swww/awww, hyprpaper, waypaper, KDE Plasma, GNOME) — and says which it used.
 
 Start Zen and open **Settings → Sine**: **M3 Expressive** is there with its preferences.
 Disable **SuperPins**, **MatugenZen** and **Transparent Zen** if you have them — this mod
@@ -85,8 +87,8 @@ To let the mod's script run (live palette reload, folder previews, album art), s
 `sine.allow-unsafe-js` to `true` in `about:config`: Sine only runs scripts of locally
 installed mods with it. Everything else works without it.
 
-**On ii-p3drovfx** there is nothing to add: without `--source` the installer takes the
-shell's current colour, and from then on the shell's own matugen run recolours Zen on
+**On ii-p3drovfx** there is nothing to add: the installer takes the shell's current
+colour, and from then on the shell's own matugen run recolours Zen on
 every wallpaper change and light/dark switch. Keep **Light / dark** on *Follow the shell*.
 
 **Everywhere else**, run matugen when your wallpaper changes (`matugen image ~/wall.jpg -m dark`,

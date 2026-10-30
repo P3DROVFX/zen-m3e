@@ -8,7 +8,8 @@
 #   ./install.sh --no-font-download
 #                                don't fetch Google Sans Flex when it isn't installed
 #   ./install.sh --source SRC    first palette from an image or a #hex colour (default:
-#                                the ii shell's current colour, if there is one)
+#                                the ii shell's colour, else the detected wallpaper:
+#                                swww/awww, hyprpaper, waypaper, KDE, GNOME)
 #   ./install.sh --uninstall     remove the mod and the matugen template block
 #   ./install.sh --glass         translucent window (Linux "Mica"): window alpha on, pages
 #                                opaque; moves out userChrome/userContent rules that make
@@ -33,7 +34,7 @@ while (($#)); do
         --glass) glass=1 ;;
         --source) source="$2"; shift ;;
         --no-font-download) download_font=0 ;;
-        -h|--help) sed -n '2,17p' "$0"; exit 0 ;;
+        -h|--help) sed -n '2,18p' "$0"; exit 0 ;;
         *) echo "unknown option: $1" >&2; exit 2 ;;
     esac
     shift
@@ -109,14 +110,38 @@ $MARK_END
 EOF
 }
 
-# First palette now, without re-running the user's whole matugen config. Source: --source
-# (an image or a #hex), else the ii shell's current colour; otherwise colors.css is
-# written the next time the user runs matugen.
+# First palette now, without re-running the user's whole matugen config. matugen keeps
+# no state of its own, so the source comes from (first match wins): --source, the ii
+# shell's current colour, or the wallpaper the desktop is showing.
+detect_wallpaper() {   # prints "<file>|<where from>", nothing if unknown
+    local f
+    f="$( (swww query || awww query) 2>/dev/null | sed -n 's/.*image: *//p' | head -1 || true)"
+    [[ -f "$f" ]] && { echo "$f|swww"; return; }
+    f="$(hyprctl hyprpaper listactive 2>/dev/null | sed -n 's/^[^=]* = *//p' | head -1 || true)"
+    [[ -f "$f" ]] && { echo "$f|hyprpaper"; return; }
+    f="$(sed -n 's/^wallpaper *= *//p' "${XDG_CONFIG_HOME:-$HOME/.config}/waypaper/config.ini" 2>/dev/null | head -1 || true)"
+    f="${f/#\~/$HOME}"
+    [[ -f "$f" ]] && { echo "$f|waypaper"; return; }
+    f="$(sed -n 's|^Image=file://||p' "${XDG_CONFIG_HOME:-$HOME/.config}/plasma-org.kde.plasma.desktop-appletsrc" 2>/dev/null | head -1 || true)"
+    [[ -f "$f" ]] && { echo "$f|KDE Plasma"; return; }
+    local key=picture-uri
+    [[ "$(gsettings get org.gnome.desktop.interface color-scheme 2>/dev/null)" == *dark* ]] && key=picture-uri-dark
+    f="$(gsettings get org.gnome.desktop.background "$key" 2>/dev/null | sed "s|^'file://||; s|'$||" || true)"
+    [[ -f "$f" ]] && { echo "$f|GNOME ($key)"; return; }
+}
+
 render_now() {
-    local src="$source" mode tmp
-    [[ -n "$src" ]] || src="$(cat "$HOME/.local/state/quickshell/user/generated/color.txt" 2>/dev/null || true)"
+    local src="$source" from="--source" mode tmp found
     if [[ -z "$src" ]]; then
-        echo "note: no --source given; colors.css appears the next time you run matugen."
+        src="$(cat "$HOME/.local/state/quickshell/user/generated/color.txt" 2>/dev/null || true)"
+        from="the ii shell"
+    fi
+    if [[ -z "$src" ]]; then
+        found="$(detect_wallpaper)"
+        src="${found%%|*}" from="${found#*|}"
+    fi
+    if [[ -z "$src" ]]; then
+        echo "note: couldn't find your wallpaper; pass --source IMAGE, or colors.css appears the next time you run matugen."
         return 0
     fi
     mode=dark
@@ -132,7 +157,9 @@ render_now() {
         rm -rf "$tmp"; die "--source must be an image file or a #rrggbb colour"
     fi
     rm -rf "$tmp"
-    echo "palette: $src ($mode) -> $target/colors.css"
+    echo "palette: $src ($mode, from $from) -> $target/colors.css"
+    [[ "$from" == --source || "$from" == "the ii shell" ]] || \
+        echo "         not the right wallpaper? run again with --source IMAGE"
 }
 
 # ---------------------------------------------------------------- glass
