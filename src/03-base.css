@@ -132,11 +132,30 @@ notification-message {
 zen-sidebar-notification {
   --zen-sidebar-notification-bg: var(--m3-surface-container-high) !important;
   --zen-sidebar-notification-outline: none !important;
-  --zen-sidebar-notification-shadow: 0 8px 22px -6px color-mix(in srgb, var(--m3-shadow) 55%, transparent) !important;
+  --zen-sidebar-notification-shadow: none !important;
+  box-shadow: none !important;
   --border-radius-medium: var(--m3e-r-lg) !important;
   background: var(--m3-surface-container-high) !important;
   color: var(--m3-on-surface) !important;
   border-radius: var(--m3e-r-lg) !important;
   outline: none !important;
   font-size: 12.5px !important;
+}
+
+/* ---------- No shadows anywhere: surfaces are told apart by tone, not elevation ---------- */
+:root {
+  --zen-big-shadow: none !important;
+  --zen-big-shadow-sm: none !important;
+  --panel-box-shadow: none !important;
+}
+.dialogBox,
+.tab-modal-prompt,
+#zen-welcome,
+dialog,
+.zen-glance-background,
+#zen-toast-container .zen-toast,
+findbar,
+:root[zen-compact-mode="true"] #navigator-toolbox,
+#urlbar[breakout-extend] > .urlbar-background {
+  box-shadow: none !important;
 }

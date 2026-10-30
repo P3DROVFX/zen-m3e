@@ -8,7 +8,7 @@ panel[type="arrow"] {
   --panel-border-color: transparent !important;
   --panel-border-radius: 28px !important;
   --panel-padding: 8px !important;
-  --panel-box-shadow: 0 12px 32px -8px color-mix(in srgb, var(--m3-shadow) 45%, transparent) !important;
+  --panel-box-shadow: none !important;
   --arrowpanel-menuitem-margin: 0 !important;
 }
 
@@ -184,7 +184,7 @@ findbar {
   border: none !important;
   border-radius: var(--m3e-r-md) !important;
   font-variation-settings: var(--m3e-type-label) !important;
-  box-shadow: 0 8px 20px -6px color-mix(in srgb, var(--m3-shadow) 50%, transparent) !important;
+  box-shadow: none !important;
   & button {
     color: var(--m3-inverse-primary) !important;
     background: transparent !important;

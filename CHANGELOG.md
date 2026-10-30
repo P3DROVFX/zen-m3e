@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.8.0 — 2026-10-30
+
+- Collapsed sidebar: every icon exactly centred (measured on all rows — the expanded
+  paddings, the folder indent and the pinned-label override no longer apply); folders
+  show just their icon (no name, count or preview overflowing); PINNED/TABS captions
+  become a gap; the current space is a plain circle; the library returns to the foot;
+  the new-tab chip is a dashed circle.
+- No shadows: menus, panels, the search overlay, dialogs, toasts, the find bar, the
+  update card and the compact sidebar are told apart by tone, not elevation.
+
 ## 0.7.1 — 2026-10-30
 
 - Zen Internet works with the glass: when `browser.tabs.allow_transparent_browser` is on,

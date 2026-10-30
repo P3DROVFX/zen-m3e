@@ -11,9 +11,8 @@ panel:not([type="arrow"]) {
   --panel-border-color: transparent !important;
   --panel-border-radius: 26px !important;
   --panel-padding: 8px !important;
-  --panel-box-shadow: 0 10px 28px -6px color-mix(in srgb, var(--m3-shadow) 50%, transparent),
-                      0 1px 4px color-mix(in srgb, var(--m3-shadow) 25%, transparent) !important;
-  --panel-box-shadow-margin: 14px !important;
+  --panel-box-shadow: none !important;
+  --panel-box-shadow-margin: 0px !important;
   --menuitem-border-radius: 16px !important;
   --menuitem-padding-block: 0 !important;
   --menuitem-padding-inline: 14px !important;

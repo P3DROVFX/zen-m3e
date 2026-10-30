@@ -1,0 +1,77 @@
+/*
+ * Collapsed sidebar (icons only). Everything sized for labels goes: captions, folder
+ * names / counts / previews, the space name; every row centres its icon exactly (the
+ * expanded layout's asymmetric paddings and the folder indent are dropped); the library
+ * goes back to the foot.
+ */
+:root:not([zen-sidebar-expanded="true"]) {
+  /* Rows: icon dead centre. */
+  & #navigator-toolbox #tabbrowser-tabs .tabbrowser-tab:not([zen-essential]) {
+    & > .tab-stack > .tab-content {
+      padding-inline: 0 !important;
+      justify-content: center !important;
+    }
+    & :is(.tab-icon-image, .tab-icon-stack) {
+      margin: 0 !important;
+    }
+    & :is(.tab-label-container, .zen-tab-sublabel, .tab-close-button, .tab-reset-button) {
+      display: none !important;
+    }
+  }
+  /* The pinned rows re-show their label with a doubled-id rule (SuperPins override). */
+  & #navigator-toolbox#navigator-toolbox .zen-workspace-pinned-tabs-section .tabbrowser-tab[pinned]:not([zen-essential]) .tab-label-container {
+    display: none !important;
+  }
+  & #navigator-toolbox#navigator-toolbox .zen-workspace-pinned-tabs-section zen-folder .tabbrowser-tab > .tab-stack > .tab-content {
+    padding-inline: 0 !important;
+  }
+  & #navigator-toolbox#navigator-toolbox .zen-workspace-pinned-tabs-section .tabbrowser-tab[pinned]:not([zen-essential]) .tab-icon-image {
+    margin-inline: 0 !important;
+  }
+
+  /* Captions give way to a gap. */
+  & .zen-workspace-pinned-tabs-section::before,
+  & .zen-workspace-normal-tabs-section::before {
+    content: "" !important;
+    padding: 0 !important;
+    height: 8px;
+  }
+
+  /* Folder header: just its icon, centred. */
+  & zen-folder > .tab-group-label-container {
+    justify-content: center !important;
+    padding-inline: 0 !important;
+    gap: 0 !important;
+    &::before,
+    &::after {
+      display: none !important;
+    }
+    & > :not(.tab-group-folder-icon) {
+      display: none !important;
+    }
+  }
+
+  /* New tab: a dashed circle. */
+  & #navigator-toolbox #vertical-tabs-newtab-button {
+    padding: 0 !important;
+    & > .toolbarbutton-text {
+      display: none !important;
+    }
+  }
+
+  /* Spaces: the current one is a circle with its mark, no name. */
+  & #zen-workspaces-button#zen-workspaces-button toolbarbutton[active="true"] {
+    padding: 0 3px !important;
+    &::after {
+      display: none !important;
+    }
+  }
+
+  /* Library back to the foot. */
+  & #navigator-toolbox #zen-library-button {
+    position: static !important;
+  }
+  & #zen-sidebar-top-buttons-separator {
+    min-width: 0 !important;
+  }
+}

@@ -48,6 +48,11 @@ fontconfig face Gecko ignores `font-variation-settings` in chrome. Roles in
 body 440, label 560, strong 760/104, title 780, display 840/140 (wide), caption 820/118
 uppercase, condensed 600/74 for urls and shortcuts.
 
+## Elevation
+
+No shadows. Surfaces are separated by the tone ladder (window → layer → sheet →
+field) and by gaps; popups by their own surface colour.
+
 ## Motion
 
 - Corner morphs use `--m3e-morph` (a soft spring) between concrete radii. Animating to
