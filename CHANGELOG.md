@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.0.0 — 2026-10-30
+
+First stable release.
+- README rewritten for release: hero banner (`tools/banner.py`, rendered from the
+  showcase screenshot in the user's matugen colours), requirements, one installer for
+  ii and non-ii systems, glass / Transparent Zen integration, preferences, limitations,
+  documentation map, contributing guide and credits.
+- Old sandbox screenshots replaced by the showcase.
+
 ## 0.9.3 — 2026-10-30
 
 - `docs/compatibility.md`: what works for any Linux user, what is tied to ii / Hyprland,
