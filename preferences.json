@@ -88,6 +88,15 @@
   },
   {
     "type": "separator",
+    "label": "Media player"
+  },
+  {
+    "type": "checkbox",
+    "property": "m3e.media-expanded",
+    "label": "Always show the full media card (otherwise: art, title and play/pause; full card on hover)"
+  },
+  {
+    "type": "separator",
     "label": "Type & motion"
   },
   {

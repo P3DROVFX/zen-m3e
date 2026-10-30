@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.9.1 — 2026-10-30
+
+- Media card: no light rim in the corners with album art (the card's own fill no longer
+  sits under the art layer).
+- Contracted by default: art thumbnail · title · play/pause (rounded square = playing,
+  circle = paused), 52 px tall; the full card on hover. `m3e.media-expanded` keeps it
+  full. Zen's looping title marquee is off.
+
 ## 0.9.0 — 2026-10-30
 
 - Media player redesigned after Android's / the shell's media card: album art (Media

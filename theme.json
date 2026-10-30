@@ -4,7 +4,7 @@
   "description": "Material 3 Expressive for Zen: matugen colours (light/dark), Google Sans Flex, shape morphs and spring motion. Sidebar, search overlay, menus and panels.",
   "homepage": "https://github.com/P3DROVFX/zen-m3e",
   "author": "P3DROVFX",
-  "version": "0.9.0",
+  "version": "0.9.1",
   "tags": ["Theme", "Material", "Material 3", "Expressive", "Matugen", "Animations"],
   "fork": ["zen"],
   "style": {

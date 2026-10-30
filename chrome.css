@@ -3394,14 +3394,18 @@ panel[type="arrow"][m3e-open] panelview[current] > * {
         linear-gradient(to right,
           color-mix(in srgb, var(--m3-surface) 82%, transparent),
           color-mix(in srgb, var(--m3-surface) 46%, transparent)),
-        var(--m3e-media-art, none) center / cover no-repeat;
+        var(--m3e-media-art, none) center / cover no-repeat,
+        var(--m3-surface);
       opacity: 0;
       transition: opacity var(--m3e-d) var(--m3e-effects);
     }
     &[m3e-has-art]::before {
       opacity: 1;
     }
+    /* With art the layer above is the whole background: a second, lighter fill under it
+       would show as a rim in the anti-aliased corners. */
     &[m3e-has-art] {
+      background-color: transparent !important;
       color: var(--m3-on-surface) !important;
     }
   }
@@ -3498,6 +3502,8 @@ panel[type="arrow"][m3e-open] panelview[current] > * {
     & label {
       margin: 0 !important;
       min-height: 0 !important;
+      animation: none !important;   /* Zen's back-and-forth marquee: a loop; the fade
+                                       at the end already says the title goes on */
     }
   }
   & .zen-media-title {
@@ -3580,6 +3586,67 @@ panel[type="arrow"][m3e-open] panelview[current] > * {
     /* A sine of the track's height, repeated: the wavy progress of M3E. Static —
        it reads as "playing" without a looping animation. */
     mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 8'%3E%3Cpath d='M0 4 Q4 0 8 4 T16 4' fill='none' stroke='black' stroke-width='2.4' stroke-linecap='round'/%3E%3C/svg%3E") left center / 16px 8px repeat-x;
+  }
+}
+
+/* ---------- Contracted (default): art · title · play/pause; the full card on hover ---------- */
+@media not -moz-pref("m3e.media-expanded") {
+  #zen-media-controls-toolbar:not(:hover) {
+    & .zen-media-card {
+      padding: 6px !important;
+      border-radius: var(--m3e-r-lg) !important;
+      background-color: var(--m3-secondary-container) !important;
+      color: var(--m3-on-secondary-container) !important;
+      &::before {
+        opacity: 0 !important;
+      }
+    }
+    & .zen-media-main-vbox {
+      grid-template-columns: auto minmax(0, 1fr) auto;
+      grid-template-areas: "app info play";
+      row-gap: 0;
+      column-gap: 10px;
+    }
+    & :is(.zen-media-buttons-hbox, .zen-media-mute-button, .media-device-buttons,
+          .zen-media-previoustrack-button, .zen-media-nexttrack-button,
+          .zen-media-progress-bar, .zen-media-artist) {
+      display: none !important;
+    }
+    & .zen-media-info-vbox {
+      align-self: center;
+      padding: 0 !important;
+    }
+    & .zen-media-title {
+      font-size: 13.5px !important;
+      font-variation-settings: var(--m3e-type-strong) !important;
+    }
+    /* The art as a thumbnail where the app icon was (the favicon stays if no art). */
+    & .zen-media-focus-button > .toolbarbutton-icon {
+      width: 40px !important;
+      height: 40px !important;
+      padding: 10px !important;
+      border-radius: var(--m3e-r-sm) !important;
+    }
+    & .zen-media-card[m3e-has-art] .zen-media-focus-button > .toolbarbutton-icon {
+      content: url("chrome://browser/skin/zen-icons/blank.svg") !important;
+      background: var(--m3e-media-art) center / cover no-repeat !important;
+    }
+    /* Playing / paused at a glance: the same shape change, smaller. */
+    & .zen-media-playpause-button {
+      align-self: center;
+      &,
+      & > .toolbarbutton-icon {
+        width: 40px !important;
+        height: 40px !important;
+      }
+      border-radius: 20px !important;
+      & > .toolbarbutton-icon {
+        padding: 12px !important;
+      }
+    }
+    & .zen-media-card.playing .zen-media-playpause-button {
+      border-radius: 12px !important;
+    }
   }
 }
 
