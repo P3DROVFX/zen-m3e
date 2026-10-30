@@ -57,7 +57,30 @@ cd ~/Projects/zen-m3e
 `~/.config/matugen/config.toml` (backup next to it) and renders a first palette from the
 shell's current source colour. `./install.sh --uninstall` reverts both.
 
-Then disable **MatugenZen**, **Transparent Zen** and **SuperPins** in Sine: this mod replaces them.
+Then disable **MatugenZen**, **Transparent Zen** and **SuperPins** in Sine: this mod replaces them
+(for Transparent Zen's effect, see *Glass* below).
+
+## Glass (translucent window)
+
+Like Zen's Mica on Windows: the browser UI is translucent and the compositor's blur
+(Hyprland) shows through the sidebar, top bar, gaps and empty tabs, while **web pages
+and video stay opaque**. With Zen closed:
+
+```sh
+./install.sh --glass
+```
+
+It turns on `zen.widget.linux.transparency` (window alpha) and `m3e.translucent`, turns
+**off** `browser.tabs.allow_transparent_browser`, and moves out userChrome/userContent
+rules that force pages transparent (backups as `*.bak-zen-m3e`). Replaces Transparent Zen.
+
+- One translucent layer paints the window (`--m3e-glass`, Glass tint: light / medium /
+  strong); everything else in the window is transparent so the tint stays even.
+- Things that float over the page (search overlay, compact sidebar, find bar) are nearly
+  opaque: Gecko's `backdrop-filter` can't blur web content (it renders in another
+  process — checked on Hyprland), so a see-through overlay would show a sharp page.
+- Menus are separate popups; Hyprland only blurs them with `decoration:blur:popups`.
+  Enable that, then "Translucent menus too".
 
 ## Colour and light/dark
 
@@ -72,7 +95,9 @@ hidden) and the popup entrance flag. Sine runs scripts of locally installed mods
 |---|---|
 | `m3e.scheme` | `shell` (matugen mode), `system`, `light`, `dark` |
 | `m3e.colors-path` | another palette file (empty = the mod's `colors.css`) |
-| `m3e.translucent` | translucent surfaces, for compositor blur with a transparent window |
+| `m3e.translucent` | glass: translucent browser UI, opaque pages (see above) |
+| `m3e.translucent-strength` | glass tint: `light` / `medium` / `strong` |
+| `m3e.translucent-popups` | translucent menus (needs Hyprland popup blur) |
 | `m3e.system-font` | use the system font instead of Google Sans Flex |
 | `m3e.reduced-motion` | no springs or staggered entrances (the OS setting is honoured too) |
 | `m3e.essentials.width` | `thin` / `normal` / `wide` essentials tiles |

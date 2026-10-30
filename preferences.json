@@ -36,9 +36,55 @@
     "placeholder": "(empty: colors.css inside this mod)"
   },
   {
+    "type": "separator",
+    "label": "Glass (translucent window)"
+  },
+  {
+    "type": "checkbox",
+    "property": "zen.widget.linux.transparency",
+    "label": "Give the window an alpha channel on Linux (needed for glass; restart Zen)",
+    "restart": true
+  },
+  {
     "type": "checkbox",
     "property": "m3e.translucent",
-    "label": "Translucent surfaces (for compositor blur with a transparent window)"
+    "label": "Translucent browser UI: the compositor blur shows through; pages and video stay opaque"
+  },
+  {
+    "type": "dropdown",
+    "property": "m3e.translucent-strength",
+    "label": "Glass tint",
+    "defaultValue": "medium",
+    "placeholder": false,
+    "options": [
+      {
+        "label": "Light (more see-through)",
+        "value": "light"
+      },
+      {
+        "label": "Medium",
+        "value": "medium"
+      },
+      {
+        "label": "Strong (more tint)",
+        "value": "strong"
+      }
+    ]
+  },
+  {
+    "type": "checkbox",
+    "property": "m3e.translucent-popups",
+    "label": "Translucent menus too (turn on decoration:blur:popups in Hyprland first)"
+  },
+  {
+    "type": "checkbox",
+    "property": "browser.tabs.allow_transparent_browser",
+    "label": "See-through web pages (leave OFF: pages without a background would show the desktop)"
+  },
+  {
+    "type": "checkbox",
+    "property": "zen.view.grey-out-inactive-windows",
+    "label": "Grey out the window when it loses focus"
   },
   {
     "type": "separator",

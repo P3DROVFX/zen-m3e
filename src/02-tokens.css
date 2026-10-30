@@ -90,18 +90,6 @@
   }
 }
 
-/* Translucent surfaces: for compositor blur (Hyprland) with a transparent Zen window. */
-@media -moz-pref("m3e.translucent") {
-  :root {
-    --m3e-window: color-mix(in srgb, var(--m3-surface) 62%, transparent);
-    --m3e-layer1: color-mix(in srgb, var(--m3-surface-container-low) 70%, transparent);
-    --m3e-layer2: color-mix(in srgb, var(--m3-surface-container) 74%, transparent);
-    --m3e-sheet: color-mix(in srgb, var(--m3-surface-container-high) 84%, transparent);
-    --m3e-field: color-mix(in srgb, var(--m3-surface-container-highest) 80%, transparent);
-    --m3e-popup: color-mix(in srgb, var(--m3-surface-container) 88%, transparent);
-  }
-}
-
 /* Zen and Firefox variables, mapped onto the scheme. */
 :root {
   color-scheme: var(--m3e-scheme, dark) !important;

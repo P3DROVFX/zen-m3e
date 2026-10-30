@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.7.0 — 2026-10-29
+
+Glass, tested on Hyprland: the browser UI is translucent (compositor blur shows through
+sidebar, top bar, gaps and empty tabs) while pages and video stay opaque, as Zen's Mica
+does on Windows.
+- One translucent window layer (`#zen-browser-background`), every other window-level
+  layer transparent; tint presets light / medium / strong.
+- Empty tabs show the glass (their about:blank isn't drawn while current).
+- Floating surfaces over the page stay nearly opaque (backdrop-filter can't sample web
+  content); menus nearly opaque unless popup blur is on.
+- `install.sh --glass`: window alpha on, transparent pages off, and the old
+  userChrome/userContent transparency rules moved out with backups.
+- Glass preferences in the mod's settings (including the Zen prefs it relies on).
+
 ## 0.6.0 — 2026-10-29
 
 - Search overlay scales up (0.86 → 1) with the emphasized-decelerate ease.
