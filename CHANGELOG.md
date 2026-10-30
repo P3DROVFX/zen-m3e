@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.9.2 — 2026-10-30
+
+- Contracted media card redone: it is the full card, shorter (60 px) — album art and
+  scrim, title, artist and play/pause stay; the top and bottom control rows fold away.
+  Opening/closing on hover is one continuous motion (controls' max-height, fade, play
+  button size and padding ease together; measured frame by frame on Hyprland: 60 → 152
+  → 60 px with no jumps) instead of swapping layouts.
+
 ## 0.9.1 — 2026-10-30
 
 - Media card: no light rim in the corners with album art (the card's own fill no longer

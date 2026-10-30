@@ -3589,63 +3589,69 @@ panel[type="arrow"][m3e-open] panelview[current] > * {
   }
 }
 
-/* ---------- Contracted (default): art · title · play/pause; the full card on hover ---------- */
+/* ---------- Contracted (default): the same card, shorter ---------- */
+/* The grid never changes: the controls of the top (app · tools) and bottom (prev ·
+   progress · next) rows ease to 0 height (max-height, which Gecko interpolates reliably;
+   auto grid tracks don't) while they fade, the play button shrinks, padding tightens.
+   Art, scrim, title and artist stay. Hover (or m3e.media-expanded) opens it again — one
+   continuous motion both ways, no layout swap. */
+#zen-media-controls-toolbar {
+  & .zen-media-main-vbox {
+    transition: row-gap var(--m3e-d) var(--m3e-decel) !important;
+  }
+  & :is(.zen-media-focus-button, .zen-media-buttons-hbox, .zen-media-mute-button,
+        .media-device-buttons, .zen-media-previoustrack-button, .zen-media-nexttrack-button,
+        .zen-media-progress-bar) {
+    min-height: 0 !important;
+    max-height: 40px;
+    overflow: clip;
+    transition: max-height var(--m3e-d) var(--m3e-decel),
+      opacity var(--m3e-d-effects) var(--m3e-effects) 80ms,
+      var(--m3e-shape-motion), var(--m3e-color-motion), scale var(--m3e-d-fast) var(--m3e-spatial-fast) !important;
+  }
+  & .zen-media-playpause-button {
+    transition: width var(--m3e-d) var(--m3e-decel), height var(--m3e-d) var(--m3e-decel),
+      var(--m3e-shape-motion), var(--m3e-color-motion), scale var(--m3e-d-fast) var(--m3e-spatial-fast) !important;
+    & > .toolbarbutton-icon {
+      transition: width var(--m3e-d) var(--m3e-decel), height var(--m3e-d) var(--m3e-decel),
+        padding var(--m3e-d) var(--m3e-decel) !important;
+    }
+  }
+  & .zen-media-card {
+    transition-property: transform, opacity, filter, padding !important;
+    transition-duration: 0.35s, 0.3s, 0.3s, var(--m3e-d) !important;
+  }
+}
 @media not -moz-pref("m3e.media-expanded") {
   #zen-media-controls-toolbar:not(:hover) {
     & .zen-media-card {
-      padding: 6px !important;
-      border-radius: var(--m3e-r-lg) !important;
-      background-color: var(--m3-secondary-container) !important;
-      color: var(--m3-on-secondary-container) !important;
-      &::before {
-        opacity: 0 !important;
-      }
+      padding: 8px 8px 8px 14px !important;
     }
     & .zen-media-main-vbox {
-      grid-template-columns: auto minmax(0, 1fr) auto;
-      grid-template-areas: "app info play";
       row-gap: 0;
-      column-gap: 10px;
     }
-    & :is(.zen-media-buttons-hbox, .zen-media-mute-button, .media-device-buttons,
-          .zen-media-previoustrack-button, .zen-media-nexttrack-button,
-          .zen-media-progress-bar, .zen-media-artist) {
-      display: none !important;
+    & :is(.zen-media-focus-button, .zen-media-buttons-hbox, .zen-media-mute-button,
+          .media-device-buttons, .zen-media-previoustrack-button, .zen-media-nexttrack-button,
+          .zen-media-progress-bar) {
+      max-height: 0;
+      opacity: 0;
+      pointer-events: none;
+      transition-delay: 0s !important;
     }
     & .zen-media-info-vbox {
       align-self: center;
-      padding: 0 !important;
+      padding-block: 0 !important;
     }
-    & .zen-media-title {
-      font-size: 13.5px !important;
-      font-variation-settings: var(--m3e-type-strong) !important;
-    }
-    /* The art as a thumbnail where the app icon was (the favicon stays if no art). */
-    & .zen-media-focus-button > .toolbarbutton-icon {
-      width: 40px !important;
-      height: 40px !important;
-      padding: 10px !important;
-      border-radius: var(--m3e-r-sm) !important;
-    }
-    & .zen-media-card[m3e-has-art] .zen-media-focus-button > .toolbarbutton-icon {
-      content: url("chrome://browser/skin/zen-icons/blank.svg") !important;
-      background: var(--m3e-media-art) center / cover no-repeat !important;
-    }
-    /* Playing / paused at a glance: the same shape change, smaller. */
     & .zen-media-playpause-button {
       align-self: center;
       &,
       & > .toolbarbutton-icon {
-        width: 40px !important;
-        height: 40px !important;
+        width: 44px !important;
+        height: 44px !important;
       }
-      border-radius: 20px !important;
       & > .toolbarbutton-icon {
-        padding: 12px !important;
+        padding: 13px !important;
       }
-    }
-    & .zen-media-card.playing .zen-media-playpause-button {
-      border-radius: 12px !important;
     }
   }
 }

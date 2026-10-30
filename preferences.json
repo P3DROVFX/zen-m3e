@@ -93,7 +93,7 @@
   {
     "type": "checkbox",
     "property": "m3e.media-expanded",
-    "label": "Always show the full media card (otherwise: art, title and play/pause; full card on hover)"
+    "label": "Always show the full media card (otherwise a shorter card without the control rows; full on hover)"
   },
   {
     "type": "separator",
