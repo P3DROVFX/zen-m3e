@@ -8,6 +8,7 @@ First stable release.
   ii and non-ii systems, glass / Transparent Zen integration, preferences, limitations,
   documentation map, contributing guide and credits.
 - Old sandbox screenshots replaced by the showcase.
+- MIT license.
 
 ## 0.9.3 — 2026-10-30
 

@@ -183,3 +183,8 @@ technique per place, nothing that loops.
 - **Google Sans Flex** and **Material 3 Expressive** by Google.
 - **[illogical-impulse](https://github.com/end-4/dots-hyprland)** by end-4, the shell
   ii-p3drovfx grows from.
+
+## License
+
+[MIT](LICENSE). Google Sans Flex is not bundled in the repository; the installer copies
+your installed copy into the mod.
