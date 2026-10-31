@@ -93,9 +93,12 @@ Zen Internet works the same everywhere once transparent pages are allowed.
 
 ## Installer notes
 
-- Finds the default profile in `~/.zen` (native) or the Flatpak's
-  `~/.var/app/app.zen_browser.zen/.zen`; otherwise use `--profile DIR`. Other
-  packagings (Snap, AppImage with a custom profile dir) need `--profile`.
+- Finds profiles by reading `profiles.ini` / `installs.ini` (relative and absolute
+  paths) in `~/.zen` (native tarball, AUR), `~/.config/zen`, the Flatpak's
+  `~/.var/app/app.zen_browser.zen/zen` (and the older `.zen` / `config/zen`), and the
+  Snap's `~/snap/zen-browser/common/.zen`. It keeps only profiles with Sine
+  (`chrome/JS/sine.sys.mjs`), picks the most recently used, and asks when several have
+  Sine. Anything else: `--profile DIR` (*about:support → Profile Folder*).
 - Needs `bash`, `python3`, `fc-list` (fontconfig), `curl` (only to fetch the font) and
   `matugen` (or `--no-matugen`).
 - `--glass` and installing must happen with Zen closed (Zen rewrites `prefs.js` and Sine

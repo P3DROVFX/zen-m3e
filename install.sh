@@ -3,7 +3,10 @@
 #
 #   ./install.sh                 symlink this repo into the default Zen profile
 #   ./install.sh --copy          copy instead of symlink
-#   ./install.sh --profile DIR   pick the profile explicitly
+#   ./install.sh --profile DIR   pick the profile explicitly (about:support > Profile Folder).
+#                                Without it: every Zen profile with Sine — native ~/.zen,
+#                                ~/.config/zen, Flatpak, Snap — most recently used first;
+#                                asks when there is more than one.
 #   ./install.sh --no-matugen    skip the matugen template
 #   ./install.sh --no-font-download
 #                                don't fetch Google Sans Flex when it isn't installed
@@ -37,7 +40,7 @@ while (($#)); do
         --glass) glass=1 ;;
         --source) source="$2"; shift ;;
         --no-font-download) download_font=0 ;;
-        -h|--help) sed -n '2,21p' "$0"; exit 0 ;;
+        -h|--help) sed -n '2,24p' "$0"; exit 0 ;;
         *) echo "unknown option: $1" >&2; exit 2 ;;
     esac
     shift
@@ -46,17 +49,104 @@ done
 die() { echo "error: $*" >&2; exit 1; }
 
 # ---------------------------------------------------------------- profile
+# Every Zen profile on this machine, one per line: path<TAB>sine(0/1)<TAB>label.
+# Reads profiles.ini / installs.ini under each place Zen keeps them: native (~/.zen),
+# XDG (~/.config/zen), Flatpak (~/.var/app/<id>/zen, and the older .zen / config/zen),
+# Snap. Sine profiles first, then the most recently used (prefs.js is written on exit).
+list_profiles() {
+    python3 - <<'EOF'
+import configparser, os, time
+home = os.path.expanduser("~")
+xdg = os.environ.get("XDG_CONFIG_HOME") or os.path.join(home, ".config")
+roots = [os.path.join(home, ".zen"), os.path.join(xdg, "zen")]
+for app in ("app.zen_browser.zen", "io.github.zen_browser.zen"):
+    base = os.path.join(home, ".var/app", app)
+    roots += [os.path.join(base, "zen"), os.path.join(base, ".zen"), os.path.join(base, "config/zen")]
+roots += [os.path.join(home, "snap/zen-browser/common/.zen"), os.path.join(home, "snap/zen-browser/current/.zen")]
+
+def ini(path):
+    cp = configparser.RawConfigParser(strict=False)
+    cp.optionxform = str
+    try:
+        cp.read(path, encoding="utf-8")
+    except configparser.Error:
+        pass
+    return cp
+
+found, seen = [], set()
+for root in roots:
+    if not os.path.isdir(root):
+        continue
+    prof = ini(os.path.join(root, "profiles.ini"))
+    defaults = {s.get("Default") for s in (ini(os.path.join(root, "installs.ini")), prof)
+                for s in s.values() if s.get("Default") not in (None, "1", "0")}
+    paths = []
+    for name in prof.sections():
+        sec = prof[name]
+        if name.startswith("Profile") and sec.get("Path"):
+            rel = sec.get("IsRelative", "1") == "1"
+            paths.append((os.path.join(root, sec["Path"]) if rel else sec["Path"], sec.get("Path") in defaults))
+    # Profiles a broken or missing profiles.ini doesn't list.
+    for entry in os.listdir(root):
+        if os.path.isfile(os.path.join(root, entry, "prefs.js")):
+            paths.append((os.path.join(root, entry), entry in defaults))
+    for path, default in paths:
+        real = os.path.realpath(path)
+        if real in seen or not os.path.isdir(real):
+            continue
+        seen.add(real)
+        chrome = os.path.join(path, "chrome")
+        sine = os.path.isfile(os.path.join(chrome, "JS", "sine.sys.mjs")) or os.path.isdir(os.path.join(chrome, "sine-mods"))
+        try:
+            used = os.path.getmtime(os.path.join(path, "prefs.js"))
+        except OSError:
+            used = 0
+        label = "used " + time.strftime("%Y-%m-%d", time.localtime(used)) if used else "never used"
+        if default:
+            label += ", install default"
+        found.append((sine, used, path, label))
+for sine, used, path, label in sorted(found, key=lambda f: (f[0], f[1]), reverse=True):
+    print(f"{path}\t{int(sine)}\t{label}")
+EOF
+}
+
 if [[ -z "$profile" ]]; then
-    # Native builds keep profiles in ~/.zen; the Flatpak in its sandbox.
-    for zen_root in "$HOME/.zen" "$HOME/.var/app/app.zen_browser.zen/.zen"; do
-        [[ -f "$zen_root/installs.ini" ]] && break
+    mapfile -t profiles < <(list_profiles)
+    ((${#profiles[@]})) || die "no Zen profile found (looked in ~/.zen, ~/.config/zen, the Flatpak and the Snap).
+Open about:support in Zen, copy \"Profile Folder\" and run: $0 --profile DIR"
+    sine_profiles=()
+    for line in "${profiles[@]}"; do
+        [[ $(cut -f2 <<<"$line") == 1 ]] && sine_profiles+=("$line")
     done
-    [[ -f "$zen_root/installs.ini" ]] || die "no Zen profiles found (use --profile DIR)"
-    rel="$(grep -m1 '^Default=' "$zen_root/installs.ini" | cut -d= -f2-)"
-    profile="$zen_root/$rel"
+    if ((${#sine_profiles[@]} == 0)); then
+        echo "Zen profiles found, but none has Sine installed:" >&2
+        for line in "${profiles[@]}"; do printf '  %s  (%s)\n' "$(cut -f1 <<<"$line")" "$(cut -f3 <<<"$line")" >&2; done
+        die "install Sine (https://github.com/CosmoCreeper/Sine) and start Zen once, or pass --profile DIR"
+    fi
+    profile="$(cut -f1 <<<"${sine_profiles[0]}")"
+    if ((${#sine_profiles[@]} > 1)); then
+        echo "Zen profiles with Sine:"
+        for i in "${!sine_profiles[@]}"; do
+            printf '  %d) %s  (%s)\n' $((i + 1)) "$(cut -f1 <<<"${sine_profiles[i]}")" "$(cut -f3 <<<"${sine_profiles[i]}")"
+        done
+        if [[ -t 0 ]]; then
+            read -rp "Install into which? [1] " pick
+            if [[ -n "$pick" ]]; then
+                [[ "$pick" =~ ^[0-9]+$ ]] && ((pick >= 1 && pick <= ${#sine_profiles[@]})) || die "no profile $pick"
+                profile="$(cut -f1 <<<"${sine_profiles[pick - 1]}")"
+            fi
+        else
+            echo "using the most recently used one (pass --profile DIR for another)"
+        fi
+    fi
 fi
-[[ -d "$profile/chrome/sine-mods" ]] || die "$profile has no chrome/sine-mods (is Sine installed?)"
+profile="${profile%/}"
+[[ -d "$profile" ]] || die "$profile is not a directory"
+[[ -f "$profile/chrome/JS/sine.sys.mjs" || -d "$profile/chrome/sine-mods" ]] \
+    || die "$profile has no Sine (chrome/JS/sine.sys.mjs). Install Sine and start Zen once."
+echo "profile: $profile"
 mods_dir="$profile/chrome/sine-mods"
+mkdir -p "$mods_dir"
 target="$mods_dir/$MOD_ID"
 
 if pgrep -x zen >/dev/null || pgrep -f '/zen/zen$' >/dev/null; then

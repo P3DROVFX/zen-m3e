@@ -58,7 +58,7 @@ cd ~/Projects/zen-m3e
 |---|---|
 | `--source IMAGE` / `--source '#rrggbb'` | first palette from this image or colour instead of the detected one |
 | `--copy` | copy instead of symlink (default symlink: `git pull` + restart updates it) |
-| `--profile DIR` | a profile other than the default (`~/.zen`, or the Flatpak's) |
+| `--profile DIR` | a specific profile (*about:support → Profile Folder*). Without it the installer finds every Zen profile that has Sine — native, `~/.config/zen`, Flatpak, Snap — and asks if there is more than one |
 | `--no-matugen` | don't touch matugen; use the built-in palette |
 | `--no-font-download` | don't fetch Google Sans Flex if it isn't installed |
 | `--glass` | glass window — see [Glass](#glass-transparent-zen) |

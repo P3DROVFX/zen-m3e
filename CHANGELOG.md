@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+- Installer: profile detection rewritten. It now finds the Flatpak's current profile
+  folder (`~/.var/app/app.zen_browser.zen/zen`), `~/.config/zen` and the Snap, reads
+  every install in `profiles.ini` (not only the first line of `installs.ini`), skips
+  profiles without Sine, prefers the most recently used one and asks when several have
+  Sine. Creates `chrome/sine-mods` when Sine hasn't made it yet.
+
 - Page corner radius setting (`m3e.page-radius`: 0 / 4 / 8 / 12 / 17 / 23 / 32 px) for window
   managers with smaller window corners, where the page's corner looked larger than the
   window's. Falls back to the ii Dynamic Page Radius mod, then 23 px.
