@@ -28,6 +28,8 @@ shell for Hyprland), but it works on any Linux desktop with Zen, Sine and matuge
   grouped list, wide display-face headings.
 - **Menus and the app menu** in the shell's style: separate rounded rows, icons in
   circular badges (Zen's icon set mapped onto context menus), M3 checkboxes and radios.
+- **Ctrl+Tab switcher** — the tabs as cards on a large sheet: thumbnail, favicon badge and
+  title; the tab you're switching to fills with primary and its thumbnail rounds in.
 - **Site panel** (extensions popover), **Library**, **find bar**, **toasts**, **tooltips**.
 - **Media player** like Android's: album art under a scrim, a big play/pause (rounded
   square ↔ circle), wavy progress; contracted by default, full on hover.

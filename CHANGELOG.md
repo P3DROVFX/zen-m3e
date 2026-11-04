@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+- Ctrl+Tab switcher themed: a large sheet that scales up from its centre, tabs as cards
+  (thumbnail, favicon in a circular badge, title) dealing in; the tab being switched to
+  fills with primary and its thumbnail becomes concentric with the card; "Show all tabs"
+  is a tonal pill.
+
 - Installer: profile detection rewritten. It now finds the Flatpak's current profile
   folder (`~/.var/app/app.zen_browser.zen/zen`), `~/.config/zen` and the Snap, reads
   every install in `profiles.ini` (not only the first line of `installs.ini`), skips

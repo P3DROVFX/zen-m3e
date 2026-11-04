@@ -3681,3 +3681,162 @@ panel[type="arrow"][m3e-open] panelview[current] > * {
     padding: 13px !important;
   }
 }
+
+/* ===== 16-ctrltab.css ===== */
+/*
+ * Ctrl+Tab switcher (#ctrlTab-panel, Firefox's tab previews). A large sheet with the
+ * tabs as cards: thumbnail on top, then a row with the favicon in a circular badge and
+ * the title. The card being switched to fills with primary and its thumbnail rounds in
+ * to sit concentric inside it; "Show all tabs" is a tonal pill. The sheet scales up
+ * from its centre like the search overlay and the cards deal in.
+ *
+ * Firefox sizes the panel and each thumbnail inline from the screen width, so nothing
+ * here sets a width: only padding, gaps and shapes.
+ */
+#ctrlTab-panel {
+  --panel-background-color: var(--m3e-popup) !important;
+  --panel-text-color: var(--m3-on-surface) !important;
+  --panel-border-color: transparent !important;
+  --panel-border-radius: var(--m3e-r-xl) !important;
+  --panel-padding: 12px !important;
+  --panel-box-shadow: none !important;
+  --panel-box-shadow-margin: 0px !important;
+  --m3e-ct-pad: 8px;
+  --m3e-ct-card: var(--m3e-r-lg);
+  /* Concentric with the card: its radius minus its padding. */
+  --m3e-ct-thumb: calc(var(--m3e-ct-card) - var(--m3e-ct-pad));
+  --m3e-ct-badge: 30px;
+  font-family: var(--m3e-font) !important;
+  font-weight: normal !important;
+  font-variation-settings: var(--m3e-type-label);
+  -moz-window-shadow: none !important;
+}
+
+#ctrlTab-panel[m3e-open]::part(content) {
+  animation: m3e-overlay-in var(--m3e-d-enter) var(--m3e-decel) both;
+  transform-origin: 50% 50%;
+}
+
+#ctrlTab-previews {
+  column-gap: 4px !important;
+  row-gap: 4px !important;
+}
+
+/* ---------- Cards ---------- */
+#ctrlTab-panel :is(.ctrlTab-preview, #ctrlTab-showAll) {
+  text-shadow: none !important;
+  font: inherit !important;
+}
+
+.ctrlTab-preview-inner {
+  display: grid !important;
+  grid-template-columns: var(--m3e-ct-badge) minmax(0, 1fr);
+  align-items: center;
+  column-gap: 10px;
+  row-gap: 10px;
+  margin: 0 !important;
+  padding: var(--m3e-ct-pad) !important;
+  border: none !important;
+  border-radius: var(--m3e-ct-card) !important;
+  background-color: transparent;
+  color: var(--m3-on-surface);
+  transition: var(--m3e-color-motion), var(--m3e-shape-motion);
+}
+
+.ctrlTab-canvas {
+  grid-column: 1 / -1;
+  justify-self: center;
+  margin: 0 !important;
+  overflow: clip;
+  /* Rounder than the card while idle (no card behind it), concentric once selected. */
+  border-radius: var(--m3e-ct-card);
+  box-shadow: none !important;
+  background-color: var(--m3e-row) !important;
+  transition: var(--m3e-shape-motion);
+
+  & > :is(img, canvas) {
+    display: block;
+  }
+}
+
+/* Favicon: a circular badge beside the title instead of a square stuck on the corner. */
+.ctrlTab-favicon-container {
+  justify-content: center !important;
+  align-items: center;
+  width: var(--m3e-ct-badge);
+  height: var(--m3e-ct-badge);
+  border-radius: 50%;
+  background-color: var(--m3e-row);
+  transition: var(--m3e-color-motion);
+}
+.ctrlTab-favicon {
+  width: 18px !important;
+  height: 18px !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: none !important;
+  border-radius: 0 !important;
+  background: none !important;
+
+  &:not([src]) {
+    display: none;
+  }
+}
+
+.ctrlTab-label {
+  margin: 0 !important;
+  text-align: start !important;
+  color: inherit;
+  font-variation-settings: var(--m3e-type-label);
+  transition: font-variation-settings var(--m3e-d-effects) var(--m3e-effects);
+}
+
+/* ---------- The tab being switched to ---------- */
+.ctrlTab-preview:focus > .ctrlTab-preview-inner {
+  background-color: var(--m3-primary) !important;
+  color: var(--m3-on-primary);
+  animation: m3e-pop var(--m3e-d-fast) var(--m3e-spatial-fast);
+
+  & > .ctrlTab-canvas {
+    border-radius: var(--m3e-ct-thumb);
+  }
+  & > .ctrlTab-favicon-container {
+    background-color: var(--m3-primary-container);
+  }
+  & > .ctrlTab-label {
+    font-variation-settings: var(--m3e-type-strong);
+  }
+}
+
+/* ---------- Show all tabs ---------- */
+#ctrlTab-showAll-container {
+  margin-top: 8px;
+}
+#ctrlTab-showAll {
+  min-height: 40px;
+  margin: 0 !important;
+  padding: 0 20px !important;
+  border: none !important;
+  border-radius: var(--m3e-r-pill) !important;
+  background-color: var(--m3-secondary-container) !important;
+  color: var(--m3-on-secondary-container) !important;
+  font-variation-settings: var(--m3e-type-label);
+  transition: var(--m3e-color-motion);
+
+  &:focus {
+    background-color: var(--m3-primary) !important;
+    color: var(--m3-on-primary) !important;
+    animation: m3e-pop var(--m3e-d-fast) var(--m3e-spatial-fast);
+  }
+}
+
+/* ---------- Cards deal in under the sheet ---------- */
+#ctrlTab-panel[m3e-open] .ctrlTab-preview:not([hidden]) {
+  animation: m3e-rise-in var(--m3e-d) var(--m3e-spatial) both;
+  &:nth-child(2) { animation-delay: 20ms; }
+  &:nth-child(3) { animation-delay: 40ms; }
+  &:nth-child(4) { animation-delay: 60ms; }
+  &:nth-child(5) { animation-delay: 80ms; }
+  &:nth-child(6) { animation-delay: 100ms; }
+  &:nth-child(n + 7) { animation-delay: 120ms; }
+}
