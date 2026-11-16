@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 1.1.0 — 2026-11-15
 
 - Menus: hovering a row no longer widens the menu. The label is measured at its resting
   weight and the heavier active weight ellipsizes inside it (count badges such as
