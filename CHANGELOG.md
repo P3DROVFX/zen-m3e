@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+- Menus: hovering a row no longer widens the menu. The label is measured at its resting
+  weight and the heavier active weight ellipsizes inside it (count badges such as
+  "0 / 12" keep one weight). This also stops the flicker and vanishing menu on Wayland
+  over the widest rows (e.g. *Open in New Container Tab*, *Select All Tabs*), which came
+  from the popup window being resized on every hover.
+
 - Ctrl+Tab switcher themed: a large sheet that scales up from its centre, tabs as cards
   (thumbnail, favicon in a circular badge, title) dealing in; the tab being switched to
   fills with primary and its thumbnail becomes concentric with the card; "Show all tabs"
