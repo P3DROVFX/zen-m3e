@@ -174,7 +174,7 @@ src/           the stylesheet, one file per area (tokens, sidebar, urlbar, menus
 m3e.uc.js      the optional runtime script
 matugen/       the matugen template
 build.py       src/*.css → chrome.css; generates the palette, shapes and menu icons
-tools/         banner.py (this README's banner)
+tools/         banner.py (this README's banner), release-banner.py (release announcement cards)
 tests/         Marionette client and screenshot scenes
 ```
 
