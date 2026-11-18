@@ -70,6 +70,7 @@
   /* Library back to the foot. */
   & #navigator-toolbox #zen-library-button {
     position: static !important;
+    translate: none !important;
   }
   & #zen-sidebar-top-buttons-separator {
     min-width: 0 !important;

@@ -61,14 +61,30 @@ panelview .panel-subview-body {
   padding: 8px !important;
 }
 
-/* The account row at the top: a hero in primary container. */
-#appMenu-fxa-label2,
-#appMenu-fxa-status2 {
+/* The account row at the top: a hero in primary container. Doubled ids: the row rule
+   above outranks a single id (the ids inside its :not() count), which used to keep the
+   row's surface under the on-primary-container text — black text on a dark row with
+   palettes whose on-primary-container is black. */
+#appMenu-fxa-status2#appMenu-fxa-status2 {
+  background: transparent !important;
+  padding: 0 !important;
+  min-height: 0 !important;
+  margin-block-end: 6px !important;
+}
+#appMenu-fxa-label2#appMenu-fxa-label2 {
   background: var(--m3-primary-container) !important;
   color: var(--m3-on-primary-container) !important;
   min-height: 52px !important;
+  margin: 0 !important;
+  padding-inline: 16px 14px !important;
   border-radius: var(--m3e-r-lg) !important;
-  margin-block-end: 6px !important;
+  &:hover {
+    background: color-mix(in srgb, var(--m3-on-primary-container) 8%, var(--m3-primary-container)) !important;
+    border-radius: 26px !important;
+  }
+  &:hover:active {
+    background: color-mix(in srgb, var(--m3-on-primary-container) 14%, var(--m3-primary-container)) !important;
+  }
 }
 
 /* Panel headers: the wide display face. */

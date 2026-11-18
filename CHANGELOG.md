@@ -1,5 +1,22 @@
 # Changelog
 
+## 1.1.1 — 2026-11-18
+
+- App menu: the account row is the primary-container hero again. The menu-row rule
+  outranked it and kept the row's surface under on-primary-container text, so palettes
+  whose on-primary-container is black showed the account name and email in black on a
+  dark row. The row now has its own hover/press tones and a 16 px inset.
+
+- Library button anchored to the top bar's separator (CSS anchor positioning) instead of
+  a fixed 66 px offset: it sits right after the sidebar toggle in every layout — sidebar
+  plus top toolbar, single toolbar, window controls on the left — and is centred on the
+  bar. Falls back to the old offset where anchor positioning isn't supported.
+
+- Hovering the library no longer hides the media card. Zen opens its recent-downloads
+  stack above the sidebar foot on hover and masks the bottom of the tab list for it; with
+  the button in the top bar that stack is off while the sidebar is expanded (the
+  collapsed sidebar, where the button is back in the foot, keeps it).
+
 ## 1.1.0 — 2026-11-15
 
 - Menus: hovering a row no longer widens the menu. The label is measured at its resting

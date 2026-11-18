@@ -1356,6 +1356,39 @@ tab-group {
   inset-inline-start: var(--m3e-library-start, 66px);
   z-index: 2;
 }
+/* The top bar's separator always follows its last button (the compact toggle, after the
+   app menu button in single-toolbar mode, after window controls on the left…), and its
+   min-width above keeps that slot free: anchor the library there, centred on the bar,
+   instead of guessing a fixed offset per layout. */
+@supports (anchor-name: --a) {
+  #zen-sidebar-top-buttons-separator {
+    anchor-name: --m3e-library-slot;
+  }
+  #navigator-toolbox #zen-library-button {
+    position-anchor: --m3e-library-slot;
+    top: anchor(center);
+    inset-inline-start: anchor(start);
+    translate: 0 -50%;
+  }
+}
+
+/* Hovering the library opens Zen's recent-downloads stack above the foot and masks the
+   bottom of the tab list (where the media card is) to make room for it. With the button
+   up in the top bar that stack opens far from it and only hides the media card, so it
+   stays closed while the sidebar is expanded (the library itself lists downloads). */
+:root[zen-sidebar-expanded="true"] {
+  & #TabsToolbar-customization-target:is([zen-library-stack-open], [zen-library-stack-closing]) {
+    mask-image: none !important;
+  }
+  & #zen-library-download-list {
+    display: none !important;
+  }
+  &:not([inDOMFullscreen="true"]) #zen-sidebar-foot-buttons[zen-library-badge][zen-library-stack-open] #library-button-badge {
+    --zen-library-progress: 0 !important;
+    visibility: visible !important;
+    transition: none !important;
+  }
+}
 
 #zen-create-new-button {
   & > .toolbarbutton-icon {
@@ -2142,14 +2175,30 @@ panelview .panel-subview-body {
   padding: 8px !important;
 }
 
-/* The account row at the top: a hero in primary container. */
-#appMenu-fxa-label2,
-#appMenu-fxa-status2 {
+/* The account row at the top: a hero in primary container. Doubled ids: the row rule
+   above outranks a single id (the ids inside its :not() count), which used to keep the
+   row's surface under the on-primary-container text — black text on a dark row with
+   palettes whose on-primary-container is black. */
+#appMenu-fxa-status2#appMenu-fxa-status2 {
+  background: transparent !important;
+  padding: 0 !important;
+  min-height: 0 !important;
+  margin-block-end: 6px !important;
+}
+#appMenu-fxa-label2#appMenu-fxa-label2 {
   background: var(--m3-primary-container) !important;
   color: var(--m3-on-primary-container) !important;
   min-height: 52px !important;
+  margin: 0 !important;
+  padding-inline: 16px 14px !important;
   border-radius: var(--m3e-r-lg) !important;
-  margin-block-end: 6px !important;
+  &:hover {
+    background: color-mix(in srgb, var(--m3-on-primary-container) 8%, var(--m3-primary-container)) !important;
+    border-radius: 26px !important;
+  }
+  &:hover:active {
+    background: color-mix(in srgb, var(--m3-on-primary-container) 14%, var(--m3-primary-container)) !important;
+  }
 }
 
 /* Panel headers: the wide display face. */
@@ -3380,6 +3429,7 @@ panel[type="arrow"][m3e-open] panelview[current] > * {
   /* Library back to the foot. */
   & #navigator-toolbox #zen-library-button {
     position: static !important;
+    translate: none !important;
   }
   & #zen-sidebar-top-buttons-separator {
     min-width: 0 !important;

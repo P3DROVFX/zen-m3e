@@ -153,8 +153,8 @@ All in **Settings → Sine → M3 Expressive**.
 - **Nothing floating over a page is see-through.** Gecko's `backdrop-filter` can't blur
   web content (it renders in another process), so the search overlay, compact sidebar
   and find bar stay nearly opaque.
-- **The library button is placed in the top bar by CSS**, assuming that toolbar's
-  default order; a heavily customised top bar can push it out of place.
+- **The library button is placed in the top bar by CSS**, anchored right after the top
+  bar's last button; its recent-downloads hover stack is off while it's up there.
 - **Without the script** there is no live reload, folder preview, album art, scroll-edge
   fades or hidden scrollbar.
 
