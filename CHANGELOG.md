@@ -1,5 +1,16 @@
 # Changelog
 
+## Unreleased
+
+- Library button in the *sidebar and top toolbar* layout: it fell to the foot and sat
+  over the other buttons whenever Zen took the top bar's separator (its anchor) out of
+  the DOM. It now anchors to the bar's last button — the compact-mode toggle, or
+  whatever was added after it — and moves along when buttons are added or removed; the
+  separator stays the anchor only in single-toolbar mode, where its 34 px slot is now
+  confined. In compact mode with a top toolbar (Zen moves the bar out of the sidebar)
+  or with an empty bar, the library returns to the foot instead of floating over the
+  list, and Zen's recent-downloads stack works there again.
+
 ## 1.1.1 — 2026-11-18
 
 - App menu: the account row is the primary-container hero again. The menu-row rule

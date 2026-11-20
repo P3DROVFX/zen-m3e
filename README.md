@@ -154,7 +154,9 @@ All in **Settings → Sine → M3 Expressive**.
   web content (it renders in another process), so the search overlay, compact sidebar
   and find bar stay nearly opaque.
 - **The library button is placed in the top bar by CSS**, anchored right after the top
-  bar's last button; its recent-downloads hover stack is off while it's up there.
+  bar's last button; its recent-downloads hover stack is off while it's up there. In
+  compact mode with a separate top toolbar Zen moves that bar out of the sidebar, so the
+  library stays in the sidebar's foot.
 - **Without the script** there is no live reload, folder preview, album art, scroll-edge
   fades or hidden scrollbar.
 

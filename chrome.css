@@ -1344,10 +1344,14 @@ tab-group {
 }
 
 /* ---------- Library: up to the top bar, next to the compact-mode toggle ---------- */
+/* Only while the sidebar has its own top bar with buttons in it. In compact mode with a
+   separate top toolbar Zen moves that bar (compact toggle included) into the top
+   toolbar, and after switching layouts at runtime it can be left empty; then there is
+   nothing to sit next to and the library stays in the foot, as in the collapsed sidebar. */
 #zen-sidebar-foot-buttons {
   position: static !important;
 }
-#zen-sidebar-top-buttons-separator {
+:root[zen-single-toolbar="true"] #zen-sidebar-top-buttons-separator {
   min-width: 34px !important;
 }
 #navigator-toolbox #zen-library-button {
@@ -1356,34 +1360,54 @@ tab-group {
   inset-inline-start: var(--m3e-library-start, 66px);
   z-index: 2;
 }
-/* The top bar's separator always follows its last button (the compact toggle, after the
-   app menu button in single-toolbar mode, after window controls on the left…), and its
-   min-width above keeps that slot free: anchor the library there, centred on the bar,
-   instead of guessing a fixed offset per layout. */
+#navigator-toolbox:not(:has(#zen-sidebar-top-buttons-customization-target > :not(#zen-sidebar-top-buttons-separator, [hidden])))
+  #zen-library-button {
+  position: static !important;
+  translate: none !important;
+}
+/* Anchor the library right after the top bar's last button, centred on the bar, instead
+   of guessing a fixed offset per layout.
+   - Single toolbar: the separator follows the sidebar's own buttons (app menu, compact
+     toggle, anything added there) and splits them from the nav buttons; its min-width
+     above keeps that slot free, so the library sits at its start.
+   - Sidebar + top toolbar: the separator isn't a reliable anchor (Zen takes it out of the
+     DOM when leaving single-toolbar mode, and buttons added to the bar land after it),
+     so the anchor is the bar's last button, with a slot reserved after it. Adding or
+     removing buttons moves the library with them. */
 @supports (anchor-name: --a) {
-  #zen-sidebar-top-buttons-separator {
+  :root[zen-single-toolbar="true"] #zen-sidebar-top-buttons-separator {
     anchor-name: --m3e-library-slot;
+  }
+  :root[zen-sidebar-expanded="true"]:not([zen-single-toolbar="true"])
+    #zen-sidebar-top-buttons-customization-target
+    > :nth-last-child(1 of :not(#zen-sidebar-top-buttons-separator, [hidden])) {
+    anchor-name: --m3e-library-slot;
+    margin-inline-end: 38px !important;
   }
   #navigator-toolbox #zen-library-button {
     position-anchor: --m3e-library-slot;
-    top: anchor(center);
-    inset-inline-start: anchor(start);
+    top: anchor(center, 25px);
+    inset-inline-start: anchor(start, 66px);
     translate: 0 -50%;
+  }
+  :root:not([zen-single-toolbar="true"]) #navigator-toolbox #zen-library-button {
+    inset-inline-start: calc(anchor(end, 62px) + 4px);
   }
 }
 
 /* Hovering the library opens Zen's recent-downloads stack above the foot and masks the
    bottom of the tab list (where the media card is) to make room for it. With the button
    up in the top bar that stack opens far from it and only hides the media card, so it
-   stays closed while the sidebar is expanded (the library itself lists downloads). */
-:root[zen-sidebar-expanded="true"] {
+   stays closed while the library is up there (the library itself lists downloads). */
+:root[zen-sidebar-expanded="true"]
+  #navigator-toolbox:has(#zen-sidebar-top-buttons-customization-target > :not(#zen-sidebar-top-buttons-separator, [hidden])) {
   & #TabsToolbar-customization-target:is([zen-library-stack-open], [zen-library-stack-closing]) {
     mask-image: none !important;
   }
   & #zen-library-download-list {
     display: none !important;
   }
-  &:not([inDOMFullscreen="true"]) #zen-sidebar-foot-buttons[zen-library-badge][zen-library-stack-open] #library-button-badge {
+  :root:not([inDOMFullscreen="true"]) & #zen-sidebar-foot-buttons[zen-library-badge][zen-library-stack-open] #library-button-badge {
     --zen-library-progress: 0 !important;
     visibility: visible !important;
     transition: none !important;
