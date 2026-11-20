@@ -20,12 +20,13 @@ ROOT = Path(__file__).resolve().parent.parent
 OUT = ROOT / "assets" / "releases"
 FONT = ROOT / "fonts" / "GoogleSansFlex.ttf"
 
-VERSION = "1.1.1"
-SUBTITLE = "Bug Fixes"
+VERSION = "1.2.0"
+SUBTITLE = "Library Redesign"
 HIGHLIGHTS = [
-    "Readable account row",
-    "Library beside the sidebar toggle",
-    "Media card stays on library hover",
+    "Toolbar on top",
+    "Full-width content",
+    "Follows glass",
+    "Library button in every layout",
 ]
 FOOTER = "github.com/P3DROVFX/zen-m3e"
 CALL = "git pull and restart Zen"

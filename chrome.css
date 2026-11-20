@@ -2648,11 +2648,14 @@ findbar {
 
 /* ===== 09-library.css ===== */
 /*
- * Zen Library (Media / Downloads / Boosts / Spaces / History). The side column is the
- * shell's navigation rail: destinations are pills at rest and a rounded square in primary
- * container when current. The search is the field pill, filters are chips (dashed when
- * off), group headings are captions, rows get a favicon tile and the history list fades
- * at its top edge once scrolled instead of drawing a line.
+ * Zen Library (Routing / Media / Downloads / Boosts / Spaces / History). The side rail
+ * becomes the shell's toolbar at the top: one pill-shaped group of icon buttons in which
+ * the current destination is a tonal pill that unfolds its label. The column the rail
+ * took goes to the content, which has no surface of its own: the library shows the
+ * window's own background, so it follows glass exactly like the sidebar it covers.
+ * The search is the field pill, filters are chips (dashed when off), group headings
+ * are captions, rows get a favicon tile and the lists fade at their top edge once
+ * scrolled instead of drawing a line.
  */
 zen-library {
   --zen-library-radius: var(--m3e-r-md);
@@ -2661,51 +2664,185 @@ zen-library {
   color: var(--m3-on-surface) !important;
   color-scheme: var(--m3e-scheme, dark) !important;
   font-variation-settings: var(--m3e-type-body);
+  background: transparent !important;
 
+  /* Toolbar · content · footer, top to bottom, on either sidebar side. */
+  & #zen-library-panel {
+    flex-direction: column !important;
+  }
+  /* The rail's box goes away and its parts join that column. Spaces sizes the library
+     as the rail's width plus its cards: with no box the rail counts 0, so a full-width
+     toolbar can't feed back into the library's width. */
   & #zen-library-side {
-    background: var(--m3e-layer1) !important;
-    box-shadow: none !important;
-    border-radius: 0 var(--m3e-r-xl) var(--m3e-r-xl) 0;
+    display: contents !important;
   }
 }
-:root[zen-right-side="true"] zen-library #zen-library-side {
-  border-radius: var(--m3e-r-xl) 0 0 var(--m3e-r-xl);
-}
 #zen-library-content {
-  background: var(--m3e-window);
+  background: transparent !important;
 }
 
-/* ---------- Rail destinations ---------- */
+/* ---------- Toolbar: the destinations ---------- */
+#zen-library-sidebar-tabs {
+  flex: none;
+  flex-direction: row !important;
+  justify-content: flex-start !important;
+  align-self: flex-start;
+  gap: 2px !important;
+  box-sizing: border-box;
+  max-width: calc(100% - 62px);
+  height: auto !important;
+  margin: 10px 8px 4px 54px;               /* the back button sits in the 54 px */
+  padding: 4px;
+  border-radius: var(--m3e-r-full);
+  background: var(--m3e-layer2);
+  overflow: auto hidden !important;
+  -moz-window-dragging: no-drag;
+}
+
 .zen-library-tab {
-  margin: 4px 10px !important;
-  padding: 14px 0 12px !important;
+  --zen-library-sprite-size: 22px;
+  --m3e-lib-tab-start: 9px;                  /* 9 + 22 + 9: a 40 px circle at rest */
+  flex: none;
+  flex-direction: row !important;
+  gap: 0 !important;
+  box-sizing: border-box;
+  height: 40px;
+  margin: 0 !important;
+  padding: 0 9px 0 var(--m3e-lib-tab-start) !important;
   color: var(--m3-on-surface-variant);
-  font-size: 12px;
+  font-size: 13px;
   font-variation-settings: var(--m3e-type-label);
-  transition: var(--m3e-color-motion), font-variation-settings var(--m3e-d) var(--m3e-spatial);
+  transition:
+    var(--m3e-color-motion),
+    padding var(--m3e-d-fast) var(--m3e-spatial-fast),
+    font-variation-settings var(--m3e-d) var(--m3e-spatial);
 
   &::before {
-    border-radius: 34px !important;
+    border-radius: 20px !important;
     transition:
-      border-radius var(--m3e-d) var(--m3e-morph),
       background-color var(--m3e-d-effects) var(--m3e-effects),
       transform var(--m3e-d-fast) var(--m3e-spatial-fast) !important;
   }
   &:hover::before {
     background: color-mix(in srgb, var(--m3-on-surface) var(--m3e-tint-idle), transparent) !important;
-    border-radius: 26px !important;
   }
   &:hover:active::before {
     transform: scale(0.95) !important;
   }
+
+  /* The label folds away at rest and unfolds in the current destination (Zen hides
+     labels on short windows: here only the current one shows, so it stays). */
+  & label {
+    display: block !important;
+    max-width: 0;
+    margin: 0 !important;
+    opacity: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    transition:
+      max-width var(--m3e-d-fast) var(--m3e-spatial-fast),
+      margin-inline-start var(--m3e-d-fast) var(--m3e-spatial-fast),
+      opacity var(--m3e-d-effects) var(--m3e-effects);
+  }
+
   &[active] {
-    color: var(--m3-on-primary-container);
+    --m3e-lib-tab-start: 12px;
+    padding-inline-end: 16px !important;
+    color: var(--m3-on-secondary-container);
     font-variation-settings: var(--m3e-type-strong);
+    & label {
+      max-width: 160px;
+      margin-inline-start: 8px !important;
+      opacity: 1;
+    }
   }
   &[active]::before {
-    background: var(--m3-primary-container) !important;
-    border-radius: var(--m3e-r-md) !important;
+    background: var(--m3-secondary-container) !important;
   }
+}
+.zen-library-tab .zen-library-tab-icon-image {
+  --stroke: currentColor;
+}
+
+/* Downloading: the ring sits around the icon wherever the pill has put it. */
+zen-library[zen-library-downloading] .zen-library-tab[data-section="downloads"]::after {
+  top: 50% !important;
+  left: auto !important;
+  inset-inline-start: calc(var(--m3e-lib-tab-start) - 3px) !important;
+  translate: 0 -50% !important;
+  width: calc(var(--zen-library-sprite-size) + 6px) !important;
+  height: calc(var(--zen-library-sprite-size) + 6px) !important;
+  background:
+    conic-gradient(var(--m3-primary) var(--zen-library-download-progress, 0%), var(--m3-surface-container-highest) 0) border-box,
+    var(--m3-primary-container) padding-box !important;
+  box-shadow: none !important;
+  transition: inset-inline-start var(--m3e-d-fast) var(--m3e-spatial-fast);
+}
+
+/* Customizing: every destination shows, dashed; the remove/restore badge stays inside
+   the group (which scrolls, so it would clip a badge hanging off the corner). */
+zen-library[customizing] .zen-library-tab {
+  outline-color: color-mix(in srgb, var(--m3-outline) 70%, transparent) !important;
+  outline-style: dashed !important;
+  outline-width: 1.5px !important;
+  outline-offset: -1.5px !important;
+  border-radius: 20px !important;
+}
+.zen-library-tab-toggle {
+  top: -1px !important;
+  inset-inline-start: -1px !important;
+  border: none !important;
+  background: var(--m3-inverse-surface) !important;
+  color: var(--m3-inverse-on-surface) !important;
+  box-shadow: none !important;
+}
+
+/* ---------- Back: top start, beside the toolbar ---------- */
+/* Zen builds it as the footer's first button; it is lifted out to where an app bar's
+   navigation icon goes (positioned against the panel, the footer has no position). */
+#zen-library-footer > .toolbarbutton-1:first-child {
+  position: absolute !important;
+  top: 14px;                               /* centred on the 48 px toolbar at 10 px */
+  left: 8px;
+  padding: 0 !important;
+  -moz-window-dragging: no-drag;
+  & > .toolbarbutton-icon {
+    padding: 12px !important;              /* 16 + 24: a 40 px circle */
+    border-radius: 20px !important;
+  }
+  &:hover > .toolbarbutton-icon {
+    border-radius: var(--m3e-r-sm) !important;
+  }
+}
+/* Library on the right: everything mirrors, so back (pointing right) is top right. */
+:root[zen-right-side="true"] {
+  & #zen-library-sidebar-tabs {
+    align-self: flex-end;
+    margin-inline: 8px 54px;
+  }
+  & #zen-library-footer > .toolbarbutton-1:first-child {
+    left: auto;
+    right: 8px;
+  }
+}
+
+/* ---------- Footer: the remaining actions at the end ---------- */
+#zen-library-footer {
+  order: 1;
+  flex: none;
+  align-items: center;
+  justify-content: flex-end !important;
+  gap: 2px;
+  padding: 2px 10px 8px !important;
+}
+
+/* ---------- Content: the rail's column is given back ---------- */
+/* Zen caps every section at the library's minimum width minus the 110 px rail. */
+.zen-library-section:not([data-section="spaces"]) {
+  max-width: none !important;
+}
+.zen-library-search-top {
+  padding: 6px 12px 8px !important;
 }
 
 /* ---------- Search and filters ---------- */
@@ -2767,6 +2904,7 @@ zen-library {
 /* ---------- Results ---------- */
 .zen-library-search-results {
   border-top: none !important;
+  padding: 0 8px 8px !important;
   &[scrolled] {
     mask-image: linear-gradient(to bottom, transparent 0, #000 32px);
   }
@@ -2824,6 +2962,10 @@ zen-library {
 }
 
 /* ---------- Spaces: each space a pane ---------- */
+/* The toolbar now sits above the cards: they start under it instead of 45 px down. */
+.zen-library-spaces {
+  padding: 12px 16px 16px !important;
+}
 .zen-library-space {
   background: var(--m3e-layer1) !important;
   border-radius: var(--m3e-r-xl) !important;

@@ -29,6 +29,7 @@ The guide asks not to repeat a technique. Where each one lives:
 | Separate rows with a gap + icon badge | menus, app menu | the shell's own menu style |
 | Section caption (caption face, no surface) | PINNED, TABS (the + is the new-tab button) | sections split by type and space, not panes |
 | Expanding chip | the current space in the foot | names the space without a header block |
+| Toolbar group (icon buttons; the current one a tonal pill that unfolds its label) | library destinations | the shell's toolbar; frees the rail's column for content |
 | Edge fade on scroll | the tab list, library history | shell technique; replaces divider lines |
 | Shape is state (circle ↔ rounded square) | essentials, icon buttons, create FAB | small, frequent state changes |
 | Polygon morph (equal-vertex `clip-path`) | search badge (Clover-4 → Sunny while typing), space mark in the foot chip (Cookie-9 → 12 on hover) | the two identity marks of the window |

@@ -1,6 +1,18 @@
 # Changelog
 
-## Unreleased
+## 1.2.0 — 2026-11-20
+
+- Library redesigned around a top toolbar. The destinations (Routing, Media, Downloads,
+  Boosts, Spaces, History) leave the side rail for one pill-shaped group at the top, in
+  the shell's toolbar style: icon buttons at rest, the current one a tonal pill that
+  unfolds its label. The 110 px the rail took goes to the content — search, filters and
+  lists now use the library's full width — and Spaces cards start right under the
+  toolbar. Back sits at the top start, beside the toolbar (top end with the sidebar
+  on the right); customize and donate stay in a slim footer.
+- The library has no surface of its own any more: the list and the rail painted solid
+  layers over the window, so with glass on the open library ignored the transparency.
+  It now shows the window's background, the same tone (and glass) as the sidebar it
+  covers.
 
 - Library button in the *sidebar and top toolbar* layout: it fell to the foot and sat
   over the other buttons whenever Zen took the top bar's separator (its anchor) out of
