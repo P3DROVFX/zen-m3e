@@ -13,9 +13,11 @@ panel[type="arrow"] {
 }
 
 /* Subview items: the menu rows (own surface, gap, icon badge, pill when active). */
-/* Scoped to panels: some sidebar buttons (the spaces switcher) also carry .subviewbutton. */
+/* Scoped to panels: some sidebar buttons (the spaces switcher) also carry .subviewbutton.
+   An extension's action button is a row only in the panel (.subviewbutton); pinned to a
+   toolbar it is a .toolbarbutton-1 and gets the icon-button style (03-base). */
 panelview .subviewbutton:not(#appMenu-zoom-controls, #appMenu-zoom-controls > .subviewbutton, .subviewbutton-iconic.subviewbutton-back),
-.unified-extensions-item-action-button,
+.unified-extensions-item-action-button.subviewbutton,
 .protections-popup-category {
   min-height: 42px !important;
   margin: 0 0 3px !important;

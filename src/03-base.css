@@ -85,6 +85,24 @@
   }
 }
 
+/* Extensions pinned to a toolbar: no surface of their own (Zen paints its toolbar-element
+   tone on the button), icon centred in the same slot as the other buttons. */
+.unified-extensions-item-action-button.toolbarbutton-1 {
+  appearance: none !important;
+  background: transparent !important;
+  min-height: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  justify-content: center !important;
+  align-items: center !important;
+
+  & > .toolbarbutton-badge-stack {
+    margin: 0 !important;
+    justify-content: center !important;
+    align-items: center !important;
+  }
+}
+
 /* ---------- Tooltips: inverse surface, plain M3 tooltip ---------- */
 tooltip:not([remote]),
 #tabbrowser-tab-tooltip,

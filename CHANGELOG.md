@@ -1,5 +1,18 @@
 # Changelog
 
+## 1.2.1 — 2026-11-20
+
+- Extensions pinned to a toolbar lost the panel's row style: the menu-row rule for the
+  extensions panel also matched the pinned button, giving it a surface, a 42 px height
+  and a 30 px icon badge that pushed it out of line. It now applies only inside the
+  panel; on the toolbar the button has no surface and centres its icon like the other
+  buttons.
+
+- Audio badge on the collapsed sidebar (and essentials): the favicon size rule made it
+  20 px, and its upstream background had poor contrast. It is a 16 px circle on the
+  favicon's corner again — primary while playing, the inverse surface when muted or
+  blocked — and presses to 0.95.
+
 ## 1.2.0 — 2026-11-20
 
 - Library redesigned around a top toolbar. The destinations (Routing, Media, Downloads,

@@ -657,6 +657,24 @@
   }
 }
 
+/* Extensions pinned to a toolbar: no surface of their own (Zen paints its toolbar-element
+   tone on the button), icon centred in the same slot as the other buttons. */
+.unified-extensions-item-action-button.toolbarbutton-1 {
+  appearance: none !important;
+  background: transparent !important;
+  min-height: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  justify-content: center !important;
+  align-items: center !important;
+
+  & > .toolbarbutton-badge-stack {
+    margin: 0 !important;
+    justify-content: center !important;
+    align-items: center !important;
+  }
+}
+
 /* ---------- Tooltips: inverse surface, plain M3 tooltip ---------- */
 tooltip:not([remote]),
 #tabbrowser-tab-tooltip,
@@ -2151,9 +2169,11 @@ panel[type="arrow"] {
 }
 
 /* Subview items: the menu rows (own surface, gap, icon badge, pill when active). */
-/* Scoped to panels: some sidebar buttons (the spaces switcher) also carry .subviewbutton. */
+/* Scoped to panels: some sidebar buttons (the spaces switcher) also carry .subviewbutton.
+   An extension's action button is a row only in the panel (.subviewbutton); pinned to a
+   toolbar it is a .toolbarbutton-1 and gets the icon-button style (03-base). */
 panelview .subviewbutton:not(#appMenu-zoom-controls, #appMenu-zoom-controls > .subviewbutton, .subviewbutton-iconic.subviewbutton-back),
-.unified-extensions-item-action-button,
+.unified-extensions-item-action-button.subviewbutton,
 .protections-popup-category {
   min-height: 42px !important;
   margin: 0 0 3px !important;
@@ -3058,9 +3078,36 @@ zen-library[customizing] .zen-library-tab {
 }
 
 /* ---------- Favicon size (default large, 20px) ---------- */
-#tabbrowser-tabs .tabbrowser-tab :is(.tab-icon-pending, .tab-icon-image, .tab-sharing-icon-overlay, .tab-icon-overlay) {
+#tabbrowser-tabs .tabbrowser-tab :is(.tab-icon-pending, .tab-icon-image, .tab-sharing-icon-overlay) {
   width: var(--m3e-favicon, 20px) !important;
   height: var(--m3e-favicon, 20px) !important;
+}
+
+/* Audio badge (collapsed sidebar, essentials): a small circle on the favicon's corner.
+   Playing is primary; muted / blocked are the inverse surface, so both read on any row. */
+#tabbrowser-tabs .tabbrowser-tab .tab-icon-overlay:not([crashed]):is([soundplaying], [muted], [activemedia-blocked]) {
+  box-sizing: border-box !important;
+  width: 16px !important;
+  height: 16px !important;
+  padding: 3px !important;
+  top: -6px !important;
+  inset-inline-end: -6px !important;
+  border-radius: var(--m3e-r-full) !important;
+  outline: none !important;
+  box-shadow: none !important;
+  background-image: none !important;
+  background-color: var(--m3-primary) !important;
+  color: var(--m3-on-primary) !important;
+  fill: currentColor !important;
+  transition: var(--m3e-color-motion), scale var(--m3e-d-fast) var(--m3e-spatial-fast) !important;
+
+  &:is([muted], [activemedia-blocked]) {
+    background-color: var(--m3-inverse-surface) !important;
+    color: var(--m3-inverse-on-surface) !important;
+  }
+  &:hover:active {
+    scale: 0.95;
+  }
 }
 #tabbrowser-tabs .tabbrowser-tab .tab-throbber {
   transform: scale(calc(var(--m3e-favicon, 20px) / 16px));
