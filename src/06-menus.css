@@ -245,3 +245,6 @@ menupopup > .recent-chats-header {
   --m3e-menu-from: 8px;
   --m3e-menu-origin: 50% 100%;
 }
+
+/* Context menus (opened at the pointer, [m3e-point]) instead grow from the click point:
+   m3e.uc.js animates their content box, which ::part() can't reach from a user sheet. */

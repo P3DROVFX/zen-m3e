@@ -1,5 +1,29 @@
 # Changelog
 
+## 1.2.2 — 2026-11-22
+
+- Translations panel redesigned. The two languages are tonal pills side by side — a
+  "Translate from ⌄" caption over the language, like Android's translator — with a
+  cookie-shaped tertiary swap button between them that exchanges the languages through
+  the panel's own lists (the arrows turn half a turn per swap). Cancel and Translate
+  share the footer's width: Cancel dashed, Translate primary. The header uses the wide
+  display face and the settings gear is a round icon button; errors sit on an
+  error-container card. When re-translating, the "to" pill takes the whole row.
+- Panel footers: a main action marked `[default]` (translations, not only `.primary`)
+  was drawn as a dashed secondary with on-primary text — dark text on a transparent
+  button. It is filled primary now, with M3 disabled colours; secondaries keep
+  on-surface text and get hover/press tints.
+
+- Context menus (tab, page, toolbar…) scale up from the point you clicked, with only a
+  short, shallow fade; near a screen edge, where the menu flips or slides, the origin
+  follows the click to the menu's other corner or side. Their rows no longer deal in
+  separately.
+- Found along the way: Sine loads the mod as a user sheet, where Gecko ignores
+  `::part()`, so no rule on a popup's `::part(content)` has ever applied (the anchored
+  menus' spring in `06-menus.css` included). The context-menu motion is therefore
+  driven by the script (Web Animations on the content box), and the script also hides
+  the translations menulists' own chevrons.
+
 ## 1.2.1 — 2026-11-20
 
 - Extensions pinned to a toolbar lost the panel's row style: the menu-row rule for the

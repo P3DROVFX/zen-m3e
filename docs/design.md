@@ -34,6 +34,7 @@ The guide asks not to repeat a technique. Where each one lives:
 | Shape is state (circle ↔ rounded square) | essentials, icon buttons, create FAB | small, frequent state changes |
 | Polygon morph (equal-vertex `clip-path`) | search badge (Clover-4 → Sunny while typing), space mark in the foot chip (Cookie-9 → 12 on hover) | the two identity marks of the window |
 | Clipped ornament | the search overlay's top-result card | the one hero on screen |
+| Language pair (caption-over-value pills around a tertiary cookie swap) | translations panel | the shell's translator; the swap is the panel's one expressive shape |
 | Dashed unselected chip | "New tab", secondary buttons, library filters | an action that is not a state |
 | Wide display face (`wdth 140`) | space name, result group headings, panel titles | headings only, never body text |
 | Caption over value | "TOP RESULT" | forms vocabulary from the timetable rail |
@@ -64,6 +65,11 @@ field) and by gaps; popups by their own surface colour.
   effects curve.
 - The overlay springs from 0.94 with a 10 px lift; menus spring from 0.92 towards their
   anchor side. On Linux the popup *window* can only fade, so the content animates inside it.
+- Context menus (opened at the pointer) grow from 0.8 out of the click point, with a
+  short 0.5 → 1 fade; the script computes the origin once the popup is laid out, so a
+  menu flipped or slid at a screen edge still grows from the click.
+- `::part()` doesn't apply from Sine's user sheet: anything inside a popup's or a
+  menulist's shadow tree is reached from `m3e.uc.js` (or by inheritance from the host).
 - No loops, no pulses, no decorative rotation. Hover 1.02 / press 0.95 is the only scale
   (press only here; hover scale would blur text in Gecko).
 - `prefers-reduced-motion` and `m3e.reduced-motion` zero the spatial durations.

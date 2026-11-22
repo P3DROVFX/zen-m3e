@@ -2153,6 +2153,9 @@ menupopup > .recent-chats-header {
   --m3e-menu-origin: 50% 100%;
 }
 
+/* Context menus (opened at the pointer, [m3e-point]) instead grow from the click point:
+   m3e.uc.js animates their content box, which ::part() can't reach from a user sheet. */
+
 /* ===== 07-panels.css ===== */
 /*
  * Arrow panels (app menu, extensions, downloads, site info), the find bar,
@@ -2304,7 +2307,9 @@ toolbarseparator,
   }
 }
 
-/* Primary buttons in panels and notifications. */
+/* Primary buttons in panels and notifications. A footer's main action is either
+   .primary or [default] (translations, protections); the rest are dashed secondaries
+   whose text is on-surface, never the primary's on-primary. */
 .panel-footer button,
 .popup-notification-primary-button,
 button.primary {
@@ -2312,15 +2317,36 @@ button.primary {
   min-height: 40px !important;
 }
 .popup-notification-primary-button,
+.panel-footer button[default],
 button.primary {
   background: var(--m3-primary) !important;
   color: var(--m3-on-primary) !important;
+  outline: none !important;
+  &:not([disabled]):hover {
+    background: color-mix(in srgb, var(--m3-on-primary) 10%, var(--m3-primary)) !important;
+  }
+  &:not([disabled]):hover:active {
+    background: color-mix(in srgb, var(--m3-on-primary) 18%, var(--m3-primary)) !important;
+  }
+  &[disabled] {
+    background: color-mix(in srgb, var(--m3-on-surface) 12%, transparent) !important;
+    color: color-mix(in srgb, var(--m3-on-surface) 38%, transparent) !important;
+    opacity: 1 !important;
+  }
 }
 .popup-notification-secondary-button,
-.panel-footer button:not(.primary) {
+.panel-footer button:not(.primary, [default]) {
   background: transparent !important;
+  color: var(--m3-on-surface) !important;
   outline: 1.5px dashed color-mix(in srgb, var(--m3-outline) 70%, transparent) !important;
   outline-offset: -1.5px;
+  &:not([disabled]):hover {
+    background: color-mix(in srgb, var(--m3-on-surface) var(--m3e-tint-idle), transparent) !important;
+    outline-color: var(--m3-outline) !important;
+  }
+  &:not([disabled]):hover:active {
+    background: color-mix(in srgb, var(--m3-on-surface) var(--m3e-tint-hover), transparent) !important;
+  }
 }
 
 /* ---------- Find bar ---------- */
@@ -3414,8 +3440,9 @@ zen-folder > .tab-group-label-container[m3e-count]::after {
   rotate: 45deg;
 }
 
-/* Menu rows deal in under the springing container (first reveal of each open). */
-menupopup[m3e-open] > :is(menuitem, menu) {
+/* Menu rows deal in under the springing container (first reveal of each open). Context
+   menus grow from the click as one piece instead. */
+menupopup[m3e-open]:not([m3e-point]) > :is(menuitem, menu) {
   animation: m3e-drop-in var(--m3e-d-fast) var(--m3e-decel) both;
   &:nth-child(2) { animation-delay: 15ms; }
   &:nth-child(3) { animation-delay: 30ms; }
@@ -4134,4 +4161,247 @@ panel[type="arrow"][m3e-open] panelview[current] > * {
   &:nth-child(5) { animation-delay: 80ms; }
   &:nth-child(6) { animation-delay: 100ms; }
   &:nth-child(n + 7) { animation-delay: 120ms; }
+}
+
+/* ===== 17-translations.css ===== */
+/*
+ * Translations panel: the two languages as tonal pills side by side — caption ("From ⌄")
+ * over the language — with a cookie-shaped swap button between them (added by
+ * m3e.uc.js; without the script the pills simply meet). Cancel is the dashed secondary,
+ * Translate the primary; both share the footer's width.
+ */
+#full-page-translations-panel {
+  --m3e-tr-pill: 60px;
+
+  & .translations-panel-view {
+    width: 30em !important;
+  }
+
+  /* Header: the wide display title and a round settings button. */
+  & .translations-panel-header {
+    align-items: center !important;
+    padding: 14px 12px 4px 20px !important;
+    & h1 {
+      margin: 0 !important;
+      font-size: 16px !important;
+      font-variation-settings: var(--m3e-type-display) !important;
+      color: var(--m3-on-surface) !important;
+    }
+    & .panel-info-button {
+      min-width: 36px !important;
+      min-height: 36px !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      justify-content: center;
+      border-radius: var(--m3e-r-full) !important;
+      background: transparent !important;
+      fill: var(--m3-on-surface-variant) !important;
+      transition: var(--m3e-color-motion) !important;
+      &:hover { background: color-mix(in srgb, var(--m3-on-surface) var(--m3e-tint-idle), transparent) !important; }
+      &:hover:active { background: color-mix(in srgb, var(--m3-on-surface) var(--m3e-tint-hover), transparent) !important; }
+      & > image { padding: 0 !important; }
+    }
+  }
+
+  & .translations-panel-content {
+    padding: 10px 12px 4px !important;
+  }
+
+  /* First-run intro text. */
+  & #full-page-translations-panel-intro {
+    margin: 0 8px 12px !important;
+    color: var(--m3-on-surface-variant) !important;
+    font-variation-settings: var(--m3e-type-body) !important;
+    line-height: 1.5;
+    & a {
+      color: var(--m3-primary) !important;
+      font-variation-settings: var(--m3e-type-label) !important;
+    }
+  }
+}
+
+/* ---------- Language pills ---------- */
+/* One row: [from] (swap) [to]. Caption and menulist share a grid cell; the caption sits
+   on the pill and lets clicks through to it. */
+#full-page-translations-panel-lang-selection {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center;
+  column-gap: 6px;
+}
+
+#full-page-translations-panel-from-label,
+#full-page-translations-panel-to-label {
+  grid-row: 1;
+  align-self: start;
+  justify-self: start;
+  z-index: 1;
+  display: flex !important;
+  align-items: center;
+  gap: 2px;
+  max-width: calc(100% - 36px);
+  margin: 11px 0 0 20px !important;  /* beats the inline margins the panel script sets */
+  pointer-events: none;
+  font-size: 11.5px !important;
+  font-variation-settings: var(--m3e-type-label) !important;
+  color: var(--m3-on-surface-variant) !important;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+/* The chevron moves into the caption, Android-style, once the script has hidden the
+   menulist's own (without the script the pills keep theirs). */
+#full-page-translations-panel-lang-selection:has(> #m3e-translations-swap) > :is(#full-page-translations-panel-from-label, #full-page-translations-panel-to-label)::after {
+  content: "";
+  flex: none;
+  width: 12px;
+  height: 12px;
+  background: currentColor;
+  mask: url("chrome://global/skin/icons/arrow-down-12.svg") center / 10px no-repeat;
+}
+#full-page-translations-panel-from-label { grid-column: 1; }
+#full-page-translations-panel-to-label { grid-column: 3; }
+
+#full-page-translations-panel-from,
+#full-page-translations-panel-to {
+  grid-row: 1;
+  box-sizing: border-box !important;
+  min-width: 0 !important;
+  min-height: var(--m3e-tr-pill) !important;
+  margin: 0 !important;
+  padding: 25px 14px 9px 16px !important;  /* the inner label adds 4px each side */
+  border: none !important;
+  border-radius: var(--m3e-r-full) !important;
+  background: var(--m3e-field) !important;
+  color: var(--m3-on-surface) !important;
+  outline-offset: 2px !important;
+  transition: var(--m3e-color-motion) !important;
+
+  &:hover {
+    background: color-mix(in srgb, var(--m3-on-surface) var(--m3e-tint-idle), var(--m3e-field)) !important;
+  }
+  /* The language label is in the menulist's shadow tree; it inherits these (::part()
+     doesn't work from Sine's user sheet). */
+  font-size: 15px !important;
+  font-variation-settings: var(--m3e-type-strong) !important;
+
+  &[open="true"] {
+    background: var(--m3-secondary-container) !important;
+    color: var(--m3-on-secondary-container) !important;
+  }
+}
+#full-page-translations-panel-from { grid-column: 1; }
+#full-page-translations-panel-to { grid-column: 3; }
+#full-page-translations-panel-from-label:has(+ #full-page-translations-panel-from[open="true"]),
+#full-page-translations-panel-lang-selection:has(#full-page-translations-panel-to[open="true"]) > #full-page-translations-panel-to-label {
+  color: var(--m3-on-secondary-container) !important;
+}
+
+/* Re-translating hides "from": "to" takes the whole row. */
+#full-page-translations-panel-from[hidden] ~ :is(#full-page-translations-panel-to-label, #full-page-translations-panel-to) {
+  grid-column: 1 / -1;
+}
+
+/* Swap: a tertiary cookie between the pills; the arrows turn half a turn per swap. */
+#m3e-translations-swap {
+  grid-row: 1;
+  grid-column: 2;
+  appearance: none !important;
+  box-sizing: border-box !important;
+  width: 48px !important;
+  height: 48px !important;
+  min-width: 48px !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  justify-content: center;
+  align-items: center;
+  border: none !important;
+  border-radius: 0 !important;
+  background: var(--m3-tertiary) !important;
+  color: var(--m3-on-tertiary) !important;
+  clip-path: var(--m3e-shape-cookie-12);
+  transition: var(--m3e-color-motion), scale var(--m3e-d-fast) var(--m3e-spatial-fast) !important;
+
+  &::before {
+    content: "";
+    width: 20px;
+    height: 20px;
+    background: currentColor;
+    mask: var(--m3e-icon-swap) center / contain no-repeat;
+    transition: rotate var(--m3e-d) var(--m3e-spatial) !important;
+  }
+  &[m3e-swapped]::before {
+    rotate: 180deg;
+  }
+  & > .toolbarbutton-icon,
+  & > .toolbarbutton-text {
+    display: none !important;
+  }
+
+  &:hover {
+    background: color-mix(in srgb, var(--m3-on-tertiary) 10%, var(--m3-tertiary)) !important;
+  }
+  &:hover:active {
+    background: color-mix(in srgb, var(--m3-on-tertiary) 18%, var(--m3-tertiary)) !important;
+    scale: 0.95;
+  }
+  &:focus-visible {
+    outline: none !important;
+    background: var(--m3-tertiary-container) !important;
+    color: var(--m3-on-tertiary-container) !important;
+  }
+  &[disabled] {
+    background: color-mix(in srgb, var(--m3-on-surface) 12%, transparent) !important;
+    color: color-mix(in srgb, var(--m3-on-surface) 38%, transparent) !important;
+  }
+  #full-page-translations-panel-from[hidden] + & {
+    display: none !important;
+  }
+}
+
+/* Two arrows passing each other (Material "swap_horiz", rounded). */
+:root {
+  --m3e-icon-swap: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M6.99 11 3.7 14.29a1 1 0 0 0 0 1.42L6.99 19a1 1 0 0 0 1.71-.71V16h6.3a1 1 0 0 0 0-2H8.7v-2.29A1 1 0 0 0 6.99 11zM20.3 8.29 17.01 5a1 1 0 0 0-1.71.71V8H9a1 1 0 0 0 0 2h6.3v2.29a1 1 0 0 0 1.71.71l3.29-3.29a1 1 0 0 0 0-1.42z'/%3E%3C/svg%3E");
+}
+
+/* ---------- Error box ---------- */
+#full-page-translations-panel-error {
+  margin-block-start: 10px !important;
+  padding: 14px 16px !important;
+  border: none !important;
+  border-radius: var(--m3e-r-lg) !important;
+  background: var(--m3-error-container) !important;
+  color: var(--m3-on-error-container) !important;
+
+  & #full-page-translations-panel-error-message {
+    font-variation-settings: var(--m3e-type-strong) !important;
+  }
+}
+#full-page-translations-panel-translate-hint-action {
+  min-height: 36px !important;
+  padding: 0 18px !important;
+  border-radius: var(--m3e-r-full) !important;
+  background: var(--m3-on-error-container) !important;
+  color: var(--m3-error-container) !important;
+  font-variation-settings: var(--m3e-type-label) !important;
+}
+
+/* ---------- Footer: dashed Cancel, primary Translate, sharing the width ---------- */
+#full-page-translations-panel .translations-panel-footer {
+  gap: 8px;
+  padding: 12px !important;
+  margin: 0 !important;
+
+  & > button {
+    flex: 1 1 0;
+    min-width: 0 !important;
+    min-height: 44px !important;
+    margin: 0 !important;
+    padding-inline: 16px !important;
+    border-radius: var(--m3e-r-full) !important;
+    font-size: 13.5px !important;
+    font-variation-settings: var(--m3e-type-label) !important;
+    transition: var(--m3e-color-motion), outline-color var(--m3e-d-effects) var(--m3e-effects), scale var(--m3e-d-fast) var(--m3e-spatial-fast) !important;
+    &:not([disabled]):hover:active { scale: 0.97; }
+  }
 }

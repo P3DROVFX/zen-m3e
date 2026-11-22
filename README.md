@@ -31,9 +31,12 @@ shell for Hyprland), but it works on any Linux desktop with Zen, Sine and matuge
 - **Ctrl+Tab switcher** — the tabs as cards on a large sheet: thumbnail, favicon badge and
   title; the tab you're switching to fills with primary and its thumbnail rounds in.
 - **Site panel** (extensions popover), **Library**, **find bar**, **toasts**, **tooltips**.
+- **Translations panel** — the language pair as two pills ("From ⌄" over the language)
+  around a cookie-shaped swap button; dashed *Cancel*, primary *Translate*.
 - **Media player** like Android's: album art under a scrim, a big play/pause (rounded
   square ↔ circle), wavy progress; contracted by default, full on hover.
-- **Motion** — springs on shape and position, selection pops, folders dealing in;
+- **Motion** — springs on shape and position, selection pops, folders dealing in,
+  context menus growing out of the click;
   nothing loops; reduced motion honoured. **No shadows**: surfaces separate by tone.
 
 ## Requirements
@@ -158,7 +161,7 @@ All in **Settings → Sine → M3 Expressive**.
   compact mode with a separate top toolbar Zen moves that bar out of the sidebar, so the
   library stays in the sidebar's foot.
 - **Without the script** there is no live reload, folder preview, album art, scroll-edge
-  fades or hidden scrollbar.
+  fades, hidden scrollbar, popup motion or translations swap button.
 
 ## Documentation
 

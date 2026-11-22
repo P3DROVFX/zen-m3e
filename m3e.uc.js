@@ -5,7 +5,9 @@
 //  * Live palette: when colors.css changes (new wallpaper, light/dark switch in the
 //    shell), it is loaded into the window as an author sheet at once, instead of on the
 //    next restart. A stat every few seconds, skipped while the window is hidden.
-//  * Popup motion: popups get [m3e-open] while open so their content can spring in.
+//  * Popup motion: popups get [m3e-open] while open so their content can spring in;
+//    context menus grow from the click point.
+//  * Translations panel: a swap button between the two languages.
 //  * Scroll edges: the tab list gets [m3e-at-start]/[m3e-at-end]/[m3e-scrolled] so its
 //    edges fade only where there is something hidden (the shell's top/bottom gradient).
 //  * Media cards: the Media Session artwork of each playing tab becomes its card's
@@ -80,8 +82,124 @@
   }
 
   const isPopup = (el) => el?.localName === "menupopup" || el?.localName === "panel";
-  const onPopupShowing = (e) => isPopup(e.target) && e.target.setAttribute("m3e-open", "");
-  const onPopupHidden = (e) => isPopup(e.target) && e.target.removeAttribute("m3e-open");
+
+  // Context menus scale up from the click. A menu opened at the pointer (no anchor, not
+  // a submenu or a list's dropdown) gets [m3e-point] and its content box grows from
+  // 0.8 with a short, shallow fade. This runs here rather than in CSS: Sine loads the
+  // mod as a user sheet, and Gecko ignores ::part() there, so the stylesheet can't reach
+  // the popup's content box. The animation starts at once with the menu's usual corner
+  // (top-left) as origin; on the first frame, when the popup is laid out but not yet
+  // painted, the origin moves to the click point inside it (clamped to its box: near a
+  // screen edge Gecko flips or slides the menu).
+  const isPointMenu = (p) =>
+    p.localName === "menupopup" && !p.anchorNode && !["menu", "menulist"].includes(p.parentNode?.localName);
+  const token = (name) => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+  const ms = (v) => (v.endsWith("ms") ? parseFloat(v) : parseFloat(v) * 1000) || 0;
+  function clickPoint(e, popup) {
+    if (e.screenX || e.screenY) return [e.screenX, e.screenY];
+    // Page menus are opened from a synthetic event without coordinates; the content
+    // process's click is still on nsContextMenu while popupshowing is dispatched.
+    const c = popup.id === "contentAreaContextMenu" && window.nsContextMenu?.contentData?.context;
+    if (c && Number.isFinite(c.screenXDevPx)) {
+      return [c.screenXDevPx / window.devicePixelRatio, c.screenYDevPx / window.devicePixelRatio];
+    }
+    return null;
+  }
+  const menuAnimations = new WeakMap();
+  const stopGrow = (popup) => {
+    for (const a of menuAnimations.get(popup) ?? []) a.cancel();
+    menuAnimations.delete(popup);
+  };
+  function growFromPoint(popup, [sx, sy]) {
+    const content = popup.shadowRoot?.querySelector('[part~="content"]');
+    if (!content) return;
+    stopGrow(popup);
+    content.style.transformOrigin = popup.matches(":-moz-locale-dir(rtl)") ? "100% 0" : "0 0";
+    const grow = ms(token("--m3e-d-fast"));
+    if (grow) {
+      menuAnimations.set(popup, [
+        content.animate([{ transform: "scale(0.8)" }, { transform: "none" }], {
+          duration: grow, easing: token("--m3e-spatial") || "ease-out",
+        }),
+        content.animate([{ opacity: 0.5 }, { opacity: 1 }], {
+          duration: ms(token("--m3e-d-effects")), easing: token("--m3e-effects") || "ease-out",
+        }),
+      ]);
+    }
+    requestAnimationFrame(() => {
+      if (!popup.hasAttribute("m3e-point")) return;
+      const box = content.getBoundingClientRect();
+      const clamp = (v, max) => Math.round(Math.min(Math.max(v, 0), max));
+      const x = clamp(sx - window.mozInnerScreenX - box.x, box.width);
+      const y = clamp(sy - window.mozInnerScreenY - box.y, box.height);
+      content.style.transformOrigin = `${x}px ${y}px`;
+    });
+  }
+
+  const onPopupShowing = (e) => {
+    const popup = e.target;
+    if (!isPopup(popup)) return;
+    popup.setAttribute("m3e-open", "");
+    const point = isPointMenu(popup) && clickPoint(e, popup);
+    if (point) {
+      popup.setAttribute("m3e-point", "");
+      growFromPoint(popup, point);
+    }
+    if (popup.id === "full-page-translations-panel") setupTranslations(popup);
+  };
+  const onPopupHidden = (e) => {
+    const popup = e.target;
+    if (!isPopup(popup)) return;
+    popup.removeAttribute("m3e-open");
+    if (popup.hasAttribute("m3e-point")) {
+      popup.removeAttribute("m3e-point");
+      stopGrow(popup);
+    }
+  };
+
+  // Translations panel: a swap button between the two language pills. It drives the
+  // panel through its own menulists and command handlers, so telemetry, the remembered
+  // target language and the Translate button's state stay Firefox's.
+  const TR = "full-page-translations-panel";
+  function setupTranslations(panel) {
+    const from = document.getElementById(`${TR}-from`);
+    const to = document.getElementById(`${TR}-to`);
+    if (!from || !to) return;
+    // The chevron moves to the caption; the menulist's own dropmarker is in its shadow
+    // tree, out of the stylesheet's reach (no ::part() in user sheets).
+    for (const list of [from, to]) {
+      list.shadowRoot?.querySelector("dropmarker")?.style.setProperty("display", "none", "important");
+    }
+    let swap = document.getElementById("m3e-translations-swap");
+    if (!swap) {
+      swap = document.createXULElement("toolbarbutton");
+      swap.id = "m3e-translations-swap";
+      swap.setAttribute("tooltiptext", "Swap languages");
+      swap.setAttribute("aria-label", "Swap languages");
+      swap.setAttribute("tabindex", "0");
+      swap.setAttribute("closemenu", "none"); // a panel closes on any other toolbarbutton
+      swap.addEventListener("command", () => swapLanguages(from, to, swap));
+      from.after(swap);
+      panel.addEventListener("command", () => requestAnimationFrame(() => updateSwap(from, to, swap)));
+    }
+    // The lists are filled while the panel opens; check once they are.
+    requestAnimationFrame(() => updateSwap(from, to, swap));
+  }
+  const itemFor = (list, value) =>
+    value ? list.menupopup?.querySelector(`menuitem[value="${CSS.escape(value)}"]`) : null;
+  function updateSwap(from, to, swap) {
+    swap.toggleAttribute("disabled", !(itemFor(to, from.value) && itemFor(from, to.value)));
+  }
+  function swapLanguages(from, to, swap) {
+    const a = from.value, b = to.value;
+    const intoFrom = itemFor(from, b), intoTo = itemFor(to, a);
+    if (!intoFrom || !intoTo) return;
+    from.value = b;
+    to.value = a;
+    intoFrom.doCommand();
+    intoTo.doCommand();
+    swap.toggleAttribute("m3e-swapped");
+  }
 
   // Scroll edges of the spaces' tab lists. One rAF per burst of scroll events, and an
   // attribute write only when a state flips.

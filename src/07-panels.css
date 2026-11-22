@@ -148,7 +148,9 @@ toolbarseparator,
   }
 }
 
-/* Primary buttons in panels and notifications. */
+/* Primary buttons in panels and notifications. A footer's main action is either
+   .primary or [default] (translations, protections); the rest are dashed secondaries
+   whose text is on-surface, never the primary's on-primary. */
 .panel-footer button,
 .popup-notification-primary-button,
 button.primary {
@@ -156,15 +158,36 @@ button.primary {
   min-height: 40px !important;
 }
 .popup-notification-primary-button,
+.panel-footer button[default],
 button.primary {
   background: var(--m3-primary) !important;
   color: var(--m3-on-primary) !important;
+  outline: none !important;
+  &:not([disabled]):hover {
+    background: color-mix(in srgb, var(--m3-on-primary) 10%, var(--m3-primary)) !important;
+  }
+  &:not([disabled]):hover:active {
+    background: color-mix(in srgb, var(--m3-on-primary) 18%, var(--m3-primary)) !important;
+  }
+  &[disabled] {
+    background: color-mix(in srgb, var(--m3-on-surface) 12%, transparent) !important;
+    color: color-mix(in srgb, var(--m3-on-surface) 38%, transparent) !important;
+    opacity: 1 !important;
+  }
 }
 .popup-notification-secondary-button,
-.panel-footer button:not(.primary) {
+.panel-footer button:not(.primary, [default]) {
   background: transparent !important;
+  color: var(--m3-on-surface) !important;
   outline: 1.5px dashed color-mix(in srgb, var(--m3-outline) 70%, transparent) !important;
   outline-offset: -1.5px;
+  &:not([disabled]):hover {
+    background: color-mix(in srgb, var(--m3-on-surface) var(--m3e-tint-idle), transparent) !important;
+    outline-color: var(--m3-outline) !important;
+  }
+  &:not([disabled]):hover:active {
+    background: color-mix(in srgb, var(--m3-on-surface) var(--m3e-tint-hover), transparent) !important;
+  }
 }
 
 /* ---------- Find bar ---------- */
